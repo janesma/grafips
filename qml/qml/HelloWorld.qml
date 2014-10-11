@@ -1,26 +1,27 @@
 import QtQuick 2.3
-import GripsRendering 1.0
+import QtQuick.Layouts 1.1
 
-Rectangle {
-    width: 200
-    height: 100
-    color: "green"
-
-    Renderer {
-        id: renderer
-        width: 200
-        height: 100
-        anchors.fill: parent
-        anchors.margins: 10
-
-        // The transform is just to show something interesting..
-        // transform: [
-        //     Rotation { id: rotation; axis.x: 0; axis.z: 0; axis.y: 1; angle: 0; origin.x: renderer.width / 2; origin.y: renderer.height / 2; },
-        //     Translate { id: txOut; x: -renderer.width / 2; y: -renderer.height / 2 },
-        //     Scale { id: scale; },
-        //     Translate { id: txIn; x: renderer.width / 2; y: renderer.height / 2 }
-        // ]
+RowLayout {
+    width: 800
+    height: 400
+    spacing: 5
+    Rectangle { 
+        color:'plum'
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.minimumWidth: 50
+        Layout.preferredWidth: 100
+        Layout.maximumWidth: 300
+        Layout.minimumHeight: 150
     }
+    Graph {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.minimumWidth: 200
+        Layout.preferredWidth: 700
+        Layout.minimumHeight: 150
+    }
+
     // property int animatedValue: 0
     // SequentialAnimation on animatedValue {
     //     loops: Animation.Infinite

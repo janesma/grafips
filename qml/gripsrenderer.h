@@ -9,6 +9,10 @@ class GripsRenderer : public QQuickFramebufferObject
 {
     Q_OBJECT
 public:
+    GripsRenderer()
+        {
+            setTextureFollowsItemSize(true);
+        }
     Renderer *createRenderer() const;
 };
 
