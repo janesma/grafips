@@ -14,13 +14,13 @@ class MetricDescription
   public:
     MetricDescription(const MetricDescription &o);
     MetricDescription(const std::string &_path,
-                      const std::string &_helpText,
-                      const std::string &_displayName,
+                      const std::string &_help_text,
+                      const std::string &_display_name,
                       MetricType _type);
     int id() const;
     std::string path;
-    std::string helpText;
-    std::string displayName;
+    std::string help_text;
+    std::string display_name;
     MetricType type;
 };
 

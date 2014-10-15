@@ -11,11 +11,11 @@ class CpuProvider : public Provider
   public:
     CpuProvider(Publisher *p);
     ~CpuProvider();
-    void getDescriptions(std::vector<MetricDescription> *descriptions);
-    void enable(int id);
-    void disable(int id);
-    void poll();
-    void run();
+    void GetDescriptions(std::vector<MetricDescription> *descriptions);
+    void Enable(int id);
+    void Disable(int id);
+    void Poll();
+    void Run();
 
     friend class CpuProviderFixture;
   private:
@@ -27,20 +27,20 @@ class CpuProvider : public Provider
         float utilization;
     };
 
-    bool isEnabled() const;
-    void refresh();
-    void parseCpuLine(CpuLine *dest, char **savePtr);
-    void publish();
+    bool IsEnabled() const;
+    void Refresh();
+    void ParseCpuLine(CpuLine *dest, char **savePtr);
+    void Publish();
 
     // file handle for /proc/stat
-    int m_cpuInfoHandle;
+    int m_cpu_info_handle;
 
     // thread that polls the file handle
     std::thread m_thread;
 
     // data structures to store the parsed line
     CpuLine m_systemStats;
-    std::vector<CpuLine> m_coreStats;
+    std::vector<CpuLine> m_core_stats;
 
     // stable buffer for reading
     std::vector<char> m_buf;
@@ -49,7 +49,7 @@ class CpuProvider : public Provider
     Publisher *m_publisher;
 
     // tracks subscriptions
-    std::set<int> m_enabledCores;
+    std::set<int> m_enabled_cores;
 
     // translates metric ids to offsets
     int m_sysId;

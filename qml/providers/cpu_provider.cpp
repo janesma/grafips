@@ -13,15 +13,15 @@ static const int READ_BUF_SIZE = 4096;
 
 CpuProvider::CpuProvider(Publisher *p) : m_publisher(p)
 {
-    m_cpuInfoHandle = open("/proc/stat", O_RDONLY);
+    m_cpu_info_handle = open("/proc/stat", O_RDONLY);
     m_buf.resize(READ_BUF_SIZE);
-    refresh();
-    p->registerProvider(this);
+    Refresh();
+    p->RegisterProvider(this);
 }
 
 CpuProvider::~CpuProvider()
 {
-    close(m_cpuInfoHandle);
+    close(m_cpu_info_handle);
 }
 
 struct CpuLine
@@ -32,12 +32,12 @@ struct CpuLine
 };
 
 void
-CpuProvider::refresh()
+CpuProvider::Refresh()
 {
     // seek will refresh the data in the proc file
-    lseek(m_cpuInfoHandle, 0, SEEK_SET);
+    lseek(m_cpu_info_handle, 0, SEEK_SET);
 
-    const ssize_t bytes = read(m_cpuInfoHandle, m_buf.data(), m_buf.size());
+    const ssize_t bytes = read(m_cpu_info_handle, m_buf.data(), m_buf.size());
     assert(bytes > 0);
     m_buf[bytes] = '\0';
 
@@ -55,14 +55,14 @@ CpuProvider::refresh()
 
         if (0 == strncmp("cpu", word, 5))
         {
-            parseCpuLine(&m_systemStats, &wordsaveptr);
+            ParseCpuLine(&m_systemStats, &wordsaveptr);
         }
         else
         {
             int core = atoi(&(word[3]));
-            if (core >= m_coreStats.size())
-                m_coreStats.resize(core + 1);
-            parseCpuLine(&(m_coreStats[core]), &wordsaveptr);
+            if (core >= m_core_stats.size())
+                m_core_stats.resize(core + 1);
+            ParseCpuLine(&(m_core_stats[core]), &wordsaveptr);
         }
 
         // advance to next line
@@ -71,7 +71,7 @@ CpuProvider::refresh()
 }
 
 void 
-CpuProvider::parseCpuLine(CpuLine *dest, char **savePtr)
+CpuProvider::ParseCpuLine(CpuLine *dest, char **savePtr)
 {
     const char *user = strtok_r(NULL, " ", savePtr);
     assert(user != NULL);
@@ -93,20 +93,20 @@ CpuProvider::parseCpuLine(CpuLine *dest, char **savePtr)
 }
 
 bool
-CpuProvider::isEnabled() const
+CpuProvider::IsEnabled() const
 {
-    return ! m_enabledCores.empty();
+    return ! m_enabled_cores.empty();
 }
 
 void 
-CpuProvider::getDescriptions(std::vector<MetricDescription> *descriptions)
+CpuProvider::GetDescriptions(std::vector<MetricDescription> *descriptions)
 {
     descriptions->push_back(MetricDescription("/cpu/system/utilization", 
                                               "Displays percent cpu activity for the system",
                                               "CPU Busy", GR_METRIC_PERCENT));
     m_sysId = descriptions->back().id();
 
-    for (int i = 0; i < m_coreStats.size(); ++i)
+    for (int i = 0; i < m_core_stats.size(); ++i)
     {
         std::stringstream s;
         s << "/cpu/core" << i << "/utilization";
@@ -119,18 +119,18 @@ CpuProvider::getDescriptions(std::vector<MetricDescription> *descriptions)
 }
 
 void 
-CpuProvider::enable(int id)
+CpuProvider::Enable(int id)
 {
     if (id == m_sysId)
     {
-        m_enabledCores.insert(-1);
+        m_enabled_cores.insert(-1);
         return;
     }
     for (int i = 0; i < m_ids.size(); ++i)
     {
         if (m_ids[i] == id)
         {
-            m_enabledCores.insert(i);
+            m_enabled_cores.insert(i);
             return;
         }
     }
@@ -138,18 +138,18 @@ CpuProvider::enable(int id)
 }
 
 void 
-CpuProvider::disable(int id)
+CpuProvider::Disable(int id)
 {
     if (id == m_sysId)
     {
-        m_enabledCores.erase(-1);
+        m_enabled_cores.erase(-1);
         return;
     }
     for (int i = 0; i < m_ids.size(); ++i)
     {
         if (m_ids[i] == id)
         {
-            m_enabledCores.erase(i);
+            m_enabled_cores.erase(i);
             return;
         }
     }
@@ -157,29 +157,29 @@ CpuProvider::disable(int id)
 }
 
 void 
-CpuProvider::poll()
+CpuProvider::Poll()
 {
-    if (! isEnabled())
+    if (! IsEnabled())
         return;
 
-    refresh();
-    publish();
+    Refresh();
+    Publish();
 }
 
 void 
-CpuProvider::publish()
+CpuProvider::Publish()
 {
     DataSet d;
     const int ms = get_ms_time();
 
-    if (m_enabledCores.count(-1) != 0)
+    if (m_enabled_cores.count(-1) != 0)
         d.push_back(DataPoint(ms, m_sysId, m_systemStats.utilization));
 
     for (int i = 0; i < m_ids.size(); ++i)
     {
-        if (m_enabledCores.count(i) == 0)
+        if (m_enabled_cores.count(i) == 0)
             continue;
-        d.push_back(DataPoint(ms, m_ids[i], m_coreStats[i].utilization));
+        d.push_back(DataPoint(ms, m_ids[i], m_core_stats[i].utilization));
     }
-    m_publisher->onMetric(d);
+    m_publisher->OnMetric(d);
 }

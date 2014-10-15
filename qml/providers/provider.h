@@ -9,8 +9,8 @@ class Provider
 {
   public:
     virtual ~Provider() {}
-    virtual void getDescriptions(std::vector<MetricDescription> *descriptions) = 0;
-    virtual void enable(int id) = 0;
-    virtual void disable(int id) = 0;
-    virtual void poll() = 0;
+    virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) = 0;
+    virtual void Enable(int id) = 0;
+    virtual void Disable(int id) = 0;
+    virtual void Poll() = 0;
 };

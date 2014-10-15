@@ -6,8 +6,7 @@
 
 #include "data_sink.h"
 
-class GripsRenderer : public QQuickFramebufferObject,
-                      public DataSink
+class GripsRenderer : public QQuickFramebufferObject
 {
     Q_OBJECT
 public:
@@ -16,7 +15,7 @@ public:
             setTextureFollowsItemSize(true);
         }
     Renderer *createRenderer() const;
-    void data(int time, float val);
+    void Data(int time, float val);
   private:
     std::mutex m_mut;
 };

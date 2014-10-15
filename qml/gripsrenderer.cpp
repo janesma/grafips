@@ -11,7 +11,7 @@ struct point {
   GLfloat y;
 };
 
-#define GL_CHECK() checkError(__FILE__, __LINE__)
+#define GL_CHECK() CheckError(__FILE__, __LINE__)
 
 class PrivateRenderer : public QQuickFramebufferObject::Renderer
 {
@@ -39,7 +39,7 @@ public:
             glShaderSource(vs, 1, &vshader, &len);
             GL_CHECK();
             glCompileShader(vs);
-            printCompileError(vs);
+            PrintCompileError(vs);
 
             const int fs = glCreateShader(GL_FRAGMENT_SHADER);
             GL_CHECK();
@@ -47,7 +47,7 @@ public:
             glShaderSource(fs, 1, &fshader, &len);
             GL_CHECK();
             glCompileShader(fs);
-            printCompileError(fs);
+            PrintCompileError(fs);
 
             prog = glCreateProgram();
             glAttachShader(prog, vs);
@@ -63,7 +63,7 @@ public:
             GL_CHECK();
         }
 
-    GLint getTimeOffset()
+    GLint GetTimeOffset()
         {
             struct timespec tp;
             clock_gettime(CLOCK_REALTIME, &tp);
@@ -96,7 +96,7 @@ public:
             GL_CHECK();
 
             
-            GLint t = getTimeOffset();
+            GLint t = GetTimeOffset();
             assert(t >= 0);
             assert(t <2000);
             float x_offset = t / 1000.0;
@@ -122,7 +122,7 @@ public:
             update();
         }
 
-    void printCompileError(GLint shader)
+    void PrintCompileError(GLint shader)
         {
             GLint status;
             glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -135,7 +135,7 @@ public:
             printf("ERROR -- compile failed: %s\n", log.data());
         }
 
-    void checkError(const char * file, int line)
+    void CheckError(const char * file, int line)
         {
             if (glGetError() == GL_NO_ERROR)
                 return;
@@ -178,6 +178,6 @@ PrivateRenderer::fshader = "void main(void) {"
     "}";
 
 void 
-GripsRenderer::data(int time, float val)
+GripsRenderer::Data(int time, float val)
 {
 }

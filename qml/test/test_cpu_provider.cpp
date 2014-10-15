@@ -5,20 +5,20 @@
 class NullPublisher : public Publisher
 {
   public:
-    void registerProvider(Provider *p) {}
-    void onMetric(const DataSet &d) {}
-    void enable(int id) {}
-    void getDescriptions(std::vector<MetricDescription> *descriptions) {}
+    void RegisterProvider(Provider *p) {}
+    void OnMetric(const DataSet &d) {}
+    void Enable(int id) {}
+    void GetDescriptions(std::vector<MetricDescription> *descriptions) {}
 };
 
 class TestPublisher : public Publisher
 {
   public:
-    void registerProvider(Provider *p) { m_p = p; }
-    void onMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
-    void enable(int id) { m_p->enable(id); }
-    void getDescriptions(std::vector<MetricDescription> *descriptions) 
-        { m_p->getDescriptions(descriptions); }
+    void RegisterProvider(Provider *p) { m_p = p; }
+    void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
+    void Enable(int id) { m_p->Enable(id); }
+    void GetDescriptions(std::vector<MetricDescription> *descriptions) 
+        { m_p->GetDescriptions(descriptions); }
     DataSet m_d;
     Provider *m_p;
 };
@@ -43,10 +43,10 @@ class CpuProviderFixture : public testing::Test
             EXPECT_GT(p.m_systemStats.system, 0);
             EXPECT_GT(p.m_systemStats.idle, 0);
 
-            EXPECT_GT(p.m_coreStats.size(), 0);
-            EXPECT_GT(p.m_coreStats[0].user, 0);
-            EXPECT_GT(p.m_coreStats[0].system, 0);
-            EXPECT_GT(p.m_coreStats[0].idle, 0);
+            EXPECT_GT(p.m_core_stats.size(), 0);
+            EXPECT_GT(p.m_core_stats[0].user, 0);
+            EXPECT_GT(p.m_core_stats[0].system, 0);
+            EXPECT_GT(p.m_core_stats[0].idle, 0);
         }
 
     void test_publish()
@@ -54,10 +54,10 @@ class CpuProviderFixture : public testing::Test
             TestPublisher pub;
             CpuProvider p(&pub);
             MetricDescriptionSet metrics;
-            pub.getDescriptions(&metrics);
+            pub.GetDescriptions(&metrics);
             for (MetricDescriptionSet::iterator i = metrics.begin(); i != metrics.end(); ++i)
-                pub.enable(i->id());
-            p.poll();
+                pub.Enable(i->id());
+            p.Poll();
             EXPECT_EQ(pub.m_d.size(), metrics.size());
             for (int i = 0; i < pub.m_d.size(); ++i)
             {
@@ -66,7 +66,7 @@ class CpuProviderFixture : public testing::Test
                 for (int j = i + 1; j < pub.m_d.size(); ++j)
                 {
                     EXPECT_NE(pub.m_d[i].id, pub.m_d[j].id);
-                    EXPECT_EQ(pub.m_d[i].timeVal, pub.m_d[j].timeVal);
+                    EXPECT_EQ(pub.m_d[i].time_val, pub.m_d[j].time_val);
                 }
             }
         }

@@ -1,16 +1,16 @@
 #include "provider.h"
 
 MetricDescription::MetricDescription(const MetricDescription &o) 
-    : path(o.path), helpText(o.helpText), 
-      displayName(o.displayName), type(o.type)
+    : path(o.path), help_text(o.help_text), 
+       display_name(o.display_name), type(o.type)
 {}
 
 MetricDescription::MetricDescription(const std::string &_path,
-                                     const std::string &_helpText,
-                                     const std::string &_displayName,
+                                     const std::string &_help_text,
+                                     const std::string &_display_name,
                                      MetricType _type)
-    : path(_path), helpText(_helpText),
-      displayName(_displayName), type(_type)
+    : path(_path), help_text(_help_text),
+      display_name(_display_name), type(_type)
 {}
 
 int 
