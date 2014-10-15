@@ -39,5 +39,6 @@ target_link_libraries(grips grips_providers GL)
 
 add_subdirectory(test)
 add_subdirectory(providers)
+add_subdirectory(publishers)
 add_subdirectory(/usr/src/gtest gtest)
 

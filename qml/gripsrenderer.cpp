@@ -176,3 +176,8 @@ const char *
 PrivateRenderer::fshader = "void main(void) {"
     "  gl_FragColor = vec4(0,0,0,1);"
     "}";
+
+void 
+GripsRenderer::data(int time, float val)
+{
+}

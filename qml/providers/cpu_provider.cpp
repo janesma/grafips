@@ -3,16 +3,20 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "publisher.h"
+
 static const int READ_BUF_SIZE = 4096;
 
-CpuProvider::CpuProvider()
+CpuProvider::CpuProvider(Publisher *p) : m_publisher(p)
 {
     m_cpuInfoHandle = open("/proc/stat", O_RDONLY);
     m_buf.resize(READ_BUF_SIZE);
     refresh();
+    p->registerProvider(this);
 }
 
 CpuProvider::~CpuProvider()
@@ -30,9 +34,6 @@ struct CpuLine
 void
 CpuProvider::refresh()
 {
-    if (! isEnabled())
-        return;
-
     // seek will refresh the data in the proc file
     lseek(m_cpuInfoHandle, 0, SEEK_SET);
 
@@ -85,24 +86,100 @@ CpuProvider::parseCpuLine(CpuLine *dest, char **savePtr)
     const char *idle = strtok_r(NULL, " ", savePtr);
     assert (idle != NULL);
     dest->idle = atoi(idle);
+
+    const float active = dest->system + dest->user;
+    const float total = active + dest->idle;
+    dest->utilization = active / total;
 }
 
 bool
 CpuProvider::isEnabled() const
 {
-    return true;
+    return ! m_enabledCores.empty();
 }
 
 void 
 CpuProvider::getDescriptions(std::vector<MetricDescription> *descriptions)
 {
+    descriptions->push_back(MetricDescription("/cpu/system/utilization", 
+                                              "Displays percent cpu activity for the system",
+                                              "CPU Busy", GR_METRIC_PERCENT));
+    m_sysId = descriptions->back().id();
+
+    for (int i = 0; i < m_coreStats.size(); ++i)
+    {
+        std::stringstream s;
+        s << "/cpu/core" << i << "/utilization";
+        descriptions->push_back(MetricDescription(s.str(), 
+                                                  "Displays percent cpu activity for the core",
+                                                  "CPU Core Busy", GR_METRIC_PERCENT));
+        if (m_ids.size() <= i)
+            m_ids.push_back(descriptions->back().id());
+    }
 }
 
 void 
 CpuProvider::enable(int id)
 {
+    if (id == m_sysId)
+    {
+        m_enabledCores.insert(-1);
+        return;
+    }
+    for (int i = 0; i < m_ids.size(); ++i)
+    {
+        if (m_ids[i] == id)
+        {
+            m_enabledCores.insert(i);
+            return;
+        }
+    }
+    assert(false);
 }
+
 void 
 CpuProvider::disable(int id)
 {
+    if (id == m_sysId)
+    {
+        m_enabledCores.erase(-1);
+        return;
+    }
+    for (int i = 0; i < m_ids.size(); ++i)
+    {
+        if (m_ids[i] == id)
+        {
+            m_enabledCores.erase(i);
+            return;
+        }
+    }
+    assert(false);
+}
+
+void 
+CpuProvider::poll()
+{
+    if (! isEnabled())
+        return;
+
+    refresh();
+    publish();
+}
+
+void 
+CpuProvider::publish()
+{
+    DataSet d;
+    const int ms = get_ms_time();
+
+    if (m_enabledCores.count(-1) != 0)
+        d.push_back(DataPoint(ms, m_sysId, m_systemStats.utilization));
+
+    for (int i = 0; i < m_ids.size(); ++i)
+    {
+        if (m_enabledCores.count(i) == 0)
+            continue;
+        d.push_back(DataPoint(ms, m_ids[i], m_coreStats[i].utilization));
+    }
+    m_publisher->onMetric(d);
 }

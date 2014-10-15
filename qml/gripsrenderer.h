@@ -1,11 +1,13 @@
 #ifndef GRIPS_RENDERER_H
 #define GRIPS_RENDERER_H
 
+#include <mutex>
 #include <QtQuick/QQuickFramebufferObject>
 
-//class LogoRenderer;
+#include "data_sink.h"
 
-class GripsRenderer : public QQuickFramebufferObject
+class GripsRenderer : public QQuickFramebufferObject,
+                      public DataSink
 {
     Q_OBJECT
 public:
@@ -14,6 +16,9 @@ public:
             setTextureFollowsItemSize(true);
         }
     Renderer *createRenderer() const;
+    void data(int time, float val);
+  private:
+    std::mutex m_mut;
 };
 
 #endif
