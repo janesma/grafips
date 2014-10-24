@@ -1,6 +1,8 @@
 #pragma once
 
 #include <time.h>
+#include <string>
+#include <vector>
 
 enum MetricType
 {
@@ -33,3 +35,16 @@ get_ms_time()
     ms += (t.tv_nsec / 1000000);
     return ms;
 }
+
+struct DataPoint
+{
+    DataPoint(int t, int i, float d) : time_val(t), id(i), data(d) {}
+    int   time_val;
+    int   id;
+    float data;
+};
+
+typedef std::vector<MetricDescription> MetricDescriptionSet;
+
+typedef std::vector<DataPoint> DataSet;
+

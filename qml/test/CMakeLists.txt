@@ -7,3 +7,5 @@ add_executable(test_grips
   )
 
 target_link_libraries(test_grips grips_providers grips_publishers gtest_main)
+
+add_test(NAME test_g COMMAND test_grips)

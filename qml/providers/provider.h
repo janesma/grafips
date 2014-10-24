@@ -5,6 +5,8 @@
 
 #include "metric.h"
 
+
+// polls raw data sources, hands data to publisher, which resides in same process
 class Provider
 {
   public:

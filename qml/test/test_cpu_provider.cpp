@@ -9,6 +9,7 @@ class NullPublisher : public Publisher
     void OnMetric(const DataSet &d) {}
     void Enable(int id) {}
     void GetDescriptions(std::vector<MetricDescription> *descriptions) {}
+    void Subscribe(Subscriber *) {}
 };
 
 class TestPublisher : public Publisher
@@ -19,6 +20,7 @@ class TestPublisher : public Publisher
     void Enable(int id) { m_p->Enable(id); }
     void GetDescriptions(std::vector<MetricDescription> *descriptions) 
         { m_p->GetDescriptions(descriptions); }
+    void Subscribe(Subscriber *) {}
     DataSet m_d;
     Provider *m_p;
 };

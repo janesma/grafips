@@ -1,20 +1,17 @@
 #pragma once
 
 #include <vector>
+#include <map>
+
+#include "metric.h"
 
 class Provider;
+class Subscriber;
 
-struct DataPoint
-{
-    DataPoint(int t, int i, float d) : time_val(t), id(i), data(d) {}
-    int   time_val;
-    int   id;
-    float data;
-};
 
-typedef std::vector<DataPoint> DataSet;
-typedef std::vector<MetricDescription> MetricDescriptionSet;
 
+// collates metrics from providers, distributes to subscriber (which may be
+// off-proc or off-machine)
 class Publisher
 {
   public:
@@ -23,4 +20,27 @@ class Publisher
     virtual void OnMetric(const DataSet &d) = 0;
     virtual void Enable(int id) = 0;
     virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) = 0;
+    virtual void Subscribe(Subscriber *) = 0;
+};
+
+
+class PublisherImpl : public Publisher
+{
+  public:
+    PublisherImpl();
+    ~PublisherImpl();
+    void RegisterProvider(Provider *p);
+    void OnMetric(const DataSet &d);
+    void Enable(int id);
+    void GetDescriptions(std::vector<MetricDescription> *descriptions);
+    void Subscribe(Subscriber *);
+  private:
+    Subscriber *m_subscriber;
+    typedef std::map <int, Provider*> ProviderMap;
+    ProviderMap m_providersByMetricId;
+};
+
+// handles off-machine publication
+class PublisherProxy
+{
 };
