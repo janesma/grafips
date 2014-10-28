@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Grips)
+project(Grafips)
 
 find_package(Qt5Widgets REQUIRED) 
 find_package(Qt5Core REQUIRED)
@@ -24,7 +24,7 @@ QT5_WRAP_UI(UIS_HDRS
 
 qt5_add_resources(RESOURCE_ADDED resources.qrc)
 
-add_executable(grips 
+add_executable(grafips 
   main.cpp
   data_sink.h
   gripsrenderer.h
@@ -33,9 +33,9 @@ add_executable(grips
   ${RESOURCE_ADDED} 
 )
 
-qt5_use_modules(grips Core Gui Widgets OpenGL Quick Declarative) 
+qt5_use_modules(grafips Core Gui Widgets OpenGL Quick Declarative) 
 
-target_link_libraries(grips grips_providers GL)
+target_link_libraries(grafips grips_providers GL pthread)
 
 add_subdirectory(test)
 add_subdirectory(providers)

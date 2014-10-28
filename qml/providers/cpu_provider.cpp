@@ -6,6 +6,7 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <thread>
 
 #include "publisher.h"
 
@@ -182,4 +183,14 @@ CpuProvider::Publish()
         d.push_back(DataPoint(ms, m_ids[i], m_core_stats[i].utilization));
     }
     m_publisher->OnMetric(d);
+}
+
+
+void CpuProvider::Run()
+{
+    while (true)
+    {
+        Poll();
+        usleep(100000);
+    }
 }

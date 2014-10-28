@@ -1,8 +1,35 @@
 #include "graph_view.h"
 
+#include <assert.h>
+
+#include <QtOpenGL>
+#include <GLES2/gl2.h>
+
 #define GL_CHECK() CheckError(__FILE__, __LINE__)
 
-GraphView::GraphView()
+GraphViewRenderer* GraphView::m_renderer = NULL;
+
+const char *
+GraphViewRenderer::vshader = "attribute vec2 coord2d;\n" 
+    "uniform float time_offset;\n"
+    "void main(void) {\n" 
+    "  float x = coord2d.x - time_offset;"
+    "  gl_Position = vec4(x, coord2d.y, 0, 1);\n" 
+    "}";
+
+const char *
+GraphViewRenderer::fshader = "void main(void) {"
+    "  gl_FragColor = vec4(0,0,0,1);"
+    "}";
+
+void
+GraphViewRenderer::AddMetric(int id)
+{
+    m_set = new GraphSet();
+    m_subscriber.AddSet(id, m_set);
+}
+
+GraphViewRenderer::GraphViewRenderer() : m_set(NULL)
 {
     glGenBuffers(1, &vbo);
     GL_CHECK();
@@ -37,11 +64,17 @@ GraphView::GraphView()
     GL_CHECK();
     uniform_time = glGetUniformLocation(prog, "time_offset");
     GL_CHECK();
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    GL_CHECK();
 }
 
 void 
-GraphView::Render()
+GraphViewRenderer::render()
 {
+    if (! m_set)
+        return;
+
     glClearColor(1,1,1,1);
     GL_CHECK();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -52,9 +85,9 @@ GraphView::Render()
     GL_CHECK();
 
     static GraphSet::PointVec data;
-    m_set.GetData(&data);
-    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(GraphSet::Point), 
-                 data->data(), GL_STATIC_DRAW);
+    m_set->GetData(&data);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GraphSet::Point), 
+                 data.data(), GL_STATIC_DRAW);
     GL_CHECK();
 
     glEnableVertexAttribArray(attribute_coord2d);
@@ -70,22 +103,23 @@ GraphView::Render()
     GL_CHECK();
 
             
-    GLint t = GetTimeOffset();
-    assert(t >= 0);
-    assert(t <2000);
-    float x_offset = t / 1000.0;
-    glUniform1f(uniform_time, x_offset);
+    // GLint t = GetTimeOffset();
+    // assert(t >= 0);
+    // assert(t <2000);
+    // float x_offset = t / 1000.0;
+    // glUniform1f(uniform_time, x_offset);
+    glUniform1f(uniform_time, 0);
     GL_CHECK();
 
-    glDrawArrays(GL_LINE_STRIP, t, 2000 - t);
+    glDrawArrays(GL_LINE_STRIP, 0, data.size());
     GL_CHECK();
 
-    x_offset = -2.0 + (t / 1000.0);
+    // x_offset = -2.0 + (t / 1000.0);
     // printf("t:%i\tx:%f\ty:%f\tcount:%d\n", t, graph[t].x - x_offset, graph[t].y, t);
-    glUniform1f(uniform_time, x_offset);
-    GL_CHECK();
-    glDrawArrays(GL_LINE_STRIP, 0, t);
-    GL_CHECK();
+    // glUniform1f(uniform_time, x_offset);
+    // GL_CHECK();
+    // glDrawArrays(GL_LINE_STRIP, 0, t);
+    // GL_CHECK();
  
     glDisableVertexAttribArray(attribute_coord2d);
     GL_CHECK();
@@ -96,7 +130,7 @@ GraphView::Render()
 }
 
 void 
-GraphView::CheckError(const char * file, int line)
+GraphViewRenderer::CheckError(const char * file, int line)
 {
     if (glGetError() == GL_NO_ERROR)
         return;
@@ -105,7 +139,7 @@ GraphView::CheckError(const char * file, int line)
 }
 
 void 
-GraphView::PrintCompileError(GLint shader)
+GraphViewRenderer::PrintCompileError(GLint shader)
 {
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -116,4 +150,20 @@ GraphView::PrintCompileError(GLint shader)
     GLsizei len;
     glGetShaderInfoLog(shader,  MAXLEN,  &len, log.data()); 
     printf("ERROR -- compile failed: %s\n", log.data());
+}
+
+void 
+GraphViewRenderer::synchronize(QQuickFramebufferObject * item) 
+{
+    GraphView *g = dynamic_cast<GraphView*>(item);
+    if(g->m_id != -1)
+    {
+        AddMetric(g->m_id);
+        g->m_id = -1;
+    }
+    if (g->m_pub)
+    {
+        AddPublisher(g->m_pub);
+        g->m_pub = NULL;
+    }
 }

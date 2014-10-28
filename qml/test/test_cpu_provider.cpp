@@ -8,6 +8,7 @@ class NullPublisher : public Publisher
     void RegisterProvider(Provider *p) {}
     void OnMetric(const DataSet &d) {}
     void Enable(int id) {}
+    void Disable(int id) {}
     void GetDescriptions(std::vector<MetricDescription> *descriptions) {}
     void Subscribe(Subscriber *) {}
 };
@@ -18,6 +19,7 @@ class TestPublisher : public Publisher
     void RegisterProvider(Provider *p) { m_p = p; }
     void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
     void Enable(int id) { m_p->Enable(id); }
+    virtual void Disable(int id) { m_p->Disable(id); }
     void GetDescriptions(std::vector<MetricDescription> *descriptions) 
         { m_p->GetDescriptions(descriptions); }
     void Subscribe(Subscriber *) {}
