@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <mutex>
 #include <GLES2/gl2.h>
 
 // interpolates data, provides it to view
@@ -21,6 +22,7 @@ class GraphSet
     void GetData(PointVec *data);
 
   private:
+    std::mutex m_protect;
     std::map<int, float> m_data;
     int m_current_time;
     int m_max_data_age;

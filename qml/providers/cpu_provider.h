@@ -22,8 +22,15 @@ class CpuProvider : public Provider
     struct CpuLine
     {
         int user;
+        int nice;
         int system;
         int idle;
+        int iowait;
+        int irq;
+        int softirq;
+        int steal;
+        int guest;
+        int guest_nice;
         float utilization;
     };
 

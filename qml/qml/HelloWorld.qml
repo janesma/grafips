@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Layouts 1.1
+import GrafipsRendering 1.0
 
 Item {
     width: 800
@@ -19,8 +20,9 @@ Item {
             Layout.maximumWidth: 300
             Layout.minimumHeight: 150
         }
-        Graph {
-            id: mygraph
+        Renderer
+        {
+            subscriber: my_subscriber
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.minimumWidth: 200

@@ -26,11 +26,19 @@ void
 GraphViewRenderer::AddMetric(int id)
 {
     m_set = new GraphSet();
-    m_subscriber.AddSet(id, m_set);
+    m_subscriber->AddSet(id, m_set);
 }
 
-GraphViewRenderer::GraphViewRenderer() : m_set(NULL)
+GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s) : m_subscriber(s), 
+                                                              m_set(NULL)
 {
+
+    // TODO remove hack
+    m_set = new GraphSet();
+    int id = m_subscriber->m_metrics[0]->met_id();
+    m_subscriber->AddSet(id, m_set);
+
+
     glGenBuffers(1, &vbo);
     GL_CHECK();
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -73,7 +81,29 @@ void
 GraphViewRenderer::render()
 {
     if (! m_set)
+    {
+        update();
         return;
+    }
+
+    static GraphSet::PointVec data;
+    m_set->GetData(&data);
+    if (data.empty() )
+    {
+        update();
+        return;
+    }
+
+    // static int last_size = 0;
+    // if (last_size != data.size())
+    // {
+    //     std::cout << "size: " << data.size() << std::endl;
+    //     for (int i = 0; i < data.size(); ++i )
+    //     {
+    //         std::cout << data[i].x << "," << data[i].y << std::endl;
+    //     }
+    // }
+    // last_size = data.size();
 
     glClearColor(1,1,1,1);
     GL_CHECK();
@@ -84,8 +114,6 @@ GraphViewRenderer::render()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     GL_CHECK();
 
-    static GraphSet::PointVec data;
-    m_set->GetData(&data);
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GraphSet::Point), 
                  data.data(), GL_STATIC_DRAW);
     GL_CHECK();
@@ -108,7 +136,7 @@ GraphViewRenderer::render()
     // assert(t <2000);
     // float x_offset = t / 1000.0;
     // glUniform1f(uniform_time, x_offset);
-    glUniform1f(uniform_time, 0);
+    glUniform1f(uniform_time, 0.0);
     GL_CHECK();
 
     glDrawArrays(GL_LINE_STRIP, 0, data.size());
@@ -166,4 +194,37 @@ GraphViewRenderer::synchronize(QQuickFramebufferObject * item)
         AddPublisher(g->m_pub);
         g->m_pub = NULL;
     }
+}
+
+GraphView::GraphView() : m_subscriber(NULL), 
+                         m_id(-1), m_pub(NULL) 
+{
+    setTextureFollowsItemSize(true);
+}
+
+
+// void 
+// GraphView::SetSubscriber(GraphSetSubscriber *s) { m_subscriber = s; }
+QQuickFramebufferObject::Renderer *
+GraphView::createRenderer() const 
+{ 
+    assert (!m_renderer);
+    m_renderer = new GraphViewRenderer(m_subscriber);
+    if (m_id != -1)
+        m_renderer->AddMetric(m_id);
+    if (m_pub)
+        m_renderer->AddPublisher(m_pub); 
+    return m_renderer;
+}
+
+    
+void 
+GraphView::AddPublisher(Publisher* p) 
+{ 
+    m_pub = p;
+}
+void 
+GraphView::AddMetric(int id) 
+{ 
+    m_id = id;
 }

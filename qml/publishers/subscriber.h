@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <mutex>
 
 //#include <QAbstractItemModel>
 #include <QString> 
@@ -45,6 +46,8 @@ class QMetric : public QObject
   signals:
     void onEnabled();
   private:
+    QMetric(const QMetric&);
+    QMetric& operator=(const QMetric&);
     int m_id;
     QString m_name;
     bool m_enabled;
@@ -65,25 +68,10 @@ class GraphSetSubscriber : public Subscriber
   signals:
     void onEnabled();
 
-    // int rowCount(const QModelIndex & parent) const; // [pure virtual]
-    // QVariant data(const QModelIndex & index, int role) const; // [pure virtual]
-    // QVariant headerData(int section, Qt::Orientation orientation, int role) const; // [virtual]
-    // emit The dataChanged() when rows change
-
-    // enum DataRoles {
-    //     NameRole = Qt::UserRole + 1,
-    //     EnabledRole
-    // };
-
-    // QHash<int,QByteArray> roleNames() const {
-    //     QHash<int, QByteArray> roles;
-    //     roles[NameRole] = "Name";
-    //     roles[EnabledRole] = "Enabled";
-    //     return roles;
-    // }
-
+  public:
+    QList<QMetric *> m_metrics;
   private:
 
     std::map<int, GraphSet *> m_dataSets;
-    QList<QMetric *> m_metrics;
+    std::mutex m_protect;
 };

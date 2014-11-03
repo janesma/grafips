@@ -71,26 +71,36 @@ CpuProvider::Refresh()
     }
 }
 
+
 void 
 CpuProvider::ParseCpuLine(CpuLine *dest, char **savePtr)
 {
-    const char *user = strtok_r(NULL, " ", savePtr);
-    assert(user != NULL);
-    dest->user = atoi(user);
+    static const int COUNT_STAT_ITEMS = 10;
+    CpuLine current;
+    int *current_item = &(current.user);
 
-    strtok_r(NULL, " ", savePtr); // skip nice
+    for (int i = 0; i < COUNT_STAT_ITEMS; ++i,++current_item)
+    {
+        const char *num = strtok_r(NULL, " ", savePtr);
+        assert(num != NULL);
+        *current_item = atoi(num);
+    }
+    
+    CpuLine delta;
+    int *prev_item = &(dest->user);
+    int *delta_item = &(delta.user);
+    current_item = &(current.user);
 
-    const char *system = strtok_r(NULL, " ", savePtr);
-    assert (system != NULL);
-    dest->system = atoi(system);
+    for (int i = 0; i < COUNT_STAT_ITEMS; ++i,++current_item, ++prev_item, ++delta_item)
+    {
+        *delta_item = *current_item - *prev_item;
+    }
 
-    const char *idle = strtok_r(NULL, " ", savePtr);
-    assert (idle != NULL);
-    dest->idle = atoi(idle);
+    const float active = delta.user + delta.nice + delta.system + delta.irq + delta.softirq + delta.guest + delta.guest_nice;
+    const float total = active + delta.idle + delta.iowait + delta.steal;
+    current.utilization = active / total;
 
-    const float active = dest->system + dest->user;
-    const float total = active + dest->idle;
-    dest->utilization = active / total;
+    memcpy(dest, &current, sizeof(CpuLine));
 }
 
 bool
@@ -191,6 +201,6 @@ void CpuProvider::Run()
     while (true)
     {
         Poll();
-        usleep(100000);
+        usleep(1000000);
     }
 }

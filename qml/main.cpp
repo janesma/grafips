@@ -13,10 +13,8 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<GripsRenderer>("GrafipsRendering", 1, 0, "Renderer");
     qmlRegisterType<QMetric>("GrafipsRendering", 1, 0, "QMetric");
-//qmlRegisterType<GraphView>("GrafipsRendering", 1, 0, "Renderer");
-    GraphView gv;
+    qmlRegisterType<GraphView>("GrafipsRendering", 1, 0, "Renderer");
 
     PublisherImpl pub;
     std::vector<MetricDescription> desc;
@@ -24,11 +22,10 @@ int main(int argc, char **argv)
 
 
     QQuickView view;
-    view.rootContext()->setContextProperty("renderer", &gv);
 
     qmlRegisterType<GraphSetSubscriber>("GrafipsRendering", 1, 0, "MetricModel");
     GraphSetSubscriber sub;
-    view.rootContext()->setContextProperty("subscriber", &sub);
+    view.rootContext()->setContextProperty("my_subscriber", &sub);
 
     pub.Subscribe(&sub);
 
@@ -37,26 +34,11 @@ int main(int argc, char **argv)
 
     view.show();
 
-    // todo: get access to GraphViewRenderer
+    pub.GetDescriptions(&desc);
 
-    // QObject *object = view.rootObject();
-    // assert(object != NULL);
-    // QObject *rowLayout = object->findChild<QObject*>("row");
-    // assert(rowLayout != NULL);
-    // QObject *graph = rowLayout->findChild<QObject*>("mygraph");
-    // assert(graph != NULL);
-    // QObject *renderer = graph->findChild<QObject*>("renderer");
-    // assert(renderer != NULL);
+    pub.Enable(desc[0].id());
 
-    // gv.AddPublisher(&pub);
-
-    //pub.GetDescriptions(&desc);
-
-    //gv.AddMetric(desc[0].id());
-
-    // pub.Enable(desc[0].id());
-
-//std::thread t(&CpuProvider::Run, &cpu);
+    std::thread t(&CpuProvider::Run, &cpu);
 
     return app.exec();
 }
