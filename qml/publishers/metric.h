@@ -26,20 +26,20 @@ class MetricDescription
     MetricType type;
 };
 
-inline int 
+inline unsigned int 
 get_ms_time()
 {
     struct timespec t;
     clock_gettime(CLOCK_REALTIME, &t);
-    int ms = t.tv_sec * 1000;
+    unsigned int ms = t.tv_sec * 1000;
     ms += (t.tv_nsec / 1000000);
     return ms;
 }
 
 struct DataPoint
 {
-    DataPoint(int t, int i, float d) : time_val(t), id(i), data(d) {}
-    int   time_val;
+    DataPoint(unsigned int t, int i, float d) : time_val(t), id(i), data(d) {}
+    unsigned int   time_val;
     int   id;
     float data;
 };

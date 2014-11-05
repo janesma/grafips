@@ -24,7 +24,7 @@ class GraphSet
   private:
     std::mutex m_protect;
     std::map<int, float> m_data;
-    int m_current_time;
+    unsigned int m_current_time;
     int m_max_data_age;
 };
 

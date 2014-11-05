@@ -181,7 +181,7 @@ void
 CpuProvider::Publish()
 {
     DataSet d;
-    const int ms = get_ms_time();
+    const unsigned int ms = get_ms_time();
 
     if (m_enabled_cores.count(-1) != 0)
         d.push_back(DataPoint(ms, m_sysId, m_systemStats.utilization));
