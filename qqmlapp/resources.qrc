@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/mainwin.qml</file>
+        <file>qml/MetricGroup.qml</file>
+        <file>qml/MetricList.qml</file>
+    </qresource>
+</RCC>

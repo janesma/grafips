@@ -3,6 +3,8 @@
 #include <vector>
 #include <map>
 
+#include <QObject> 
+
 #include "metric.h"
 
 class Provider;
@@ -12,8 +14,9 @@ class Subscriber;
 
 // collates metrics from providers, distributes to subscriber (which may be
 // off-proc or off-machine)
-class Publisher
+class Publisher : public QObject
 {
+    Q_OBJECT
   public:
     virtual ~Publisher() {}
     virtual void RegisterProvider(Provider *p) = 0;
@@ -27,7 +30,11 @@ class Publisher
 
 class PublisherImpl : public Publisher
 {
+    Q_OBJECT
+
   public:
+    Q_INVOKABLE void Subscribe(Subscriber *);
+
     PublisherImpl();
     ~PublisherImpl();
     void RegisterProvider(Provider *p);
@@ -35,7 +42,6 @@ class PublisherImpl : public Publisher
     void Enable(int id);
     void Disable(int id);
     void GetDescriptions(std::vector<MetricDescription> *descriptions);
-    void Subscribe(Subscriber *);
   private:
     Subscriber *m_subscriber;
     typedef std::map <int, Provider*> ProviderMap;

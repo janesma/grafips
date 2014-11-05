@@ -25,11 +25,14 @@ GraphSetSubscriber::OnMetric(const DataSet &d)
 void 
 GraphSetSubscriber::OnDescriptions(const std::vector<MetricDescription> &descriptions)
 {
-    std::lock_guard<std::mutex>l(m_protect);
-    for (std::vector<MetricDescription>::const_iterator i = descriptions.begin(); i != descriptions.end(); ++i)
     {
-        m_metrics.append(new QMetric(*i));
-    }
+        std::lock_guard<std::mutex>l(m_protect);
+        for (std::vector<MetricDescription>::const_iterator i = descriptions.begin(); i != descriptions.end(); ++i)
+        {
+            m_metrics.append(new QMetric(*i));
+        }
+    } 
+    emit onEnabled();
 }
 
 QQmlListProperty<QMetric> 

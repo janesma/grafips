@@ -18,7 +18,8 @@ int main(int argc, char **argv)
 
     PublisherImpl pub;
     std::vector<MetricDescription> desc;
-    CpuProvider cpu(&pub);
+    CpuProvider cpu;
+    cpu.setPublisher(&pub);
 
 
     QQuickView view;

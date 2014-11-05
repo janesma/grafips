@@ -13,7 +13,6 @@
 // handles publications, distributes metric data to associated GraphSet
 class Subscriber : public QObject
 {
-    Q_OBJECT
   public:
     virtual ~Subscriber() {}
     virtual void OnMetric(const DataSet &d) = 0;
@@ -26,15 +25,15 @@ class GraphSet;
 class QMetric : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name)
-    Q_PROPERTY(int met_id READ met_id)
+    Q_PROPERTY(QString name READ name NOTIFY onName)
+    Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY onEnabled)
   public:
     QMetric() : m_id(-1), m_name(), m_enabled(false) {}
 
     QMetric(const MetricDescription &m) : m_id(m.id()), 
                                           m_name(QString::fromStdString(m.display_name)), 
-                                          m_enabled(false){}
+                                          m_enabled(false) {}
     QString name() { return m_name; }
     int met_id() { return m_id; }
     bool enabled() { return m_enabled; }
@@ -45,6 +44,11 @@ class QMetric : public QObject
         }
   signals:
     void onEnabled();
+
+    // these exist just to avoid run-time warnings.  names & descriptions do
+    // not change
+    void onName();
+    void onMet_id();
   private:
     QMetric(const QMetric&);
     QMetric& operator=(const QMetric&);

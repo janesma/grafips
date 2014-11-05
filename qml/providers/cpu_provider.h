@@ -2,14 +2,20 @@
 
 #include <thread>
 #include <set>
+
+#include <QObject> 
+
 #include "provider.h"
+#include "publisher.h"
 
-class Publisher;
-
-class CpuProvider : public Provider
+class CpuProvider : public QObject, public Provider
 {
+    Q_OBJECT
   public:
-    CpuProvider(Publisher *p);
+    Q_PROPERTY(Publisher *publisher READ publisher WRITE setPublisher NOTIFY onPublisher)
+    Q_INVOKABLE void start();
+
+    CpuProvider();
     ~CpuProvider();
     void GetDescriptions(std::vector<MetricDescription> *descriptions);
     void Enable(int id);
@@ -18,6 +24,12 @@ class CpuProvider : public Provider
     void Run();
 
     friend class CpuProviderFixture;
+
+    Publisher *publisher() { return m_publisher; }
+    void setPublisher(Publisher *p);
+  signals:
+    void onPublisher();
+
   private:
     struct CpuLine
     {
@@ -42,9 +54,6 @@ class CpuProvider : public Provider
     // file handle for /proc/stat
     int m_cpu_info_handle;
 
-    // thread that polls the file handle
-    std::thread m_thread;
-
     // data structures to store the parsed line
     CpuLine m_systemStats;
     std::vector<CpuLine> m_core_stats;
@@ -61,4 +70,6 @@ class CpuProvider : public Provider
     // translates metric ids to offsets
     int m_sysId;
     std::vector<int> m_ids;
+
+    std::thread *m_thread;
 };

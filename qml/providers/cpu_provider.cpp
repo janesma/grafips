@@ -12,12 +12,25 @@
 
 static const int READ_BUF_SIZE = 4096;
 
-CpuProvider::CpuProvider(Publisher *p) : m_publisher(p)
+CpuProvider::CpuProvider() : m_publisher(NULL)
 {
     m_cpu_info_handle = open("/proc/stat", O_RDONLY);
     m_buf.resize(READ_BUF_SIZE);
     Refresh();
-    p->RegisterProvider(this);
+}
+
+void 
+CpuProvider::setPublisher(Publisher *p) 
+{
+    m_publisher = p; 
+    m_publisher->RegisterProvider(this);
+    emit onPublisher(); 
+}
+
+void 
+CpuProvider::start()
+{
+    m_thread = new std::thread(&CpuProvider::Run, this);
 }
 
 CpuProvider::~CpuProvider()
@@ -180,6 +193,9 @@ CpuProvider::Poll()
 void 
 CpuProvider::Publish()
 {
+    if (!m_publisher)
+        return;
+
     DataSet d;
     const unsigned int ms = get_ms_time();
 

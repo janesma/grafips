@@ -42,7 +42,8 @@ class CpuProviderFixture : public testing::Test
     void test_parse()
         {
             NullPublisher pub;
-            CpuProvider p(&pub);
+            CpuProvider p;
+            p.setPublisher(&pub);
             EXPECT_GT(p.m_systemStats.user, 0);
             EXPECT_GT(p.m_systemStats.system, 0);
             EXPECT_GT(p.m_systemStats.idle, 0);
@@ -56,7 +57,9 @@ class CpuProviderFixture : public testing::Test
     void test_publish()
         {
             TestPublisher pub;
-            CpuProvider p(&pub);
+            CpuProvider p;
+            p.setPublisher(&pub);
+
             MetricDescriptionSet metrics;
             pub.GetDescriptions(&metrics);
             for (MetricDescriptionSet::iterator i = metrics.begin(); i != metrics.end(); ++i)

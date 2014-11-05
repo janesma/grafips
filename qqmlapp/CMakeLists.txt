@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Grafips_c)
+project(Grafips)
 
 find_package(Qt5Widgets REQUIRED) 
 find_package(Qt5Core REQUIRED)
@@ -14,31 +14,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-INCLUDE_DIRECTORIES( )
-
 add_definitions(${Qt5Widgets_DEFINITIONS})
-
-QT5_WRAP_UI(UIS_HDRS
-#  mainwindow.ui
-)
 
 qt5_add_resources(RESOURCE_ADDED resources.qrc)
 
-add_executable(grafips_c
+add_executable(grafips 
   main.cpp
-  data_sink.h
-  gripsrenderer.h
-  gripsrenderer.cpp
   ${UIS_HDRS}
   ${RESOURCE_ADDED} 
 )
 
-qt5_use_modules(grafips_c Core Gui Widgets OpenGL Quick Declarative) 
+qt5_use_modules(grafips Core Gui Widgets OpenGL Quick Declarative) 
 
-target_link_libraries(grafips_c grips_providers GL pthread)
+target_link_libraries(grafips grips_providers GL pthread)
 
-add_subdirectory(test)
-add_subdirectory(providers)
-add_subdirectory(publishers)
-add_subdirectory(graph)
+# add_subdirectory(test)
+# add_subdirectory(providers)
+# add_subdirectory(publishers)
+# add_subdirectory(graph)
 
