@@ -1,14 +1,15 @@
 import QtQuick 2.0
 
 Item {
-    id: currentGroup
+    id: currentList
     property var model
     anchors.top: parent.top
     anchors.bottom: parent.bottom
+    width: 200
 
     ListView {
         anchors.fill: parent
-        model: currentGroup.model
+        model: currentList.model
         id: metricList
 
         delegate: Rectangle {
@@ -22,6 +23,9 @@ Item {
                 onClicked: { 
                     model.enabled = !model.enabled;
                     currentRect.color = model.enabled ? "green" : "red";
+                }
+                onWheel: {
+                    currentGroup.resize(wheel)
                 }
             }
         }
