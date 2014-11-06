@@ -44,13 +44,16 @@ Item {
         publisher.Subscribe(mySubscriber);
     }
 
-    Row {
+    RowLayout {
         anchors.fill: parent
+        spacing: 0
 
         Rectangle {
+            id: enabRect
             color: "blue"
             anchors.top: parent.top
             anchors.bottom: parent.bottom
+            anchors.left: parent.left
             width: 20
             MouseArea {
                 anchors.fill: parent
@@ -64,14 +67,20 @@ Item {
         }
 
         MetricList {
+            id: currentList
+            anchors.left: enabRect.right
+            width: 200
             model: mySubscriber.metrics
             publisher: currentGroup.publisher
         }
 
         Renderer {
+            visible: true
+            Layout.preferredWidth: Number.POSITIVE_INFINITY
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            width: 200
+            anchors.right: parent.right
+            anchors.left: currentList.right
             subscriber: mySubscriber
         }
     }
