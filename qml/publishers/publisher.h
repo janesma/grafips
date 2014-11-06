@@ -23,7 +23,7 @@ class Publisher : public QObject
     virtual void OnMetric(const DataSet &d) = 0;
     virtual void Enable(int id) = 0;
     virtual void Disable(int id) = 0;
-    virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) = 0;
+    virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) const = 0;
     virtual void Subscribe(Subscriber *) = 0;
 };
 
@@ -41,7 +41,7 @@ class PublisherImpl : public Publisher
     void OnMetric(const DataSet &d);
     Q_INVOKABLE void Enable(int id);
     Q_INVOKABLE void Disable(int id);
-    void GetDescriptions(std::vector<MetricDescription> *descriptions);
+    void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
   private:
     Subscriber *m_subscriber;
     typedef std::map <int, Provider*> ProviderMap;

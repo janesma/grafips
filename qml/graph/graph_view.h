@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <QtQuick/QQuickFramebufferObject>
 
 #include "graph_set.h"
@@ -12,17 +13,16 @@ class GraphView;
 class GraphViewRenderer : public QQuickFramebufferObject::Renderer
 {
   public:
-    GraphViewRenderer(GraphSetSubscriber *s);
+    GraphViewRenderer(GraphSetSubscriber *s, const Publisher &p);
+    ~GraphViewRenderer();
     void render();
     void synchronize(QQuickFramebufferObject * item);
-    void AddMetric(int id);
-    void AddPublisher(Publisher *p) { p->Subscribe(m_subscriber); }
   private:
     void CheckError(const char * file, int line);
     void PrintCompileError(GLint shader);
 
     GraphSetSubscriber *m_subscriber;
-    GraphSet *m_set;
+    std::map<int, GraphSet *> m_sets;
     static const char *vshader;
     static const char *fshader;
 
@@ -34,24 +34,18 @@ class GraphView : public QQuickFramebufferObject
 {
     Q_OBJECT
     Q_PROPERTY(GraphSetSubscriber* subscriber READ subscriber WRITE setSubscriber)
+    Q_PROPERTY(Publisher* publisher READ publisher WRITE setPublisher)
   public:
     GraphView();
-    GraphSetSubscriber *subscriber()
-        {
-            return m_subscriber;
-        }
-    void setSubscriber(GraphSetSubscriber *s) 
-        {
-            m_subscriber = s;
-        }
-    //void SetSubscriber(GraphSetSubscriber *s);
-    Renderer *createRenderer() const;
-    void AddPublisher(Publisher* p) ;
-    void AddMetric(int id);
 
-    GraphSetSubscriber *m_subscriber;
-    int m_id;
-    Publisher *m_pub;
+    GraphSetSubscriber *subscriber() {return m_subscriber;}
+    void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
+    Publisher *publisher() {return m_pub;}
+    void setPublisher(Publisher *p) {m_pub = p;}
+    
+    Renderer *createRenderer() const;
+
   private:
-    static GraphViewRenderer *m_renderer;
+    Publisher *m_pub;
+    GraphSetSubscriber *m_subscriber;
 };

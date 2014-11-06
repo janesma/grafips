@@ -18,6 +18,9 @@ ApplicationWindow {
         Component.onCompleted: {
             start()
         }
+        Component.onDestruction: {
+            stop()
+        }
     }
 
     ColumnLayout

@@ -15,6 +15,7 @@ class Subscriber : public QObject
 {
   public:
     virtual ~Subscriber() {}
+    virtual void Clear(int id) = 0;
     virtual void OnMetric(const DataSet &d) = 0;
     virtual void OnDescriptions(const std::vector<MetricDescription> &descriptions) = 0;
 };
@@ -65,6 +66,7 @@ class GraphSetSubscriber : public Subscriber
 
   public:
     void AddSet(int id, GraphSet *);
+    void Clear(int id);
     void OnMetric(const DataSet &d);
     void OnDescriptions(const std::vector<MetricDescription> &descriptions);
     QQmlListProperty<QMetric> metrics();

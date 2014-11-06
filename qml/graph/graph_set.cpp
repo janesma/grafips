@@ -65,3 +65,9 @@ GraphSet::GetData(PointVec *data)
     }
 }
 
+void
+GraphSet::Clear()
+{
+    std::lock_guard<std::mutex> l(m_protect);
+    m_data.clear();
+}

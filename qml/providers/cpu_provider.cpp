@@ -12,7 +12,7 @@
 
 static const int READ_BUF_SIZE = 4096;
 
-CpuProvider::CpuProvider() : m_publisher(NULL)
+CpuProvider::CpuProvider() : m_publisher(NULL), m_running(false)
 {
     m_cpu_info_handle = open("/proc/stat", O_RDONLY);
     m_buf.resize(READ_BUF_SIZE);
@@ -30,7 +30,17 @@ CpuProvider::setPublisher(Publisher *p)
 void 
 CpuProvider::start()
 {
+    m_running = true;
     m_thread = new std::thread(&CpuProvider::Run, this);
+}
+
+void 
+CpuProvider::stop()
+{
+    m_running = false;
+    m_thread->join();
+    delete m_thread;
+    m_thread = NULL;
 }
 
 CpuProvider::~CpuProvider()
@@ -218,7 +228,7 @@ CpuProvider::Publish()
 
 void CpuProvider::Run()
 {
-    while (true)
+    while (m_running)
     {
         Poll();
         usleep(1000000);

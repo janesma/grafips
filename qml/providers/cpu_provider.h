@@ -15,6 +15,7 @@ class CpuProvider : public QObject, public Provider
   public:
     Q_PROPERTY(Publisher *publisher READ publisher WRITE setPublisher NOTIFY onPublisher)
     Q_INVOKABLE void start();
+    Q_INVOKABLE void stop();
 
     CpuProvider();
     ~CpuProvider();
@@ -73,5 +74,6 @@ class CpuProvider : public QObject, public Provider
     std::vector<int> m_ids;
 
     std::thread *m_thread;
+    bool m_running;
     std::mutex m_protect;
 };

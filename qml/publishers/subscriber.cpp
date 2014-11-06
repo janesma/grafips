@@ -42,3 +42,8 @@ GraphSetSubscriber::metrics()
     return QQmlListProperty<QMetric>(this, m_metrics);
 }
 
+void
+GraphSetSubscriber::Clear(int id)
+{
+    m_dataSets[id]->Clear();
+}

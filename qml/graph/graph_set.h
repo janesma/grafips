@@ -20,6 +20,7 @@ class GraphSet
     void Add(const DataPoint &d);
     void SetLimit(int max_data_age);
     void GetData(PointVec *data);
+    void Clear();
 
   private:
     std::mutex m_protect;

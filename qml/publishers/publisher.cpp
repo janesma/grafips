@@ -43,12 +43,13 @@ void
 PublisherImpl::Disable(int id)
 {
     m_providersByMetricId[id]->Disable(id);
+    m_subscriber->Clear(id);
 }
 
 void 
-PublisherImpl::GetDescriptions(std::vector<MetricDescription> *descriptions)
+PublisherImpl::GetDescriptions(std::vector<MetricDescription> *descriptions) const
 {
-    for (std::vector<Provider *>::iterator i = m_providers.begin(); i != m_providers.end(); ++i)
+    for (std::vector<Provider *>::const_iterator i = m_providers.begin(); i != m_providers.end(); ++i)
         (*i)->GetDescriptions(descriptions);
 }
 

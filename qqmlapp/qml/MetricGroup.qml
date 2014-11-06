@@ -81,6 +81,7 @@ Item {
             anchors.right: parent.right
             anchors.left: currentList.right
             subscriber: mySubscriber
+            publisher: currentGroup.publisher
         }
     }
 }
