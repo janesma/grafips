@@ -76,7 +76,6 @@ Item {
 
         Renderer {
             visible: true
-            Layout.preferredWidth: Number.POSITIVE_INFINITY
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
