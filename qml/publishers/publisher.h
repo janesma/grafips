@@ -39,8 +39,8 @@ class PublisherImpl : public Publisher
     ~PublisherImpl();
     void RegisterProvider(Provider *p);
     void OnMetric(const DataSet &d);
-    void Enable(int id);
-    void Disable(int id);
+    Q_INVOKABLE void Enable(int id);
+    Q_INVOKABLE void Disable(int id);
     void GetDescriptions(std::vector<MetricDescription> *descriptions);
   private:
     Subscriber *m_subscriber;

@@ -65,6 +65,14 @@ Item {
 
         MetricList {
             model: mySubscriber.metrics
+            publisher: currentGroup.publisher
+        }
+
+        Renderer {
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: 200
+            subscriber: mySubscriber
         }
     }
 }

@@ -1,8 +1,10 @@
 import QtQuick 2.0
+import Grafips 1.0
 
 Item {
     id: currentList
     property var model
+    property PublisherImpl publisher
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     width: 200
@@ -23,6 +25,10 @@ Item {
                 onClicked: { 
                     model.enabled = !model.enabled;
                     currentRect.color = model.enabled ? "green" : "red";
+                    if (model.enabled)
+                        publisher.Enable(met_id);
+                    else
+                        publisher.Disable(met_id);
                 }
                 onWheel: {
                     currentGroup.resize(wheel)

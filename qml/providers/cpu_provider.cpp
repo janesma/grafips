@@ -125,6 +125,7 @@ CpuProvider::IsEnabled() const
 void 
 CpuProvider::GetDescriptions(std::vector<MetricDescription> *descriptions)
 {
+    std::lock_guard<std::mutex> l(m_protect);
     descriptions->push_back(MetricDescription("/cpu/system/utilization", 
                                               "Displays percent cpu activity for the system",
                                               "CPU Busy", GR_METRIC_PERCENT));
@@ -145,6 +146,7 @@ CpuProvider::GetDescriptions(std::vector<MetricDescription> *descriptions)
 void 
 CpuProvider::Enable(int id)
 {
+    std::lock_guard<std::mutex> l(m_protect);
     if (id == m_sysId)
     {
         m_enabled_cores.insert(-1);
@@ -164,6 +166,7 @@ CpuProvider::Enable(int id)
 void 
 CpuProvider::Disable(int id)
 {
+    std::lock_guard<std::mutex> l(m_protect);
     if (id == m_sysId)
     {
         m_enabled_cores.erase(-1);
@@ -183,6 +186,7 @@ CpuProvider::Disable(int id)
 void 
 CpuProvider::Poll()
 {
+    std::lock_guard<std::mutex> l(m_protect);
     if (! IsEnabled())
         return;
 

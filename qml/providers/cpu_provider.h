@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <set>
+#include <mutex>
 
 #include <QObject> 
 
@@ -72,4 +73,5 @@ class CpuProvider : public QObject, public Provider
     std::vector<int> m_ids;
 
     std::thread *m_thread;
+    std::mutex m_protect;
 };

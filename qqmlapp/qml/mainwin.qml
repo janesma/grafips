@@ -30,11 +30,11 @@ ApplicationWindow {
             publisher: mainPublisher
         }
 
-        MetricGroup {
-            id: network
-            color: "blue"
-            publisher: mainPublisher
-        }
+        // MetricGroup {
+        //     id: network
+        //     color: "blue"
+        //     publisher: mainPublisher
+        // }
 
         Rectangle {
             Layout.fillWidth:  true
