@@ -65,7 +65,9 @@ class GraphSetSubscriber : public Subscriber
     Q_PROPERTY(QQmlListProperty<QMetric> metrics READ metrics NOTIFY onEnabled)
 
   public:
+    ~GraphSetSubscriber();
     void AddSet(int id, GraphSet *);
+    void RemoveSet(int id);
     void Clear(int id);
     void OnMetric(const DataSet &d);
     void OnDescriptions(const std::vector<MetricDescription> &descriptions);

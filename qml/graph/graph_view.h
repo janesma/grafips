@@ -37,6 +37,7 @@ class GraphView : public QQuickFramebufferObject
     Q_PROPERTY(Publisher* publisher READ publisher WRITE setPublisher)
   public:
     GraphView();
+    ~GraphView();
 
     GraphSetSubscriber *subscriber() {return m_subscriber;}
     void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}

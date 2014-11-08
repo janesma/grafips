@@ -12,6 +12,13 @@ GraphSetSubscriber::AddSet(int id, GraphSet *s)
     m_dataSets[id] = s;
 }
 
+void 
+GraphSetSubscriber::RemoveSet(int id)
+{
+    std::lock_guard<std::mutex> l(m_protect);
+    m_dataSets[id] = NULL;
+}
+
 void
 GraphSetSubscriber::OnMetric(const DataSet &d)
 {
@@ -46,4 +53,8 @@ void
 GraphSetSubscriber::Clear(int id)
 {
     m_dataSets[id]->Clear();
+}
+
+GraphSetSubscriber::~GraphSetSubscriber()
+{
 }

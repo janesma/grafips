@@ -79,6 +79,7 @@ GraphViewRenderer::~GraphViewRenderer()
 {
     while (!m_sets.empty())
     {
+        m_subscriber->RemoveSet(m_sets.begin()->first);
         delete m_sets.begin()->second;
         m_sets.erase(m_sets.begin());
     }
@@ -205,3 +206,6 @@ GraphView::createRenderer() const
     return renderer;
 }
 
+GraphView::~GraphView()
+{
+}

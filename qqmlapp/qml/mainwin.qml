@@ -12,9 +12,24 @@ ApplicationWindow {
         id: mainPublisher
     }
 
+    PublisherImpl {
+        id: secondPublisher
+    }
+
     CpuProvider {
         id: cpuProvider
         publisher: mainPublisher
+        Component.onCompleted: {
+            start()
+        }
+        Component.onDestruction: {
+            stop()
+        }
+    }
+
+    CpuProvider {
+        id: cpuProvider2
+        publisher: secondPublisher
         Component.onCompleted: {
             start()
         }
@@ -33,11 +48,11 @@ ApplicationWindow {
             publisher: mainPublisher
         }
 
-        // MetricGroup {
-        //     id: network
-        //     color: "blue"
-        //     publisher: mainPublisher
-        // }
+        MetricGroup {
+            id: network
+            color: "blue"
+            publisher: secondPublisher
+        }
 
         Rectangle {
             Layout.fillWidth:  true
