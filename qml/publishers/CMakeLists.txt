@@ -7,6 +7,7 @@ add_library(grips_publishers
   gfipublisher.h
   publisher.h
   publisher.cpp
+  gfisubscriber.h
   subscriber.h
   subscriber.cpp
 )

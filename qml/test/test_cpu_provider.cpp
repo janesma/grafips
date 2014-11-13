@@ -13,7 +13,7 @@ namespace Grafips
         void Enable(int id) {}
         void Disable(int id) {}
         void GetDescriptions(std::vector<MetricDescription> *descriptions) const {}
-        void Subscribe(Subscriber *) {}
+        void Subscribe(SubscriberInterface *) {}
     };
 
     class TestPublisher : public PublisherInterface
@@ -25,7 +25,7 @@ namespace Grafips
         virtual void Disable(int id) { m_p->Disable(id); }
         void GetDescriptions(std::vector<MetricDescription> *descriptions) const
             { m_p->GetDescriptions(descriptions); }
-        void Subscribe(Subscriber *) {}
+        void Subscribe(SubscriberInterface *) {}
         DataSet m_d;
         Provider *m_p;
     };

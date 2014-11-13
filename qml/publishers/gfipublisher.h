@@ -11,7 +11,7 @@ namespace Grafips
 {
 
     class Provider;
-    class Subscriber;
+    class SubscriberInterface;
 
 // collates metrics from providers, distributes to subscriber (which may be
 // off-proc or off-machine)
@@ -25,6 +25,6 @@ namespace Grafips
         virtual void Enable(int id) = 0;
         virtual void Disable(int id) = 0;
         virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) const = 0;
-        virtual void Subscribe(Subscriber *) = 0;
+        virtual void Subscribe(SubscriberInterface *) = 0;
     };
 }

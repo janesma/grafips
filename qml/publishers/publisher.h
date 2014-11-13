@@ -11,13 +11,13 @@
 
 namespace Grafips
 {
-    class Subscriber;
+    class SubscriberInterface;
     class PublisherImpl : public PublisherInterface
     {
         Q_OBJECT
 
       public:
-        Q_INVOKABLE void Subscribe(Subscriber *);
+        Q_INVOKABLE void Subscribe(SubscriberInterface *);
 
         PublisherImpl();
         ~PublisherImpl();
@@ -27,7 +27,7 @@ namespace Grafips
         Q_INVOKABLE void Disable(int id);
         void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
       private:
-        Subscriber *m_subscriber;
+        SubscriberInterface *m_subscriber;
         typedef std::map <int, Provider*> ProviderMap;
         ProviderMap m_providersByMetricId;
         std::vector<Provider *> m_providers;

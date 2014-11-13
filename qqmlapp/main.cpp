@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Grafips::PublisherInterface>();
     qmlRegisterType<Grafips::PublisherImpl>("Grafips", 1, 0, "PublisherImpl");
 
-    qmlRegisterInterface<Grafips::Subscriber>("Subscriber");
+    qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");
     qmlRegisterType<Grafips::GraphSetSubscriber>("Grafips", 1, 0, "GraphSetSubscriber");
 
     qmlRegisterType<Grafips::QMetric>("Grafips", 1, 0, "QMetric");

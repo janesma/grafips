@@ -56,7 +56,7 @@ PublisherImpl::GetDescriptions(std::vector<MetricDescription> *descriptions) con
 }
 
 void 
-PublisherImpl::Subscribe(Subscriber *s)
+PublisherImpl::Subscribe(SubscriberInterface *s)
 {
     m_subscriber = s;
     std::vector<MetricDescription> descriptions;

@@ -4,25 +4,14 @@
 #include <vector>
 #include <mutex>
 
-//#include <QAbstractItemModel>
 #include <QString> 
 #include <QQmlListProperty>
 
 #include "metric.h"
+#include "gfisubscriber.h"
 
 namespace Grafips
 {
-
-// handles publications, distributes metric data to associated GraphSet
-    class Subscriber : public QObject
-    {
-      public:
-        virtual ~Subscriber() {}
-        virtual void Clear(int id) = 0;
-        virtual void OnMetric(const DataSet &d) = 0;
-        virtual void OnDescriptions(const std::vector<MetricDescription> &descriptions) = 0;
-    };
-
 
     class GraphSet;
 
@@ -62,7 +51,7 @@ namespace Grafips
     };
 
 
-    class GraphSetSubscriber : public Subscriber
+    class GraphSetSubscriber : public SubscriberInterface
     {
         Q_OBJECT
         Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics READ metrics NOTIFY onEnabled)
