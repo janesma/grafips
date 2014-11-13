@@ -4,6 +4,8 @@
 
 #include "metric.h"
 
+using namespace Grafips;
+
 GraphSet::GraphSet() : m_current_time(0), 
                        m_max_data_age(60 * 1000) 
 {

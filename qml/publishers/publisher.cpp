@@ -2,6 +2,8 @@
 #include "provider.h"
 #include "subscriber.h"
 
+using namespace Grafips;
+
 PublisherImpl::PublisherImpl() : m_subscriber(NULL)
 {}
 

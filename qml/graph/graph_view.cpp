@@ -5,6 +5,8 @@
 #include <QtOpenGL>
 #include <GLES2/gl2.h>
 
+using namespace Grafips;
+
 #define GL_CHECK() CheckError(__FILE__, __LINE__)
 
 const char *

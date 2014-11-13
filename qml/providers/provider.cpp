@@ -1,5 +1,7 @@
 #include "provider.h"
 
+using namespace Grafips;
+
 MetricDescription::MetricDescription(const MetricDescription &o) 
     : path(o.path), help_text(o.help_text), 
        display_name(o.display_name), type(o.type)

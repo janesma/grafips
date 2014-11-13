@@ -10,6 +10,8 @@
 
 #include "publisher.h"
 
+using namespace Grafips;
+
 static const int READ_BUF_SIZE = 4096;
 
 CpuProvider::CpuProvider() : m_publisher(NULL), m_running(false)
@@ -121,8 +123,14 @@ CpuProvider::ParseCpuLine(CpuLine *dest, char **savePtr)
 
     const float active = delta.user + delta.nice + delta.system + delta.irq + delta.softirq + delta.guest + delta.guest_nice;
     const float total = active + delta.idle + delta.iowait + delta.steal;
-    current.utilization = active / total;
-
+    if (total == 0)
+        current.utilization = 0;
+    else
+    {
+        current.utilization = active / total;
+        assert (current.utilization < 100);
+        assert (current.utilization >= 0);
+    }
     memcpy(dest, &current, sizeof(CpuLine));
 }
 

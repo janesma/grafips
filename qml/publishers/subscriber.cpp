@@ -5,6 +5,8 @@
 #include "publisher.h"
 #include "graph_set.h"
 
+using namespace Grafips;
+
 void 
 GraphSetSubscriber::AddSet(int id, GraphSet *s)
 {
