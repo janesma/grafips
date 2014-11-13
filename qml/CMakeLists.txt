@@ -8,8 +8,6 @@ find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
