@@ -4,6 +4,7 @@ project(grips_publishers)
 
 add_library(grips_publishers
   metric.h
+  gfipublisher.h
   publisher.h
   publisher.cpp
   subscriber.h

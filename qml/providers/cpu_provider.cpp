@@ -22,7 +22,7 @@ CpuProvider::CpuProvider() : m_publisher(NULL), m_running(false)
 }
 
 void 
-CpuProvider::setPublisher(Publisher *p) 
+CpuProvider::setPublisher(PublisherInterface *p) 
 {
     m_publisher = p; 
     m_publisher->RegisterProvider(this);

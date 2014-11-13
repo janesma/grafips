@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<Grafips::CpuProvider>("Grafips", 1, 0, "CpuProvider");
 
-    qmlRegisterType<Grafips::Publisher>();
+    qmlRegisterType<Grafips::PublisherInterface>();
     qmlRegisterType<Grafips::PublisherImpl>("Grafips", 1, 0, "PublisherImpl");
 
     qmlRegisterInterface<Grafips::Subscriber>("Subscriber");

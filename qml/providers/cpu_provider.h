@@ -16,7 +16,7 @@ namespace Grafips
     {
         Q_OBJECT
       public:
-        Q_PROPERTY(Grafips::Publisher *publisher READ publisher WRITE setPublisher NOTIFY onPublisher)
+        Q_PROPERTY(Grafips::PublisherInterface *publisher READ publisher WRITE setPublisher NOTIFY onPublisher)
         Q_INVOKABLE void start();
         Q_INVOKABLE void stop();
 
@@ -30,8 +30,8 @@ namespace Grafips
 
         friend class CpuProviderFixture;
 
-        Publisher *publisher() { return m_publisher; }
-        void setPublisher(Publisher *p);
+        PublisherInterface *publisher() { return m_publisher; }
+        void setPublisher(PublisherInterface *p);
       signals:
         void onPublisher();
 
@@ -67,7 +67,7 @@ namespace Grafips
         std::vector<char> m_buf;
 
         // receives updates
-        Publisher *m_publisher;
+        PublisherInterface *m_publisher;
 
         // tracks subscriptions
         std::set<int> m_enabled_cores;

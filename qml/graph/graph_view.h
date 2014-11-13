@@ -15,7 +15,7 @@ namespace Grafips
     class GraphViewRenderer : public QQuickFramebufferObject::Renderer
     {
       public:
-        GraphViewRenderer(GraphSetSubscriber *s, const Publisher &p);
+        GraphViewRenderer(GraphSetSubscriber *s, const PublisherInterface &p);
         ~GraphViewRenderer();
         void render();
         void synchronize(QQuickFramebufferObject * item);
@@ -36,20 +36,20 @@ namespace Grafips
     {
         Q_OBJECT
         Q_PROPERTY(Grafips::GraphSetSubscriber* subscriber READ subscriber WRITE setSubscriber)
-        Q_PROPERTY(Grafips::Publisher* publisher READ publisher WRITE setPublisher)
+        Q_PROPERTY(Grafips::PublisherInterface* publisher READ publisher WRITE setPublisher)
       public:
         GraphView();
         ~GraphView();
 
         GraphSetSubscriber *subscriber() {return m_subscriber;}
         void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
-        Publisher *publisher() {return m_pub;}
-        void setPublisher(Publisher *p) {m_pub = p;}
+        PublisherInterface *publisher() {return m_pub;}
+        void setPublisher(PublisherInterface *p) {m_pub = p;}
     
         Renderer *createRenderer() const;
 
       private:
-        Publisher *m_pub;
+        PublisherInterface *m_pub;
         GraphSetSubscriber *m_subscriber;
     };
 }

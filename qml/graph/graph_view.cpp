@@ -24,7 +24,7 @@ GraphViewRenderer::fshader = "void main(void) {"
 
 
 GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s,
-                                     const Publisher &p) : m_subscriber(s)
+                                     const PublisherInterface &p) : m_subscriber(s)
 {
     std::vector<MetricDescription> descriptions;
     p.GetDescriptions(&descriptions);

@@ -5,7 +5,7 @@
 namespace Grafips
 {
 
-    class NullPublisher : public Publisher
+    class NullPublisher : public PublisherInterface
     {
       public:
         void RegisterProvider(Provider *p) {}
@@ -16,7 +16,7 @@ namespace Grafips
         void Subscribe(Subscriber *) {}
     };
 
-    class TestPublisher : public Publisher
+    class TestPublisher : public PublisherInterface
     {
       public:
         void RegisterProvider(Provider *p) { m_p = p; }
