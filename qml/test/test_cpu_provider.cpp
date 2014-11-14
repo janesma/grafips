@@ -1,6 +1,6 @@
 #include "gtest/gtest.h" 
-#include "cpu_provider.h"
-#include "publisher.h"
+#include "gfcpu_provider.h"
+#include "gfpublisher.h"
 
 namespace Grafips
 {

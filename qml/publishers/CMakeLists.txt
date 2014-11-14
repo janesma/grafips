@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(grips_publishers)
+project(grafips_publishers)
 
-add_library(grips_publishers
-  metric.h
+add_library(grafips_publishers
+  gfmetric.h
   gfipublisher.h
-  publisher.h
-  publisher.cpp
+  gfpublisher.h
+  gfpublisher.cpp
   gfisubscriber.h
-  subscriber.h
-  subscriber.cpp
+  gfsubscriber.h
+  gfsubscriber.cpp
 )
 
-target_include_directories( grips_publishers PUBLIC .)
+target_include_directories( grafips_publishers PUBLIC .)
 
-target_link_libraries(grips_publishers grips_providers grips_graph)
+target_link_libraries(grafips_publishers grafips_providers grafips_graph)
 

@@ -5,7 +5,7 @@
 
 #include <QObject> 
 
-#include "metric.h"
+#include "gfmetric.h"
 
 namespace Grafips
 {

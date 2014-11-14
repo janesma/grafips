@@ -1,8 +1,8 @@
-#include "graph_set.h"
+#include "gfgraph_set.h"
 
 #include <float.h>
 
-#include "metric.h"
+#include "gfmetric.h"
 
 using namespace Grafips;
 

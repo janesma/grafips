@@ -3,9 +3,9 @@
 #include <map>
 #include <QtQuick/QQuickFramebufferObject>
 
-#include "graph_set.h"
-#include "subscriber.h"
-#include "publisher.h"
+#include "gfgraph_set.h"
+#include "gfsubscriber.h"
+#include "gfpublisher.h"
 
 namespace Grafips
 {

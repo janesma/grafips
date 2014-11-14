@@ -6,8 +6,8 @@
 
 #include <QObject> 
 
-#include "provider.h"
-#include "publisher.h"
+#include "gfprovider.h"
+#include "gfpublisher.h"
 
 namespace Grafips
 {

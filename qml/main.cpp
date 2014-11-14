@@ -5,9 +5,9 @@
 #include <QQmlContext>
 
 #include "gripsrenderer.h"
-#include "graph_view.h"
-#include "publisher.h"
-#include "cpu_provider.h"
+#include "gfgraph_view.h"
+#include "gfpublisher.h"
+#include "gfcpu_provider.h"
 
 using namespace Grafips;
 

@@ -1,4 +1,4 @@
-#include "provider.h"
+#include "gfprovider.h"
 
 using namespace Grafips;
 

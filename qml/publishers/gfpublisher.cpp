@@ -1,6 +1,6 @@
-#include "publisher.h"
-#include "provider.h"
-#include "subscriber.h"
+#include "gfpublisher.h"
+#include "gfprovider.h"
+#include "gfsubscriber.h"
 
 using namespace Grafips;
 

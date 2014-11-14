@@ -2,10 +2,10 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 
-#include "cpu_provider.h"
-#include "publisher.h"
-#include "subscriber.h"
-#include "graph_view.h"
+#include "gfcpu_provider.h"
+#include "gfpublisher.h"
+#include "gfsubscriber.h"
+#include "gfgraph_view.h"
 
 
 int main(int argc, char *argv[])

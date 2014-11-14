@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "metric.h"
+#include "gfmetric.h"
 
 namespace Grafips
 {

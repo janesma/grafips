@@ -7,7 +7,7 @@
 #include <QString> 
 #include <QQmlListProperty>
 
-#include "metric.h"
+#include "gfmetric.h"
 #include "gfisubscriber.h"
 
 namespace Grafips

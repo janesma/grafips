@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(grips_graph)
+project(grafips_graph)
 
-add_library(grips_graph
-  graph_set.h
-  graph_set.cpp
-  graph_view.h
-  graph_view.cpp
+add_library(grafips_graph
+  gfgraph_set.h
+  gfgraph_set.cpp
+  gfgraph_view.h
+  gfgraph_view.cpp
 )
 
-qt5_use_modules(grips_graph OpenGL Quick) 
+qt5_use_modules(grafips_graph OpenGL Quick) 
 
-target_include_directories( grips_graph PUBLIC .)
+target_include_directories( grafips_graph PUBLIC .)
 
-target_link_libraries(grips_graph grips_publishers)
+target_link_libraries(grafips_graph grafips_publishers)
 
 
 

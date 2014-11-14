@@ -5,9 +5,9 @@
 
 #include <QObject> 
 
-#include "metric.h"
+#include "gfmetric.h"
 #include "gfipublisher.h"
-#include "subscriber.h"
+#include "gfsubscriber.h"
 
 namespace Grafips
 {

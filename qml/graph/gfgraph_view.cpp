@@ -1,4 +1,4 @@
-#include "graph_view.h"
+#include "gfgraph_view.h"
 
 #include <assert.h>
 

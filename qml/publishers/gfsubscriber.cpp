@@ -1,9 +1,9 @@
-#include "subscriber.h"
+#include "gfsubscriber.h"
 
 #include <assert.h>
 #include <mutex>
-#include "publisher.h"
-#include "graph_set.h"
+#include "gfpublisher.h"
+#include "gfgraph_set.h"
 
 using namespace Grafips;
 

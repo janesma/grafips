@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(GripsTest)
+project(grafips_test)
 
-add_executable(test_grips
+add_executable(test_grafips
   test_cpu_provider.cpp
   )
 
-target_link_libraries(test_grips grips_providers grips_publishers gtest_main)
+target_link_libraries(test_grafips grafips_providers grafips_publishers gtest_main)
 
-add_test(NAME test_g COMMAND test_grips)
+add_test(NAME test_g COMMAND test_grafips)

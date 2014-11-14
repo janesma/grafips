@@ -1,4 +1,4 @@
-#include "cpu_provider.h"
+#include "gfcpu_provider.h"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <thread>
 
-#include "publisher.h"
+#include "gfpublisher.h"
 
 using namespace Grafips;
 
