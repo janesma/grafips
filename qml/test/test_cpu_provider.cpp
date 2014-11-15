@@ -1,6 +1,7 @@
 #include "gtest/gtest.h" 
 #include "gfcpu_provider.h"
 #include "gfpublisher.h"
+#include "gfsubscriber_remote.h"
 
 namespace Grafips
 {
@@ -91,5 +92,54 @@ namespace Grafips
     TEST_F(CpuProviderFixture, test_publish )
     {
         test_publish();
+    }
+
+
+    class SubscriberMock: public SubscriberInterface
+    {
+      public:
+        SubscriberMock() : m_cleared(false), m_clear_arg(-1) {}
+        void Clear(int id) { m_cleared = true; m_clear_arg = id; }
+        void OnMetric(const DataSet &d) {}
+        void OnDescriptions(const std::vector<MetricDescription> &descriptions) {}
+        bool m_cleared;
+        int m_clear_arg;
+    };
+
+    class RemoteInvokeTest : public testing::Test
+    {
+      public:
+        RemoteInvokeTest() : m_stub(NULL),
+                             m_skel(NULL) {}
+      protected:
+        virtual void SetUp()
+            {
+                m_skel = new SubscriberSkeleton(53134, &m_mock);
+                m_skel->Start();
+                m_stub = new SubscriberStub("localhost", 53134);
+            }
+        virtual void TearDown()
+            {
+                m_skel->Stop();
+
+                // send message to trigger server stop
+                delete m_stub;
+
+                m_skel->Join();
+                delete m_skel;
+            }
+
+        SubscriberStub *m_stub;
+        SubscriberSkeleton *m_skel;
+        SubscriberMock m_mock;
+    };
+
+
+    TEST_F(RemoteInvokeTest, test_call_clear )
+    {
+        ASSERT_FALSE(m_mock.m_cleared);
+        m_stub->Clear(5);
+        EXPECT_TRUE(m_mock.m_cleared);
+        EXPECT_EQ(m_mock.m_clear_arg, 5);
     }
 }
