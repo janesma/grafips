@@ -38,6 +38,10 @@ namespace Grafips
       private:
         struct CpuLine
         {
+            CpuLine() : user(0), nice(0), system(0), idle(0),
+                        iowait(0), irq(0), softirq(0), steal(0),
+                        guest(0), guest_nice(0), utilization(0) {}
+
             int user;
             int nice;
             int system;

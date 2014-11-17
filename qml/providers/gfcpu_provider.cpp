@@ -50,13 +50,6 @@ CpuProvider::~CpuProvider()
     close(m_cpu_info_handle);
 }
 
-struct CpuLine
-{
-    int user;
-    int system;
-    int idle;
-};
-
 void
 CpuProvider::Refresh()
 {
