@@ -1,0 +1,177 @@
+{
+   ignore_gobje
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.4200.0
+}
+
+{
+   qtgui
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.3.2
+}
+{
+   appengine
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN21QQmlApplicationEngineC1ERK4QUrlP7QObject
+   fun:main
+}
+{
+   appengine
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:_ZN15QGuiApplicationC1ERiPPci
+   fun:main
+}
+{
+   render
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:_ZN24QSGFramebufferObjectNode18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv
+}
+{
+   renderscene
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:_ZN11QSGRenderer11renderSceneEv
+}
+{
+   render965
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+}
+{
+   965calloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+{
+   appexec
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:_ZN15QGuiApplication4execEv
+   fun:main
+}
+{
+   fontconf
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.8.0
+   ...
+}
+{
+   qml
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN14QQmlDataLoader4loadEP12QQmlDataBlobNS_4ModeE
+}
+{
+   callprop
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN3QV47Runtime12callPropertyEPNS_16ExecutionContextENS_9StringRefENS_11CallDataRefE
+   obj:*
+}
+{
+   setroot
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:_ZN11QAccessible13setRootObjectEP7QObject
+}
+{
+   xcb
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+   ...
+}
+{
+   shapetext
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:_ZNK11QTextEngine9shapeTextEi
+}
+{
+   connect
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN11QMetaObject7connectEPK7QObjectiS2_iiPi
+   ...
+}
+{
+   dynplug
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN18QQmlImportDatabase19importDynamicPluginERK7QStringS2_S2_P5QListI9QQmlErrorE
+   ...
+}
+{
+   weird malloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   weirdcalloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}

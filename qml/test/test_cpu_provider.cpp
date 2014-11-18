@@ -1,4 +1,5 @@
 #include "gtest/gtest.h" 
+
 #include "gfcpu_provider.h"
 #include "gfpublisher.h"
 #include "gfsubscriber_remote.h"
@@ -140,6 +141,7 @@ namespace Grafips
     {
         ASSERT_FALSE(m_mock.m_cleared);
         m_stub->Clear(5);
+        m_stub->Flush();
         EXPECT_TRUE(m_mock.m_cleared);
         EXPECT_EQ(m_mock.m_clear_arg, 5);
     }
@@ -151,6 +153,7 @@ namespace Grafips
         d.push_back(DataPoint(1,1,1));
         d.push_back(DataPoint(2,2,2));
         m_stub->OnMetric(d);
+        m_stub->Flush();
         EXPECT_EQ(m_mock.m_d.size(), 2);
         EXPECT_EQ(m_mock.m_d[0].id, 1);
         EXPECT_EQ(m_mock.m_d[1].time_val, 2);

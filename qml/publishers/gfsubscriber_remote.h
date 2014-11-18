@@ -14,9 +14,10 @@ namespace Grafips
       public:
         SubscriberStub(const std::string &address, int port);
         ~SubscriberStub();
-         void Clear(int id);
-         void OnMetric(const DataSet &d);
-         void OnDescriptions(const std::vector<MetricDescription> &descriptions);
+        void Clear(int id);
+        void OnMetric(const DataSet &d);
+        void OnDescriptions(const std::vector<MetricDescription> &descriptions);
+        void Flush();
       private:
         Socket m_socket;
         std::vector<unsigned char> m_buf;

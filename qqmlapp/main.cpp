@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
+#include <google/protobuf/stubs/common.h>
 
 #include "gfcpu_provider.h"
 #include "gfpublisher.h"
@@ -25,5 +26,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Grafips::GraphView>("Grafips", 1, 0, "Renderer");
     
     QQmlApplicationEngine engine(QUrl("qrc:///qml/mainwin.qml"));
-    return app.exec();
+    int ret = app.exec();
+    ::google::protobuf::ShutdownProtobufLibrary();
+    return ret;
 }
