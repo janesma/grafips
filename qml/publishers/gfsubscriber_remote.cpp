@@ -42,7 +42,34 @@ SubscriberStub::Clear(int id)
 
 // TODO
 void
-SubscriberStub::OnMetric(const DataSet &d) {}
+SubscriberStub::OnMetric(const DataSet &d)
+{
+    GrafipsProto::SubscriberInvocation m;
+    m.set_method(GrafipsProto::SubscriberInvocation::kOnMetric);
+    GrafipsProto::SubscriberInvocation::OnMetric * args = m.mutable_onmetricargs();
+    for (DataSet::const_iterator i = d.begin(); i != d.end(); ++i)
+    {
+        ::GrafipsProto::DataPoint* data = args->add_data();
+        data->set_time_val(i->time_val);
+        data->set_id(i->id);
+        data->set_data(i->data);
+    }
+
+    const uint32_t write_size = m.ByteSize();
+    m_socket.Write(write_size);
+    
+    m_buf.resize(write_size);
+    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
+    google::protobuf::io::CodedOutputStream coded_out(&array_out);
+    m.SerializeToCodedStream(&coded_out);
+    m_socket.Write(m_buf.data(), write_size);
+
+    // asynchronous, no response
+    uint32_t response;
+    m_socket.Read(&response);
+    assert(response == 0);
+}
+
 void
 SubscriberStub::OnDescriptions(const std::vector<MetricDescription> &descriptions){}
 
@@ -87,6 +114,21 @@ SubscriberSkeleton::Run()
                 {
                     const GrafipsProto::SubscriberInvocation_ClearM& args= m.clearargs();
                     m_target->Clear(args.id());
+                    m_socket->Write((uint32_t)0);
+                    break;
+                }
+            case GrafipsProto::SubscriberInvocation::kOnMetric:
+                {
+                    const GrafipsProto::SubscriberInvocation_OnMetric& args = m.onmetricargs();
+                    const int count = args.data_size();
+                    DataSet d_set;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        DataPoint &d = d_set[i];
+                        const ::GrafipsProto::DataPoint &in_d = args.data(i);
+                        d_set.push_back(DataPoint(in_d.time_val(), in_d.id(), in_d.data()));
+                    }
+                    m_target->OnMetric(d_set);
                     m_socket->Write((uint32_t)0);
                     break;
                 }

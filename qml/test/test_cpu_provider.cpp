@@ -100,10 +100,11 @@ namespace Grafips
       public:
         SubscriberMock() : m_cleared(false), m_clear_arg(-1) {}
         void Clear(int id) { m_cleared = true; m_clear_arg = id; }
-        void OnMetric(const DataSet &d) {}
+        void OnMetric(const DataSet &d) { m_d = d; }
         void OnDescriptions(const std::vector<MetricDescription> &descriptions) {}
         bool m_cleared;
         int m_clear_arg;
+        DataSet m_d;
     };
 
     class RemoteInvokeTest : public testing::Test
@@ -141,5 +142,17 @@ namespace Grafips
         m_stub->Clear(5);
         EXPECT_TRUE(m_mock.m_cleared);
         EXPECT_EQ(m_mock.m_clear_arg, 5);
+    }
+
+    TEST_F(RemoteInvokeTest, test_call_onmetric)
+    {
+        ASSERT_EQ(m_mock.m_d.size(), 0);
+        DataSet d;
+        d.push_back(DataPoint(1,1,1));
+        d.push_back(DataPoint(2,2,2));
+        m_stub->OnMetric(d);
+        EXPECT_EQ(m_mock.m_d.size(), 2);
+        EXPECT_EQ(m_mock.m_d[0].id, 1);
+        EXPECT_EQ(m_mock.m_d[1].time_val, 2);
     }
 }
