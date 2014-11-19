@@ -102,10 +102,11 @@ namespace Grafips
         SubscriberMock() : m_cleared(false), m_clear_arg(-1) {}
         void Clear(int id) { m_cleared = true; m_clear_arg = id; }
         void OnMetric(const DataSet &d) { m_d = d; }
-        void OnDescriptions(const std::vector<MetricDescription> &descriptions) {}
+        void OnDescriptions(const std::vector<MetricDescription> &descriptions) { m_desc = descriptions; }
         bool m_cleared;
         int m_clear_arg;
         DataSet m_d;
+        std::vector<MetricDescription> m_desc;
     };
 
     class RemoteInvokeTest : public testing::Test
@@ -157,5 +158,24 @@ namespace Grafips
         EXPECT_EQ(m_mock.m_d.size(), 2);
         EXPECT_EQ(m_mock.m_d[0].id, 1);
         EXPECT_EQ(m_mock.m_d[1].time_val, 2);
+    }
+
+    TEST_F(RemoteInvokeTest, test_call_ondesc)
+    {
+        ASSERT_EQ(m_mock.m_desc.size(), 0);
+        std::vector<MetricDescription>  d;
+        d.push_back(MetricDescription("one","/one","done", GR_METRIC_PERCENT));
+        d.push_back(MetricDescription("two","/two","dtwo", GR_METRIC_RATE));
+        m_stub->OnDescriptions(d);
+        m_stub->Flush();
+        EXPECT_EQ(m_mock.m_desc.size(), 2);
+        EXPECT_STREQ(m_mock.m_desc[0].path.c_str(), "one");
+        EXPECT_STREQ(m_mock.m_desc[0].help_text.c_str(), "/one");
+        EXPECT_STREQ(m_mock.m_desc[0].display_name.c_str(), "done");
+        EXPECT_EQ(m_mock.m_desc[0].type, GR_METRIC_PERCENT);
+        EXPECT_STREQ(m_mock.m_desc[1].path.c_str(), "two");
+        EXPECT_STREQ(m_mock.m_desc[1].help_text.c_str(), "/two");
+        EXPECT_STREQ(m_mock.m_desc[1].display_name.c_str(), "dtwo");
+        EXPECT_EQ(m_mock.m_desc[1].type, GR_METRIC_RATE);
     }
 }

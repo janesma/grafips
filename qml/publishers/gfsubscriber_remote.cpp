@@ -84,7 +84,31 @@ SubscriberStub::OnMetric(const DataSet &d)
 }
 
 void
-SubscriberStub::OnDescriptions(const std::vector<MetricDescription> &descriptions){}
+SubscriberStub::OnDescriptions(const std::vector<MetricDescription> &descriptions)
+{
+    GrafipsProto::SubscriberInvocation m;
+    m.set_method(GrafipsProto::SubscriberInvocation::kOnDescriptions);
+    GrafipsProto::SubscriberInvocation::OnDescriptions * args = m.mutable_ondescriptionsargs();
+    for (std::vector<MetricDescription>::const_iterator i = descriptions.begin();
+         i != descriptions.end(); ++i)
+    {
+        ::GrafipsProto::MetricDescription *pdesc =  args->add_descriptions();
+        pdesc->set_path(i->path);
+        pdesc->set_help_text(i->help_text);
+        pdesc->set_display_name(i->display_name);
+        pdesc->set_type((::GrafipsProto::MetricType)i->type);
+    }
+    const uint32_t write_size = m.ByteSize();
+    m_socket.Write(write_size);
+    
+    m_buf.resize(write_size);
+    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
+    google::protobuf::io::CodedOutputStream coded_out(&array_out);
+    m.SerializeToCodedStream(&coded_out);
+    m_socket.Write(m_buf.data(), write_size);
+
+    // asynchronous, no response
+}
 
 SubscriberSkeleton::SubscriberSkeleton(int port, SubscriberInterface *target)
     : Thread("SubscriberSkeleton"),
@@ -148,6 +172,20 @@ SubscriberSkeleton::Run()
                     }
                     m_target->OnMetric(d_set);
                     // m_socket->Write((uint32_t)0);
+                    break;
+                }
+            case GrafipsProto::SubscriberInvocation::kOnDescriptions:
+                {
+                    const GrafipsProto::SubscriberInvocation::OnDescriptions& args = m.ondescriptionsargs();
+                    const int count = args.descriptions_size();
+                    std::vector<MetricDescription> d_set;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        const ::GrafipsProto::MetricDescription &in_d(args.descriptions(i));
+                        d_set.push_back(MetricDescription(in_d.path(), in_d.help_text(), in_d.display_name(),
+                                                          (MetricType)in_d.type()));
+                    }
+                    m_target->OnDescriptions(d_set);
                     break;
                 }
             default:
