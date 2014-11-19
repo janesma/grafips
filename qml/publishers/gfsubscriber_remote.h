@@ -7,6 +7,11 @@
 #include "gfsocket.h"
 #include "gfthread.h"
 
+namespace GrafipsProto
+{
+    class SubscriberInvocation;
+}
+
 namespace Grafips
 {
     class SubscriberStub : public SubscriberInterface
@@ -19,6 +24,7 @@ namespace Grafips
         void OnDescriptions(const std::vector<MetricDescription> &descriptions);
         void Flush();
       private:
+        void WriteMessage(const GrafipsProto::SubscriberInvocation&m);
         Socket m_socket;
         std::vector<unsigned char> m_buf;
     };

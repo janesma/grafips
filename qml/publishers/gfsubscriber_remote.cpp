@@ -44,6 +44,13 @@ SubscriberStub::Clear(int id)
     GrafipsProto::SubscriberInvocation::ClearM * args = m.mutable_clearargs();
     args->set_id(id);
 
+    WriteMessage(m);
+    // asynchronous, no response
+}
+
+void
+SubscriberStub::WriteMessage(const GrafipsProto::SubscriberInvocation &m)
+{
     const uint32_t write_size = m.ByteSize();
     m_socket.Write(write_size);
     
@@ -52,8 +59,6 @@ SubscriberStub::Clear(int id)
     google::protobuf::io::CodedOutputStream coded_out(&array_out);
     m.SerializeToCodedStream(&coded_out);
     m_socket.Write(m_buf.data(), write_size);
-
-    // asynchronous, no response
 }
 
 // TODO
@@ -71,15 +76,7 @@ SubscriberStub::OnMetric(const DataSet &d)
         data->set_data(i->data);
     }
 
-    const uint32_t write_size = m.ByteSize();
-    m_socket.Write(write_size);
-    
-    m_buf.resize(write_size);
-    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
-    google::protobuf::io::CodedOutputStream coded_out(&array_out);
-    m.SerializeToCodedStream(&coded_out);
-    m_socket.Write(m_buf.data(), write_size);
-
+    WriteMessage(m);
     // asynchronous, no response
 }
 
@@ -98,15 +95,7 @@ SubscriberStub::OnDescriptions(const std::vector<MetricDescription> &description
         pdesc->set_display_name(i->display_name);
         pdesc->set_type((::GrafipsProto::MetricType)i->type);
     }
-    const uint32_t write_size = m.ByteSize();
-    m_socket.Write(write_size);
-    
-    m_buf.resize(write_size);
-    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
-    google::protobuf::io::CodedOutputStream coded_out(&array_out);
-    m.SerializeToCodedStream(&coded_out);
-    m_socket.Write(m_buf.data(), write_size);
-
+    WriteMessage(m);
     // asynchronous, no response
 }
 
