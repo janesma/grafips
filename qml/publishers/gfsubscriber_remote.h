@@ -22,11 +22,11 @@ namespace Grafips
         void Clear(int id);
         void OnMetric(const DataSet &d);
         void OnDescriptions(const std::vector<MetricDescription> &descriptions);
-        void Flush();
+        void Flush() const;
       private:
-        void WriteMessage(const GrafipsProto::SubscriberInvocation&m);
-        Socket m_socket;
-        std::vector<unsigned char> m_buf;
+        void WriteMessage(const GrafipsProto::SubscriberInvocation&m) const;
+        mutable Socket m_socket;
+        mutable std::vector<unsigned char> m_buf;
     };
 
 
@@ -37,6 +37,7 @@ namespace Grafips
         ~SubscriberSkeleton();
         void Run();
         void Stop();
+        int GetPort() const;
       private:
         ServerSocket *m_server;
         Socket *m_socket;

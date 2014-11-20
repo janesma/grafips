@@ -3,6 +3,7 @@
 #include "gfcpu_provider.h"
 #include "gfpublisher.h"
 #include "gfsubscriber_remote.h"
+#include "gfpublisher_remote.h"
 
 namespace Grafips
 {
@@ -177,5 +178,38 @@ namespace Grafips
         EXPECT_STREQ(m_mock.m_desc[1].help_text.c_str(), "/two");
         EXPECT_STREQ(m_mock.m_desc[1].display_name.c_str(), "dtwo");
         EXPECT_EQ(m_mock.m_desc[1].type, GR_METRIC_RATE);
+    }
+
+    TEST(RemotePubSub, connect_test)
+    {
+        PublisherImpl pub;
+        PublisherSkeleton pub_skel(0, &pub);
+        pub_skel.Start();
+
+        {
+            PublisherStub pub_stub("localhost", pub_skel.GetPort());
+
+            SubscriberMock sub;
+            pub_stub.Subscribe(&sub);
+
+            pub_stub.Flush();
+
+            DataSet d;
+            d.push_back(DataPoint(1,1,1));
+            d.push_back(DataPoint(2,2,2));
+            pub.OnMetric(d);
+
+            // need to ensure that the ephemeral subscriber stub has fully
+            // delivered it's publication, and that it was delivered.  This
+            // stub was created within the PublisherSkeleton when subscribe was
+            // called.
+            pub_skel.Flush();
+
+            EXPECT_EQ(sub.m_d.size(), 2);
+            EXPECT_EQ(sub.m_d[0].id, 1);
+            EXPECT_EQ(sub.m_d[1].time_val, 2);
+        }
+
+        pub_skel.Join();
     }
 }

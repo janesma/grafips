@@ -38,10 +38,13 @@ namespace Grafips
       public:
         // establishes a server, waits for a client to connect
         ServerSocket(int port);
-        Socket *Accept();
-
         ~ServerSocket();
 
+        Socket *Accept();
+
+        // if 0 is passed as port, to choose an unused ephemeral port, then the
+        // chosen port can be retrieved with GetPort
+        int GetPort() const;
       private:
         int m_server_fd;
     };

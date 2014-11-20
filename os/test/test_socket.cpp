@@ -37,6 +37,7 @@ class EchoServerThread : public Thread
         {
             m_running = false;
         }
+    int GetPort() const { return m_server_sock.GetPort(); }
   private:
     bool m_running;
     Socket *m_sock;
@@ -46,7 +47,7 @@ class EchoServerThread : public Thread
 class SocketFixture : public testing::Test
 {
   public:
-    SocketFixture() : m_server_thread(53135) {}
+    SocketFixture() : m_server_thread(0) {}
     void SetUp()
         {
             m_server_thread.Start();
@@ -63,7 +64,7 @@ class SocketFixture : public testing::Test
 
 TEST_F(SocketFixture, Instantiate)
 {
-    Socket client("localhost", 53135);
+    Socket client("localhost", m_server_thread.GetPort());
     int eof = 0;
     ASSERT_TRUE(client.Write(&eof, sizeof(eof)));
     ASSERT_TRUE(client.Read(&eof, sizeof(eof)));
@@ -72,7 +73,7 @@ TEST_F(SocketFixture, Instantiate)
 
 TEST_F(SocketFixture, Echo)
 {
-    Socket client("localhost", 53135);
+    Socket client("localhost", m_server_thread.GetPort());
     std::string hello("this is a test");
     ASSERT_TRUE(client.Write((uint32_t) hello.size()));
     ASSERT_TRUE(client.Write(hello.c_str(), hello.size()));
@@ -88,7 +89,7 @@ TEST_F(SocketFixture, Echo)
 
 TEST_F(SocketFixture, RandomData)
 {
-    Socket client("localhost", 53135);
+    Socket client("localhost", m_server_thread.GetPort());
     srand(time(NULL));
     std::string hello("this is a test");
 

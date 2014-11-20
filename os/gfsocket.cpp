@@ -153,5 +153,12 @@ ServerSocket::~ServerSocket()
     close(m_server_fd);
 }
 
-
- 
+int
+ServerSocket::GetPort() const
+{
+    struct sockaddr_in addr;
+    socklen_t l = sizeof(addr);
+    const int result = getsockname(m_server_fd, (sockaddr*)&addr, &l);
+    assert(result == 0);
+    return ntohs(addr.sin_port);
+}

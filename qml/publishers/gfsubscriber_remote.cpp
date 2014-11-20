@@ -18,7 +18,7 @@ SubscriberStub::~SubscriberStub()
 }
 
 void
-SubscriberStub::Flush()
+SubscriberStub::Flush() const
 {
     GrafipsProto::SubscriberInvocation m;
     m.set_method(GrafipsProto::SubscriberInvocation::kFlush);
@@ -49,7 +49,7 @@ SubscriberStub::Clear(int id)
 }
 
 void
-SubscriberStub::WriteMessage(const GrafipsProto::SubscriberInvocation &m)
+SubscriberStub::WriteMessage(const GrafipsProto::SubscriberInvocation &m) const
 {
     const uint32_t write_size = m.ByteSize();
     m_socket.Write(write_size);
@@ -123,7 +123,10 @@ SubscriberSkeleton::Run()
             return;
         m_buf.resize(msg_len);
         if (! m_socket->ReadVec(&m_buf))
+        {
+            assert(false);
             return;
+        }
 
         const size_t buf_size = m_buf.size();
         google::protobuf::io::ArrayInputStream array_in(m_buf.data(), buf_size);
@@ -178,6 +181,7 @@ SubscriberSkeleton::Run()
                     break;
                 }
             default:
+                assert(false);
                 return;
         }
     }
@@ -196,4 +200,11 @@ SubscriberSkeleton::~SubscriberSkeleton()
         delete m_socket;
     if (m_server)
         delete m_server;
+}
+
+int
+SubscriberSkeleton::GetPort() const
+{
+    assert(m_server);
+    return m_server->GetPort();
 }
