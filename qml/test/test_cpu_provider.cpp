@@ -208,6 +208,8 @@ namespace Grafips
             EXPECT_EQ(sub.m_d.size(), 2);
             EXPECT_EQ(sub.m_d[0].id, 1);
             EXPECT_EQ(sub.m_d[1].time_val, 2);
+
+            // pub_stub destructor should make publisher skeleton finish
         }
 
         pub_skel.Join();
