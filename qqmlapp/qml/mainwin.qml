@@ -1,6 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.1
 import Grafips 1.0
 
 ApplicationWindow {
@@ -38,10 +39,44 @@ ApplicationWindow {
         }
     }
 
+    Rectangle {
+        id: connectionDialog
+        anchors.fill: parent
+        Component.onCompleted: visible = true
+        Text {
+            id: enterText
+            width: 400
+            height: 20
+            anchors.centerIn: parent
+            text: "Enter the address of the target system."
+        }
+        Rectangle {
+            anchors.left: enterText.left
+            anchors.right: enterText.right
+            anchors.top: enterText.bottom
+            border.color: "black"
+            border.width: 1
+            height: 20
+            
+            TextInput {
+                anchors.fill: parent
+                anchors.margins: 3
+                verticalAlignment: Text.AlignVCenter
+                text: "localhost"
+                onAccepted: {
+                    mainView.visible = true
+                    connectionDialog.visible = false
+                }
+            }
+        }
+    }
+
     ColumnLayout
     {
+        id: mainView
         anchors.fill: parent
-
+        visible: false
+        
         MetricGroup {
             id: cpu
             color: "red"
