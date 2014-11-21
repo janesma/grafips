@@ -4,7 +4,7 @@ import Grafips 1.0
 Item {
     id: currentList
     property var model
-    property PublisherImpl publisher
+    property PublisherStub publisher
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     width: 200

@@ -4,7 +4,7 @@
 #include <google/protobuf/stubs/common.h>
 
 #include "gfcpu_provider.h"
-#include "gfpublisher.h"
+#include "gfpublisher_remote.h"
 #include "gfsubscriber.h"
 #include "gfgraph_view.h"
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Grafips::CpuProvider>("Grafips", 1, 0, "CpuProvider");
 
     qmlRegisterType<Grafips::PublisherInterface>();
-    qmlRegisterType<Grafips::PublisherImpl>("Grafips", 1, 0, "PublisherImpl");
+    qmlRegisterType<Grafips::PublisherStub>("Grafips", 1, 0, "PublisherStub");
 
     qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");
     qmlRegisterType<Grafips::GraphSetSubscriber>("Grafips", 1, 0, "GraphSetSubscriber");

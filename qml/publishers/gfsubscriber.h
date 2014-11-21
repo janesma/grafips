@@ -50,7 +50,6 @@ namespace Grafips
         bool m_enabled;
     };
 
-
     class GraphSetSubscriber : public SubscriberInterface
     {
         Q_OBJECT

@@ -1,5 +1,7 @@
 #include "gtest/gtest.h" 
 
+#include <QString>
+
 #include "gfcpu_provider.h"
 #include "gfpublisher.h"
 #include "gfsubscriber_remote.h"
@@ -118,9 +120,9 @@ namespace Grafips
       protected:
         virtual void SetUp()
             {
-                m_skel = new SubscriberSkeleton(53134, &m_mock);
+                m_skel = new SubscriberSkeleton(0, &m_mock);
                 m_skel->Start();
-                m_stub = new SubscriberStub("localhost", 53134);
+                m_stub = new SubscriberStub("localhost", m_skel->GetPort());
             }
         virtual void TearDown()
             {
@@ -187,8 +189,15 @@ namespace Grafips
         pub_skel.Start();
 
         {
-            PublisherStub pub_stub("localhost", pub_skel.GetPort());
+            PublisherStub pub_stub;
+            QString address = QString("localhost:%1").arg(pub_skel.GetPort());
+            pub_stub.setAddress(address);
 
+            pub_stub.Flush();
+            
+            std::vector<MetricDescription> desc;
+            pub_stub.GetDescriptions(&desc);
+            
             SubscriberMock sub;
             pub_stub.Subscribe(&sub);
 

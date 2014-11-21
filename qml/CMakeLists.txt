@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Grafips_c)
 
-find_package(Qt5Widgets REQUIRED) 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
 
 
 # Instruct CMake to run moc automatically when needed.

@@ -22,18 +22,12 @@ SubscriberStub::Flush() const
 {
     GrafipsProto::SubscriberInvocation m;
     m.set_method(GrafipsProto::SubscriberInvocation::kFlush);
-    const uint32_t write_size = m.ByteSize();
-    m_socket.Write(write_size);
-    
-    m_buf.resize(write_size);
-    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
-    google::protobuf::io::CodedOutputStream coded_out(&array_out);
-    m.SerializeToCodedStream(&coded_out);
-    m_socket.Write(m_buf.data(), write_size);
+    WriteMessage(m);
 
     uint32_t response;
     m_socket.Read(&response);
     assert(response == 0);
+    m_protect.unlock();
 }
 
 void
@@ -52,6 +46,7 @@ void
 SubscriberStub::WriteMessage(const GrafipsProto::SubscriberInvocation &m) const
 {
     const uint32_t write_size = m.ByteSize();
+    m_protect.lock();
     m_socket.Write(write_size);
     
     m_buf.resize(write_size);
@@ -59,6 +54,7 @@ SubscriberStub::WriteMessage(const GrafipsProto::SubscriberInvocation &m) const
     google::protobuf::io::CodedOutputStream coded_out(&array_out);
     m.SerializeToCodedStream(&coded_out);
     m_socket.Write(m_buf.data(), write_size);
+    m_protect.unlock();
 }
 
 // TODO

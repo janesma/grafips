@@ -9,7 +9,7 @@ Item {
     Layout.minimumHeight:20
     Layout.preferredHeight: 400
     property string color
-    property PublisherImpl publisher
+    property PublisherStub publisher
 
     function refresh() {
         visible = false
@@ -36,12 +36,12 @@ Item {
         refresh()
     }
 
-    GraphSetSubscriber {
-        id: mySubscriber
+    function start() {
+        publisher.Subscribe(mySubscriber);
     }
 
-    Component.onCompleted: {
-        publisher.Subscribe(mySubscriber);
+    GraphSetSubscriber {
+        id: mySubscriber
     }
 
     RowLayout {

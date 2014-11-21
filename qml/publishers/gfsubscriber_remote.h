@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "gfisubscriber.h"
 #include "gfsocket.h"
@@ -27,6 +28,7 @@ namespace Grafips
         void WriteMessage(const GrafipsProto::SubscriberInvocation&m) const;
         mutable Socket m_socket;
         mutable std::vector<unsigned char> m_buf;
+        mutable std::mutex m_protect;
     };
 
 

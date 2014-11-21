@@ -9,35 +9,10 @@ ApplicationWindow {
     height: 500
     visible: true
 
-    PublisherImpl {
+    PublisherStub {
         id: mainPublisher
     }
 
-    PublisherImpl {
-        id: secondPublisher
-    }
-
-    CpuProvider {
-        id: cpuProvider
-        publisher: mainPublisher
-        Component.onCompleted: {
-            start()
-        }
-        Component.onDestruction: {
-            stop()
-        }
-    }
-
-    CpuProvider {
-        id: cpuProvider2
-        publisher: secondPublisher
-        Component.onCompleted: {
-            start()
-        }
-        Component.onDestruction: {
-            stop()
-        }
-    }
 
     Rectangle {
         id: connectionDialog
@@ -64,8 +39,10 @@ ApplicationWindow {
                 verticalAlignment: Text.AlignVCenter
                 text: "localhost"
                 onAccepted: {
+                    mainPublisher.address = text
                     mainView.visible = true
                     connectionDialog.visible = false
+                    cpu.start();
                 }
             }
         }
@@ -81,12 +58,6 @@ ApplicationWindow {
             id: cpu
             color: "red"
             publisher: mainPublisher
-        }
-
-        MetricGroup {
-            id: network
-            color: "blue"
-            publisher: secondPublisher
         }
 
         Rectangle {

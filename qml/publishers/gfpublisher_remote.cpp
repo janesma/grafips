@@ -3,16 +3,37 @@
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/io/coded_stream.h>
 
+#include <QStringList>
+
 #include "gfipublisher.h"
 #include "gfpublisher.pb.h"
 #include "gfmetric.h"
 #include "gfsubscriber_remote.h"
 
+// #include <iostream>
+
 using namespace Grafips;
 
-PublisherStub::PublisherStub(const std::string &address, int port)
-    : m_socket(new Socket(address, port)), m_subscriber(NULL)
+PublisherStub::PublisherStub()
+    : m_socket(NULL), m_subscriber(NULL)
 {
+}
+
+void
+PublisherStub::Connect()
+{
+    int port = 53135;
+    QString address = m_address;
+
+    const int colon_pos = m_address.indexOf(":");
+    if (colon_pos != -1)
+    {
+        QStringList l = m_address.split(":");
+        address = l[0];
+        port = l[1].toInt();
+    }
+        
+    m_socket = new Socket(address.toStdString(), port);
 }
 
 PublisherStub::~PublisherStub()
@@ -35,13 +56,23 @@ void
 PublisherStub::WriteMessage(const GrafipsProto::PublisherInvocation &m) const
 {
     const uint32_t write_size = m.ByteSize();
+
+    m_protect.lock();
+    // std::cout << "write len: " << write_size << std::endl;
     m_socket->Write(write_size);
     
     m_buf.resize(write_size);
     google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
     google::protobuf::io::CodedOutputStream coded_out(&array_out);
     m.SerializeToCodedStream(&coded_out);
+
+    // for (int i = 0; i < write_size; ++i)
+        // std::cout << " " << (int) m_buf[i] << " ";
+    // std::cout << std::endl;
+        
+    
     m_socket->Write(m_buf.data(), write_size);
+    m_protect.unlock();
 }
 
 void
@@ -125,14 +156,7 @@ PublisherStub::Flush() const
 {
     GrafipsProto::PublisherInvocation m;
     m.set_method(GrafipsProto::PublisherInvocation::kFlush);
-    const uint32_t write_size = m.ByteSize();
-    m_socket->Write(write_size);
-    
-    m_buf.resize(write_size);
-    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
-    google::protobuf::io::CodedOutputStream coded_out(&array_out);
-    m.SerializeToCodedStream(&coded_out);
-    m_socket->Write(m_buf.data(), write_size);
+    WriteMessage(m);
 
     uint32_t response;
     m_socket->Read(&response);
@@ -160,7 +184,7 @@ PublisherSkeleton::Run()
     delete m_server;
     m_server = NULL;
 
-    std::vector<unsigned char> m_buf;
+    std::vector<unsigned char> buf;
     bool running = true;
     while (running)
     {
@@ -168,13 +192,18 @@ PublisherSkeleton::Run()
         if (! m_socket->Read(&msg_len))
             break;
 
-        m_buf.resize(msg_len);
-        if (! m_socket->ReadVec(&m_buf))
+        // std::cout << "read len: " << msg_len << std::endl;
+        
+        buf.resize(msg_len);
+        if (! m_socket->ReadVec(&buf))
             break;
+        
+        // for (int i = 0; i < msg_len; ++i)
+            // std::cout << " " << (int) buf[i] << " ";
+        // std::cout << std::endl;
 
-
-        const size_t buf_size = m_buf.size();
-        google::protobuf::io::ArrayInputStream array_in(m_buf.data(), buf_size);
+        const size_t buf_size = buf.size();
+        google::protobuf::io::ArrayInputStream array_in(buf.data(), buf_size);
         google::protobuf::io::CodedInputStream coded_in(&array_in);
         
         GrafipsProto::PublisherInvocation m;
@@ -207,7 +236,7 @@ PublisherSkeleton::Run()
                     m_target->GetDescriptions(&d);
 
                     GrafipsProto::PublisherInvocation response;
-                    m.set_method(GrafipsProto::PublisherInvocation::kGetDescriptions);
+                    response.set_method(GrafipsProto::PublisherInvocation::kGetDescriptions);
                     GrafipsProto::PublisherInvocation::GetDescriptions * args = response.mutable_getdescriptionsargs();
                     for (std::vector<MetricDescription>::const_iterator i = d.begin();
                          i != d.end(); ++i)
@@ -252,11 +281,12 @@ PublisherSkeleton::WriteMessage(const GrafipsProto::PublisherInvocation &m)
     const uint32_t write_size = m.ByteSize();
     m_socket->Write(write_size);
     
-    m_buf.resize(write_size);
-    google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
+    std::vector<unsigned char> buf;
+    buf.resize(write_size);
+    google::protobuf::io::ArrayOutputStream array_out(buf.data(), write_size);
     google::protobuf::io::CodedOutputStream coded_out(&array_out);
     m.SerializeToCodedStream(&coded_out);
-    m_socket->Write(m_buf.data(), write_size);
+    m_socket->Write(buf.data(), write_size);
 }
 
 void
