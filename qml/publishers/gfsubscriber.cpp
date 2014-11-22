@@ -42,8 +42,9 @@ GraphSetSubscriber::OnDescriptions(const std::vector<MetricDescription> &descrip
 void
 GraphSetSubscriber::HandleNotifyDescriptions()
 {
-    {        
+    {
         std::lock_guard<std::mutex>l(m_protect);
+        m_metrics.clear();
         for (std::vector<MetricDescription>::const_iterator i = m_metric_descriptions.begin();
              i != m_metric_descriptions.end(); ++i)
             m_metrics.append(new QMetric(*i));
