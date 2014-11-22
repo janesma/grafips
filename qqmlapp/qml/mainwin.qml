@@ -21,7 +21,6 @@ ApplicationWindow {
         Text {
             id: enterText
             width: 400
-            height: 20
             anchors.centerIn: parent
             text: "Enter the address of the target system."
         }
@@ -31,13 +30,15 @@ ApplicationWindow {
             anchors.top: enterText.bottom
             border.color: "black"
             border.width: 1
-            height: 20
+            height: input.height + 5
             
             TextInput {
-                anchors.fill: parent
-                anchors.margins: 3
+                id: input
+                focus: true
+                anchors.centerIn: parent
+                width:parent.width
                 verticalAlignment: Text.AlignVCenter
-                text: "localhost"
+                text: "localhost:53136"
                 onAccepted: {
                     mainPublisher.address = text
                     mainView.visible = true
