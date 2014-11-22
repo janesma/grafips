@@ -55,6 +55,9 @@ namespace Grafips
         Q_OBJECT
         Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics READ metrics NOTIFY onEnabled)
 
+      public slots:
+        void NotifyDescriptions();
+
       public:
         ~GraphSetSubscriber();
         void AddSet(int id, GraphSet *);
@@ -67,10 +70,9 @@ namespace Grafips
       signals:
         void onEnabled();
 
-      public:
-        QList<QMetric *> m_metrics;
       private:
-
+        QList<QMetric *> m_metrics;
+        std::vector<MetricDescription> m_metric_descriptions;
         std::map<int, GraphSet *> m_dataSets;
         std::mutex m_protect;
     };

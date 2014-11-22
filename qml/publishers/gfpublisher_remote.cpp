@@ -142,6 +142,9 @@ PublisherStub::Subscribe(SubscriberInterface *subs)
     const int port = m_subscriber->GetPort();
     m_subscriber->Start();
 
+    // connect NotifyDescriptions
+    connect(m_subscriber, SIGNAL(NotifyDescriptions()), subs, SLOT(NotifyDescriptions()));
+
     GrafipsProto::PublisherInvocation m;
     m.set_method(GrafipsProto::PublisherInvocation::kSubscribe);
     GrafipsProto::PublisherInvocation_Subscribe *args = m.mutable_subscribeargs();

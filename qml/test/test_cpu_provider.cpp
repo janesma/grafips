@@ -102,6 +102,7 @@ namespace Grafips
     class SubscriberMock: public SubscriberInterface
     {
       public:
+        void NotifyDescriptions() {}
         SubscriberMock() : m_cleared(false), m_clear_arg(-1) {}
         void Clear(int id) { m_cleared = true; m_clear_arg = id; }
         void OnMetric(const DataSet &d) { m_d = d; }

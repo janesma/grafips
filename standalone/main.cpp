@@ -9,6 +9,7 @@ int main()
     CpuProvider prov;
     PublisherImpl pub;
     pub.RegisterProvider(&prov);
+    prov.setPublisher(&pub);
     PublisherSkeleton skel(53136, &pub);
     skel.Start();
     prov.start();

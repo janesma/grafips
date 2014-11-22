@@ -174,6 +174,7 @@ SubscriberSkeleton::Run()
                                                           (MetricType)in_d.type()));
                     }
                     m_target->OnDescriptions(d_set);
+                    emit NotifyDescriptions();
                     break;
                 }
             default:

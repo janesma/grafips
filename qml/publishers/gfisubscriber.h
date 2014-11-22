@@ -7,9 +7,11 @@
 namespace Grafips
 {
     // handles publications, distributes metric data to associated GraphSet
-// handles publications, distributes metric data to associated GraphSet
     class SubscriberInterface : public QObject
     {
+        Q_OBJECT
+      public slots:
+        virtual void NotifyDescriptions() = 0;
       public:
         virtual ~SubscriberInterface() {}
         virtual void Clear(int id) = 0;
