@@ -26,7 +26,6 @@ CpuProvider::setPublisher(PublisherInterface *p)
 {
     m_publisher = p; 
     m_publisher->RegisterProvider(this);
-    emit onPublisher(); 
 }
 
 void 

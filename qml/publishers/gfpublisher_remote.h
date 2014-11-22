@@ -23,7 +23,7 @@ namespace Grafips
     class SubscriberStub;
     class SubscriberSkeleton;
 
-    class PublisherStub : public PublisherInterface
+    class PublisherStub : public QObject, public PublisherInterface
     {
         Q_OBJECT
         Q_PROPERTY(QString address READ address WRITE setAddress)

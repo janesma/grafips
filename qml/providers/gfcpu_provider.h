@@ -4,21 +4,17 @@
 #include <set>
 #include <mutex>
 
-#include <QObject> 
-
 #include "gfprovider.h"
 #include "gfpublisher.h"
 
 namespace Grafips
 {
 
-    class CpuProvider : public QObject, public Provider
+    class CpuProvider : public Provider
     {
-        Q_OBJECT
       public:
-        Q_PROPERTY(Grafips::PublisherInterface *publisher READ publisher WRITE setPublisher NOTIFY onPublisher)
-        Q_INVOKABLE void start();
-        Q_INVOKABLE void stop();
+         void start();
+         void stop();
 
         CpuProvider();
         ~CpuProvider();

@@ -3,8 +3,6 @@
 #include <vector>
 #include <map>
 
-#include <QObject> 
-
 #include "gfmetric.h"
 #include "gfipublisher.h"
 #include "gfsubscriber.h"
@@ -14,17 +12,15 @@ namespace Grafips
     class SubscriberInterface;
     class PublisherImpl : public PublisherInterface
     {
-        Q_OBJECT
-
       public:
-        Q_INVOKABLE void Subscribe(SubscriberInterface *);
+        void Subscribe(SubscriberInterface *);
 
         PublisherImpl();
         ~PublisherImpl();
         void RegisterProvider(Provider *p);
         void OnMetric(const DataSet &d);
-        Q_INVOKABLE void Enable(int id);
-        Q_INVOKABLE void Disable(int id);
+         void Enable(int id);
+         void Disable(int id);
         void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
       private:
         SubscriberInterface *m_subscriber;

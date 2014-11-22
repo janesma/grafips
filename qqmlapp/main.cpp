@@ -13,9 +13,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<Grafips::CpuProvider>("Grafips", 1, 0, "CpuProvider");
-
-    qmlRegisterType<Grafips::PublisherInterface>();
     qmlRegisterType<Grafips::PublisherStub>("Grafips", 1, 0, "PublisherStub");
 
     qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");

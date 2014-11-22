@@ -3,8 +3,6 @@
 #include <vector>
 #include <map>
 
-#include <QObject> 
-
 #include "gfmetric.h"
 
 namespace Grafips
@@ -15,9 +13,8 @@ namespace Grafips
 
 // collates metrics from providers, distributes to subscriber (which may be
 // off-proc or off-machine)
-    class PublisherInterface : public QObject
+    class PublisherInterface
     {
-        Q_OBJECT
       public:
         virtual ~PublisherInterface() {}
         virtual void RegisterProvider(Provider *p) = 0;

@@ -5,7 +5,7 @@
 
 #include "gfgraph_set.h"
 #include "gfsubscriber.h"
-#include "gfpublisher.h"
+#include "gfpublisher_remote.h"
 
 namespace Grafips
 {
@@ -36,20 +36,20 @@ namespace Grafips
     {
         Q_OBJECT
         Q_PROPERTY(Grafips::GraphSetSubscriber* subscriber READ subscriber WRITE setSubscriber)
-        Q_PROPERTY(Grafips::PublisherInterface* publisher READ publisher WRITE setPublisher)
+        Q_PROPERTY(Grafips::PublisherStub* publisher READ publisher WRITE setPublisher)
       public:
         GraphView();
         ~GraphView();
 
         GraphSetSubscriber *subscriber() {return m_subscriber;}
         void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
-        PublisherInterface *publisher() {return m_pub;}
-        void setPublisher(PublisherInterface *p) {m_pub = p;}
+        PublisherStub *publisher() {return m_pub;}
+        void setPublisher(PublisherStub *p) {m_pub = p;}
     
         Renderer *createRenderer() const;
 
       private:
-        PublisherInterface *m_pub;
+        PublisherStub *m_pub;
         GraphSetSubscriber *m_subscriber;
     };
 }
