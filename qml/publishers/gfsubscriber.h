@@ -56,9 +56,12 @@ namespace Grafips
         Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics READ metrics NOTIFY onEnabled)
 
       public slots:
+        void HandleNotifyDescriptions();
+      signals:
         void NotifyDescriptions();
-
+        
       public:
+        GraphSetSubscriber();
         ~GraphSetSubscriber();
         void AddSet(int id, GraphSet *);
         void RemoveSet(int id);

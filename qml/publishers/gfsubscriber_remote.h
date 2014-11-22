@@ -17,9 +17,6 @@ namespace Grafips
 {
     class SubscriberStub : public SubscriberInterface
     {
-        Q_OBJECT
-      public slots:
-        void NotifyDescriptions() {}
       public:
         SubscriberStub(const std::string &address, int port);
         ~SubscriberStub();
@@ -37,9 +34,6 @@ namespace Grafips
 
     class SubscriberSkeleton : public QObject, public Thread
     {
-        Q_OBJECT
-      signals:
-        void NotifyDescriptions();
       public:
         SubscriberSkeleton(int port, SubscriberInterface *target);
         ~SubscriberSkeleton();

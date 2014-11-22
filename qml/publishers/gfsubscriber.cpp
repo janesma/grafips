@@ -36,9 +36,11 @@ GraphSetSubscriber::OnDescriptions(const std::vector<MetricDescription> &descrip
 {
     std::lock_guard<std::mutex>l(m_protect);
     m_metric_descriptions = descriptions;
+    emit NotifyDescriptions();
 }
+
 void
-GraphSetSubscriber::NotifyDescriptions()
+GraphSetSubscriber::HandleNotifyDescriptions()
 {
     {        
         std::lock_guard<std::mutex>l(m_protect);
@@ -60,6 +62,11 @@ void
 GraphSetSubscriber::Clear(int id)
 {
     m_dataSets[id]->Clear();
+}
+
+GraphSetSubscriber::GraphSetSubscriber()
+{
+    connect(this, SIGNAL(NotifyDescriptions()), this, SLOT(HandleNotifyDescriptions()));
 }
 
 GraphSetSubscriber::~GraphSetSubscriber()
