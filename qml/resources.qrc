@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qml/HelloWorld.qml</file>
-        <file>qml/MetricList.qml</file>
-    </qresource>
-</RCC>
