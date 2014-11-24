@@ -5,7 +5,6 @@
 
 #include "gfmetric.h"
 #include "gfipublisher.h"
-#include "gfsubscriber.h"
 
 namespace Grafips
 {

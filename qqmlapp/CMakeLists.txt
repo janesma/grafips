@@ -26,7 +26,7 @@ add_executable(grafips
 
 qt5_use_modules(grafips Core Gui Widgets OpenGL Quick Declarative) 
 
-target_link_libraries(grafips grafips_providers GL pthread)
+target_link_libraries(grafips grafips_graph grafips_subscriber grafips_providers GL pthread)
 
 # add_subdirectory(test)
 # add_subdirectory(providers)

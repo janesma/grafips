@@ -13,7 +13,7 @@ qt5_use_modules(grafips_graph OpenGL Quick)
 
 target_include_directories( grafips_graph PUBLIC .)
 
-target_link_libraries(grafips_graph grafips_publishers)
+target_link_libraries(grafips_graph grafips_subscriber grafips_publishers)
 
 
 

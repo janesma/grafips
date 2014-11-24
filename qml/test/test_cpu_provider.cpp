@@ -6,6 +6,7 @@
 #include "gfpublisher.h"
 #include "gfsubscriber_remote.h"
 #include "gfpublisher_remote.h"
+#include "gfpublisher_skel.h"
 
 namespace Grafips
 {

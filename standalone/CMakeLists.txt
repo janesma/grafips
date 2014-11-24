@@ -8,4 +8,4 @@ add_executable(grafips_publish
   main.cpp
 )
 
-target_link_libraries(grafips_publish grafips_providers grafips_publishers pthread)
+target_link_libraries(grafips_publish grafips_providers grafips_publishers grafips_subscriber pthread)

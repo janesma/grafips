@@ -1,5 +1,5 @@
 #include "gfcpu_provider.h"
-#include "gfpublisher_remote.h"
+#include "gfpublisher_skel.h"
 #include "gfpublisher.h"
 
 using namespace Grafips;

@@ -7,5 +7,5 @@ add_executable(test_grafips
   test_main.cpp
   )
 
-target_link_libraries(test_grafips grafips_providers grafips_publishers gtest)
+target_link_libraries(test_grafips grafips_providers grafips_publishers grafips_subscriber gtest)
 

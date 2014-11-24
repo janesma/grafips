@@ -28,8 +28,6 @@ namespace Grafips
 
         PublisherInterface *publisher() { return m_publisher; }
         void setPublisher(PublisherInterface *p);
-      signals:
-        void onPublisher();
 
       private:
         struct CpuLine
