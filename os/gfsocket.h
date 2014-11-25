@@ -13,16 +13,16 @@ namespace Grafips
         ~Socket();
 
         bool Read(void * buf, int size);
-        template <typename T> bool Read(T *val) { Read(val, sizeof(T)); }
+        template <typename T> bool Read(T *val) { return Read(val, sizeof(T)); }
         template <typename T> bool ReadVec(std::vector<T> *vec)
             {
-                Read(vec->data(), vec->size() * sizeof(T));
+                return Read(vec->data(), vec->size() * sizeof(T));
             }
         bool Write(const void * buf, int size);
-        template <typename T> bool Write(const T &val) { Write(&val, sizeof(val)); }
+        template <typename T> bool Write(const T &val) { return Write(&val, sizeof(val)); }
         template <typename T> bool WriteVec(const std::vector<T> &vec)
             {
-                Write(vec.data(), sizeof(T) * vec.size());
+                return Write(vec.data(), sizeof(T) * vec.size());
             }
         
       private:

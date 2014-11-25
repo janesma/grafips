@@ -6,14 +6,13 @@
 #include "gfsocket.h"
 #include "gfpublisher.pb.h"
 #include "gfipublisher.h"
-#include "gfsubscriber_remote.h"
 #include "gfsubscriber_stub.h"
 
 using namespace Grafips;
 
 PublisherSkeleton::PublisherSkeleton(int port, PublisherInterface *target)
-    : Thread("PublisherSkeleton"), m_server(new ServerSocket(port)), m_target(target),
-      m_socket(NULL), m_subscriber(NULL)
+    : Thread("PublisherSkeleton"), m_server(new ServerSocket(port)), 
+      m_socket(NULL), m_target(target), m_subscriber(NULL)
 {
 }
 

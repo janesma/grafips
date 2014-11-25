@@ -77,11 +77,11 @@ namespace Grafips
                 usleep(100000);
                 p.Poll();
                 EXPECT_EQ(pub.m_d.size(), metrics.size());
-                for (int i = 0; i < pub.m_d.size(); ++i)
+                for (unsigned int i = 0; i < pub.m_d.size(); ++i)
                 {
                     EXPECT_LT(pub.m_d[i].data, 100);
                     EXPECT_GE(pub.m_d[i].data, 0);
-                    for (int j = i + 1; j < pub.m_d.size(); ++j)
+                    for (unsigned int j = i + 1; j < pub.m_d.size(); ++j)
                     {
                         EXPECT_NE(pub.m_d[i].id, pub.m_d[j].id);
                         EXPECT_EQ(pub.m_d[i].time_val, pub.m_d[j].time_val);

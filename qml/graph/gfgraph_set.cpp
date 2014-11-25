@@ -20,7 +20,7 @@ GraphSet::Add(const DataPoint &d)
         // new max time.  Drop any data which is too old to be displayed.
         m_current_time = d.time_val;
         while (!m_data.empty() &&
-               m_data.begin()->first < m_current_time - m_max_data_age)
+               (unsigned int)(m_data.begin()->first) < (m_current_time - m_max_data_age))
             m_data.erase(m_data.begin());
     }
     m_data[d.time_val] = d.data;
@@ -58,11 +58,12 @@ GraphSet::GetData(PointVec *data)
         const float age = m_current_time - i->first;
         const float age_scaled = (2.0 * age / (float) m_max_data_age) - 1.0;
         dest->x = -1.0 * age_scaled;
-        const float val_range = max - min;
-        const float val_scaled = (2.0 * (i->second - min) / val_range) - 1.0;
 
         // for now, don't scale
+        //const float val_range = max - min;
+        //const float val_scaled = (2.0 * (i->second - min) / val_range) - 1.0;
         //dest->y = val_scaled;
+
         dest->y = -1.0 * (2.0 * i->second - 1.0);
     }
 }

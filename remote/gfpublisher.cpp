@@ -1,6 +1,6 @@
 #include "gfpublisher.h"
 #include "gfprovider.h"
-#include "gfsubscriber.h"
+#include "gfisubscriber.h"
 
 using namespace Grafips;
 
@@ -16,7 +16,7 @@ PublisherImpl::RegisterProvider(Provider *p)
 {
     std::vector<MetricDescription> desc;
     p->GetDescriptions(&desc);
-    for (int i = 0; i < desc.size(); ++i)
+    for (unsigned int i = 0; i < desc.size(); ++i)
     {
         m_providersByMetricId[desc[i].id()] = p;
     }

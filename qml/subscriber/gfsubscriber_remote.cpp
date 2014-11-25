@@ -68,7 +68,6 @@ SubscriberSkeleton::Run()
                     DataSet d_set;
                     for (int i = 0; i < count; ++i)
                     {
-                        DataPoint &d = d_set[i];
                         const ::GrafipsProto::DataPoint &in_d = args.data(i);
                         d_set.push_back(DataPoint(in_d.time_val(), in_d.id(), in_d.data()));
                     }

@@ -20,7 +20,7 @@ MetricDescription::id() const
 {
     // hash the path
     int hash = 0;
-    for (int i = 0; i < path.length(); ++i)
+    for (unsigned int i = 0; i < path.length(); ++i)
     {
         const char c = path[i];
         hash = 31 * hash + c;

@@ -168,7 +168,7 @@ GraphViewRenderer::CheckError(const char * file, int line)
 {
     if (glGetError() == GL_NO_ERROR)
         return;
-    printf("ERROR: %s:%i\n");
+    printf("ERROR: %s:%i\n", file, line);
     exit(-1);
 }
 
@@ -192,8 +192,9 @@ GraphViewRenderer::synchronize(QQuickFramebufferObject * item)
     //GraphView *g = dynamic_cast<GraphView*>(item);
 }
 
-GraphView::GraphView() : m_subscriber(NULL),
-                         m_pub(NULL) 
+GraphView::GraphView() : m_pub(NULL),
+                         m_subscriber(NULL)
+                         
 {
     setTextureFollowsItemSize(true);
 }

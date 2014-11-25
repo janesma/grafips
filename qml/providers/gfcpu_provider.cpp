@@ -77,7 +77,7 @@ CpuProvider::Refresh()
         }
         else
         {
-            int core = atoi(&(word[3]));
+            unsigned int core = atoi(&(word[3]));
             if (core >= m_core_stats.size())
                 m_core_stats.resize(core + 1);
             ParseCpuLine(&(m_core_stats[core]), &wordsaveptr);
@@ -141,7 +141,7 @@ CpuProvider::GetDescriptions(std::vector<MetricDescription> *descriptions)
                                               "CPU Busy", GR_METRIC_PERCENT));
     m_sysId = descriptions->back().id();
 
-    for (int i = 0; i < m_core_stats.size(); ++i)
+    for (unsigned int i = 0; i < m_core_stats.size(); ++i)
     {
         std::stringstream s;
         s << "/cpu/core" << i << "/utilization";
@@ -162,7 +162,7 @@ CpuProvider::Enable(int id)
         m_enabled_cores.insert(-1);
         return;
     }
-    for (int i = 0; i < m_ids.size(); ++i)
+    for (unsigned int i = 0; i < m_ids.size(); ++i)
     {
         if (m_ids[i] == id)
         {
@@ -182,7 +182,7 @@ CpuProvider::Disable(int id)
         m_enabled_cores.erase(-1);
         return;
     }
-    for (int i = 0; i < m_ids.size(); ++i)
+    for (unsigned int i = 0; i < m_ids.size(); ++i)
     {
         if (m_ids[i] == id)
         {
@@ -216,7 +216,7 @@ CpuProvider::Publish()
     if (m_enabled_cores.count(-1) != 0)
         d.push_back(DataPoint(ms, m_sysId, m_systemStats.utilization));
 
-    for (int i = 0; i < m_ids.size(); ++i)
+    for (unsigned int i = 0; i < m_ids.size(); ++i)
     {
         if (m_enabled_cores.count(i) == 0)
             continue;
