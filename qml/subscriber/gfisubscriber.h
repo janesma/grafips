@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QObject>
-
 #include "gfmetric.h"
 
 namespace Grafips
 {
     // handles publications, distributes metric data to associated GraphSet
-    class SubscriberInterface : public QObject
+    class SubscriberInterface
     {
       public:
         virtual ~SubscriberInterface() {}

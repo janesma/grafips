@@ -37,7 +37,7 @@ Item {
     }
 
     function start() {
-        publisher.Subscribe(mySubscriber);
+        publisher.SubscribeGraph(mySubscriber);
     }
 
     GraphSetSubscriber {

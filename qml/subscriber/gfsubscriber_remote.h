@@ -4,6 +4,8 @@
 #include <vector>
 #include <mutex>
 
+#include <QObject>
+
 #include "gfisubscriber.h"
 #include "gfsocket.h"
 #include "gfthread.h"

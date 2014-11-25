@@ -9,6 +9,7 @@
 #include "gfmetric.h"
 #include "gfsocket.h"
 #include "gfipublisher.h"
+#include "gfsubscriber.h"
 
 
 namespace GrafipsProto
@@ -33,7 +34,12 @@ namespace Grafips
         Q_INVOKABLE void Enable(int id);
         Q_INVOKABLE void Disable(int id);
         void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
-        Q_INVOKABLE void Subscribe(SubscriberInterface *);
+
+        // this method exists to work around clash between the interface (not a
+        // qobject) and the GraphSetSubscriber implementation (is a qobject).  
+        Q_INVOKABLE void SubscribeGraph(GraphSetSubscriber *p) { Subscribe(p); }
+
+        void Subscribe(SubscriberInterface *);
 
         void Flush() const;
 

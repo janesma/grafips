@@ -4,6 +4,7 @@
 #include <vector>
 #include <mutex>
 
+#include <QObject>
 #include <QString> 
 #include <QQmlListProperty>
 
@@ -50,7 +51,7 @@ namespace Grafips
         bool m_enabled;
     };
 
-    class GraphSetSubscriber : public SubscriberInterface
+    class GraphSetSubscriber : public QObject, public SubscriberInterface
     {
         Q_OBJECT
         Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics READ metrics NOTIFY onEnabled)
