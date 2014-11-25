@@ -11,8 +11,12 @@ find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Declarative REQUIRED)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 add_subdirectory(qml)
 add_subdirectory(os)
 add_subdirectory(qqmlapp)
+add_subdirectory(remote)
 add_subdirectory(standalone)
 add_subdirectory(/usr/src/gtest gtest)

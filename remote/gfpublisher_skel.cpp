@@ -7,6 +7,7 @@
 #include "gfpublisher.pb.h"
 #include "gfipublisher.h"
 #include "gfsubscriber_remote.h"
+#include "gfsubscriber_stub.h"
 
 using namespace Grafips;
 
