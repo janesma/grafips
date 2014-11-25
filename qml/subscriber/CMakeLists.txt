@@ -3,13 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 project(grafips_subscriber)
 
 add_library(grafips_subscriber
-  gfisubscriber.h
   gfsubscriber.cpp
   gfsubscriber.h
   gfsubscriber_remote.cpp
   gfsubscriber_remote.h
-  ${ProtoSources}
-  ${ProtoHeaders}
 )
 
 add_dependencies(grafips_subscriber grafips_publishers)

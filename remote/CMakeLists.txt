@@ -14,16 +14,17 @@ PROTOBUF_GENERATE_CPP(ProtoSources ProtoHeaders
 
 
 add_library(grafips_remote
+  ${ProtoHeaders}
+  ${ProtoSources}
   gfipublisher.h
+  gfisubscriber.h
   gfmetric.h
   gfpublisher.cpp
   gfpublisher.h
   gfpublisher_skel.cpp
   gfpublisher_skel.h
-  gfsubscriber_stub.h
   gfsubscriber_stub.cpp
-  ${ProtoSources}
-  ${ProtoHeaders}
+  gfsubscriber_stub.h
 )
 
 
