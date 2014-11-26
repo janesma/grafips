@@ -2,9 +2,6 @@
 
 #include <assert.h>
 
-// This wrapper uses pthread instead of std::thread, because std::thread throws
-// an exception when running in a fips-preloaded application.
-
 using namespace Grafips;
 
 Thread::Thread(const std::string &name) : m_name(name)
