@@ -1,7 +1,7 @@
 #pragma once
 
+#include <pthread.h>
 #include <string>
-#include <thread>
 
 namespace Grafips
 {
@@ -14,6 +14,6 @@ namespace Grafips
         void Join();
       private:
         const std::string m_name;
-        std::thread *m_thread;
+        pthread_t m_thread;
     };
 }
