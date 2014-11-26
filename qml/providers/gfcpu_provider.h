@@ -52,7 +52,7 @@ namespace Grafips
         bool IsEnabled() const;
         void Refresh();
         void ParseCpuLine(CpuLine *dest, char **savePtr);
-        void Publish();
+        void Publish(unsigned int ms);
 
         // file handle for /proc/stat
         int m_cpu_info_handle;
@@ -74,6 +74,10 @@ namespace Grafips
         int m_sysId;
         std::vector<int> m_ids;
 
+        // rate limits publication.  cpu metrics in sysfs are not accurate when
+        // polled faster than 500ms interval
+        unsigned int m_last_publish_ms;
+        
         std::thread *m_thread;
         bool m_running;
         std::mutex m_protect;

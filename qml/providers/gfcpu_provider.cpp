@@ -200,18 +200,22 @@ CpuProvider::Poll()
     if (! IsEnabled())
         return;
 
+    const unsigned int ms = get_ms_time();
+    if (ms - m_last_publish_ms < 500)
+        return;
+    m_last_publish_ms = ms;
+
     Refresh();
-    Publish();
+    Publish(ms);
 }
 
 void 
-CpuProvider::Publish()
+CpuProvider::Publish(unsigned int ms)
 {
     if (!m_publisher)
         return;
 
     DataSet d;
-    const unsigned int ms = get_ms_time();
 
     if (m_enabled_cores.count(-1) != 0)
         d.push_back(DataPoint(ms, m_sysId, m_systemStats.utilization));
