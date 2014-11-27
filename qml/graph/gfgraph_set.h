@@ -22,14 +22,14 @@ namespace Grafips
         GraphSet();
         void Add(const DataPoint &d);
         void SetLimit(int max_data_age);
-        void GetData(PointVec *data);
+        void SetWidth(int w) { m_width = w; }
+        void GetData(PointVec *data, unsigned int request_time_ms);
         void Clear();
 
       private:
         std::mutex m_protect;
         std::map<int, float> m_data;
-        unsigned int m_current_time;
-        int m_max_data_age;
+        int m_max_data_age, m_width, m_time_correction;
     };
 
 }

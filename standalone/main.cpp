@@ -4,12 +4,17 @@
 
 using namespace Grafips;
 
-int main()
+int main(int argc, const char **argv)
 {
     CpuProvider prov;
     PublisherImpl pub;
     prov.setPublisher(&pub);
-    PublisherSkeleton skel(53136, &pub);
+    int port = 53136;
+    if (argc > 1)
+    {
+        port = atoi(argv[1]);
+    }
+    PublisherSkeleton skel(port, &pub);
     skel.Start();
     prov.start();
 

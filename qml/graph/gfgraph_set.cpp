@@ -6,8 +6,8 @@
 
 using namespace Grafips;
 
-GraphSet::GraphSet() : m_current_time(0), 
-                       m_max_data_age(60 * 1000) 
+GraphSet::GraphSet() : m_max_data_age(60 * 1000),
+                       m_time_correction(0)
 {
 }
 
@@ -15,14 +15,13 @@ void
 GraphSet::Add(const DataPoint &d)
 {
     std::lock_guard<std::mutex> l(m_protect);
-    if (d.time_val > m_current_time)
-    {
-        // new max time.  Drop any data which is too old to be displayed.
-        m_current_time = d.time_val;
-        while (!m_data.empty() &&
-               (unsigned int)(m_data.begin()->first) < (m_current_time - m_max_data_age))
-            m_data.erase(m_data.begin());
-    }
+    const unsigned int current_time = d.time_val;
+
+    // Drop any data which is too old to be displayed.
+    while (!m_data.empty() &&
+           (unsigned int)(m_data.begin()->first) < (current_time - (1.1 * m_max_data_age)))
+        m_data.erase(m_data.begin());
+
     m_data[d.time_val] = d.data;
 }
 
@@ -35,9 +34,21 @@ GraphSet::SetLimit(int max_data_age)
 
 
 void 
-GraphSet::GetData(PointVec *data)
+GraphSet::GetData(PointVec *data, unsigned int request_time_ms)
 {
     std::lock_guard<std::mutex> l(m_protect);
+    if (m_data.empty())
+        return;
+
+    const unsigned int most_recent_data_time = m_data.rbegin()->first; 
+    if (m_time_correction == 0)
+    {
+        // calculate the delta between our data set and the current system time
+
+        // most_recent_data_time + correction ~~ request_time_ms
+        m_time_correction = request_time_ms - most_recent_data_time;
+    }
+    
     // TODO.  perhaps a point for every few pixels, with a LOD calculation
     data->resize(m_data.size());
 
@@ -55,7 +66,7 @@ GraphSet::GetData(PointVec *data)
     for (std::map<int, float>::const_iterator i = m_data.begin();
          i != m_data.end(); ++i, ++dest)
     {
-        const float age = m_current_time - i->first;
+        const float age = request_time_ms - (m_time_correction + i->first);
         const float age_scaled = (2.0 * age / (float) m_max_data_age) - 1.0;
         dest->x = -1.0 * age_scaled;
 

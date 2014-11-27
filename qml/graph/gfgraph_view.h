@@ -19,9 +19,12 @@ namespace Grafips
         ~GraphViewRenderer();
         void render();
         void synchronize(QQuickFramebufferObject * item);
+        // to ensure that we get a multisample fbo
+        QOpenGLFramebufferObject * createFramebufferObject(const QSize & size);
       private:
         void CheckError(const char * file, int line);
         void PrintCompileError(GLint shader);
+        void RenderPoints(const GraphSet::PointVec &data, const float* color);
 
         GraphSetSubscriber *m_subscriber;
         std::map<int, GraphSet *> m_sets;
@@ -29,7 +32,8 @@ namespace Grafips
         static const char *fshader;
 
         GLuint vbo;
-        GLint attribute_coord2d, uniform_time, prog;
+        GLint attribute_coord2d, uniform_time, uniform_line_color, prog;
+        int m_width;
     };
 
     class GraphView : public QQuickFramebufferObject

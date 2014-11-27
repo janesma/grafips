@@ -19,7 +19,7 @@ Item {
             height: 25
             width: 200
             color: model.enabled ? "green" : "red"
-            Text { text: name  + met_id.toString() }
+            Text { text: name }
             MouseArea {
                 anchors.fill: parent;
                 onClicked: { 

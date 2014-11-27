@@ -18,10 +18,13 @@ GraphViewRenderer::vshader = "attribute vec2 coord2d;\n"
     "}";
 
 const char *
-GraphViewRenderer::fshader = "void main(void) {"
-    "  gl_FragColor = vec4(0,0,0,1);"
+GraphViewRenderer::fshader = "uniform vec4 line_color;"
+    "void main(void) {"
+    "   gl_FragColor = line_color;"
     "}";
 
+float tick_lines_color[4] = { 0, 0, 0, .2 };
+float black_color[4] = { 0, 0, 0, 1 };
 
 GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s,
                                      const PublisherInterface &p) : m_subscriber(s)
@@ -70,11 +73,24 @@ GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s,
 
     attribute_coord2d = glGetAttribLocation(prog,  "coord2d");
     GL_CHECK();
+
     uniform_time = glGetUniformLocation(prog, "time_offset");
+    GL_CHECK();
+
+    uniform_line_color = glGetUniformLocation(prog, "line_color");
     GL_CHECK();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     GL_CHECK();
+}
+
+QOpenGLFramebufferObject *
+GraphViewRenderer::createFramebufferObject(const QSize &size)
+{
+    QOpenGLFramebufferObjectFormat format;
+    //format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+    format.setSamples(20);
+    return new QOpenGLFramebufferObject(size, format);
 }
 
 GraphViewRenderer::~GraphViewRenderer()
@@ -87,6 +103,69 @@ GraphViewRenderer::~GraphViewRenderer()
     }
 }
 
+void
+GraphViewRenderer::RenderPoints(const GraphSet::PointVec &data, const float* color)
+{
+    if (data.empty() )
+        return;
+
+    // static int last_size = 0;
+    // if (last_size != data.size())
+    // {
+    //     std::cout << "size: " << data.size() << std::endl;
+    //     for (int i = 0; i < data.size(); ++i )
+    //     {
+    //         std::cout << data[i].x << "," << data[i].y << std::endl;
+    //     }
+    // }
+    // last_size = data.size();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    GL_CHECK();
+
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GraphSet::Point), 
+                 data.data(), GL_STATIC_DRAW);
+    GL_CHECK();
+
+    glEnableVertexAttribArray(attribute_coord2d);
+    GL_CHECK();
+
+    glVertexAttribPointer(attribute_coord2d,   // attribute
+                          2,                   // number of elements per vertex, here (x,y)
+                          GL_FLOAT,            // the type of each element
+                          GL_FALSE,            // take our values as-is
+                          0,                   // no space between values
+                          0                    // use the vertex buffer object
+        );
+    GL_CHECK();
+
+    // GLint t = GetTimeOffset();
+    // assert(t >= 0);
+    // assert(t <2000);
+    // float x_offset = t / 1000.0;
+    // glUniform1f(uniform_time, x_offset);
+    glUniform1f(uniform_time, 0.0);
+    GL_CHECK();
+
+    glUniform4f(uniform_line_color, color[0], color[1], color[2], color[3]);
+
+    glDrawArrays(GL_LINE_STRIP, 0, data.size());
+    GL_CHECK();
+
+    // x_offset = -2.0 + (t / 1000.0);
+    // printf("t:%i\tx:%f\ty:%f\tcount:%d\n", t, graph[t].x - x_offset, graph[t].y, t);
+    // glUniform1f(uniform_time, x_offset);
+    // GL_CHECK();
+    // glDrawArrays(GL_LINE_STRIP, 0, t);
+    // GL_CHECK();
+ 
+    glDisableVertexAttribArray(attribute_coord2d);
+    GL_CHECK();
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    GL_CHECK();
+}
+
 void 
 GraphViewRenderer::render()
 {
@@ -95,69 +174,50 @@ GraphViewRenderer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GL_CHECK();
 
+    glUseProgram(prog);
+    GL_CHECK();
+
+    static GraphSet::PointVec data;
+
+    glLineWidth(2);
+    // render the cross-lines representing 25,50,75 %
+    data.resize(2);
+    data[0].x = -1; data[0].y = 0;
+    data[1].x = 1; data[1].y = 0;
+    RenderPoints(data, tick_lines_color);
+
+    data[0].x = -1; data[0].y = .5;
+    data[1].x = 1; data[1].y = .5;
+    RenderPoints(data, tick_lines_color);
+
+    data[0].x = -1; data[0].y = -.5;
+    data[1].x = 1; data[1].y = -.5;
+    RenderPoints(data, tick_lines_color);
+
+    // render the per-10s vertical lines
+    const unsigned int t = get_ms_time();
+    const float offset_t = 1.0  - ((float)(t % 10000))/10000.0;
+    const float line_distance = 2.0 * 10.0 / 60.0;
+    data[0].x = -1 + offset_t * line_distance; data[0].y = -1;
+    data[1].x = data[0].x; data[1].y = 1;
+    while (data[0].x < 1.0)
+    {
+        // std::cout << data[0].x << ", " << data[0].y << " : ";
+        // std::cout << data[1].x << ", " << data[1].y << std::endl;
+        RenderPoints(data, tick_lines_color);
+        data[0].x += line_distance;
+        data[1].x = data[0].x;
+    }
+
+    glLineWidth(1);
+
     for (std::map<int, GraphSet *>::iterator set = m_sets.begin();
          set != m_sets.end(); ++set)
     {
-        static GraphSet::PointVec data;
-        set->second->GetData(&data);
-        if (data.empty() )
-            continue;
+        set->second->SetWidth(m_width);
+        set->second->GetData(&data, t);
 
-        // static int last_size = 0;
-        // if (last_size != data.size())
-        // {
-        //     std::cout << "size: " << data.size() << std::endl;
-        //     for (int i = 0; i < data.size(); ++i )
-        //     {
-        //         std::cout << data[i].x << "," << data[i].y << std::endl;
-        //     }
-        // }
-        // last_size = data.size();
-
-        glUseProgram(prog);
-        GL_CHECK();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        GL_CHECK();
-
-        glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GraphSet::Point), 
-                     data.data(), GL_STATIC_DRAW);
-        GL_CHECK();
-
-        glEnableVertexAttribArray(attribute_coord2d);
-        GL_CHECK();
-
-        glVertexAttribPointer(attribute_coord2d,   // attribute
-                              2,                   // number of elements per vertex, here (x,y)
-                              GL_FLOAT,            // the type of each element
-                              GL_FALSE,            // take our values as-is
-                              0,                   // no space between values
-                              0                    // use the vertex buffer object
-            );
-        GL_CHECK();
-
-            
-        // GLint t = GetTimeOffset();
-        // assert(t >= 0);
-        // assert(t <2000);
-        // float x_offset = t / 1000.0;
-        // glUniform1f(uniform_time, x_offset);
-        glUniform1f(uniform_time, 0.0);
-        GL_CHECK();
-
-        glDrawArrays(GL_LINE_STRIP, 0, data.size());
-        GL_CHECK();
-
-        // x_offset = -2.0 + (t / 1000.0);
-        // printf("t:%i\tx:%f\ty:%f\tcount:%d\n", t, graph[t].x - x_offset, graph[t].y, t);
-        // glUniform1f(uniform_time, x_offset);
-        // GL_CHECK();
-        // glDrawArrays(GL_LINE_STRIP, 0, t);
-        // GL_CHECK();
- 
-        glDisableVertexAttribArray(attribute_coord2d);
-        GL_CHECK();
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        GL_CHECK();
+        RenderPoints(data, black_color);        
 
     }
     update();
