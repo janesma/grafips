@@ -37,6 +37,7 @@ void
 GraphSet::GetData(PointVec *data, unsigned int request_time_ms)
 {
     std::lock_guard<std::mutex> l(m_protect);
+    data->resize(m_data.size());
     if (m_data.empty())
         return;
 
@@ -50,11 +51,10 @@ GraphSet::GetData(PointVec *data, unsigned int request_time_ms)
     }
     
     // TODO.  perhaps a point for every few pixels, with a LOD calculation
-    data->resize(m_data.size());
 
     float max = FLT_MIN, min = FLT_MAX;
     
-    for (std::map<int, float>::const_iterator i = m_data.begin(); i != m_data.end(); ++i)
+    for (std::map<unsigned int, float>::const_iterator i = m_data.begin(); i != m_data.end(); ++i)
     {
         if (i->second < min)
             min = i->second;
@@ -63,10 +63,11 @@ GraphSet::GetData(PointVec *data, unsigned int request_time_ms)
     }
 
     std::vector<Point>::iterator dest = data->begin(); 
-    for (std::map<int, float>::const_iterator i = m_data.begin();
+    for (std::map<unsigned int, float>::const_iterator i = m_data.begin();
          i != m_data.end(); ++i, ++dest)
     {
-        const float age = request_time_ms - (m_time_correction + i->first);
+        // cast to int to prevent underflow, if data is newer than request
+        const float age = (int) request_time_ms - (int)(m_time_correction + i->first);
         const float age_scaled = (2.0 * age / (float) m_max_data_age) - 1.0;
         dest->x = -1.0 * age_scaled;
 

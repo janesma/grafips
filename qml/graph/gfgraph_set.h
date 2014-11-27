@@ -28,7 +28,7 @@ namespace Grafips
 
       private:
         std::mutex m_protect;
-        std::map<int, float> m_data;
+        std::map<unsigned int, float> m_data;
         int m_max_data_age, m_width, m_time_correction;
     };
 
