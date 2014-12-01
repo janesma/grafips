@@ -9,10 +9,10 @@ namespace Grafips
 {
 
 // polls raw data sources, hands data to publisher, which resides in same process
-    class Provider
+    class MetricSourceInterface
     {
       public:
-        virtual ~Provider() {}
+        virtual ~MetricSourceInterface() {}
         virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) = 0;
         virtual void Enable(int id) = 0;
         virtual void Disable(int id) = 0;

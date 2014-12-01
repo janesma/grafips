@@ -1,4 +1,4 @@
-#include "gfprovider.h"
+#include "gfmetric.h"
 
 using namespace Grafips;
 

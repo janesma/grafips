@@ -18,6 +18,7 @@ add_library(grafips_remote
   ${ProtoSources}
   gfipublisher.h
   gfisubscriber.h
+  gfmetric.cpp
   gfmetric.h
   gfpublisher.cpp
   gfpublisher.h
@@ -30,5 +31,5 @@ add_library(grafips_remote
 
 target_include_directories( grafips_remote PUBLIC . ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/remote)
 
-target_link_libraries(grafips_remote grafips_providers grafips_os protobuf)
+target_link_libraries(grafips_remote grafips_sources grafips_os protobuf)
 

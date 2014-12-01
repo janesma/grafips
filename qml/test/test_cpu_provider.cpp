@@ -2,8 +2,9 @@
 
 #include <QString>
 
-#include "gfcpu_provider.h"
+#include "gfcpu_source.h"
 #include "gfpublisher.h"
+#include "gfimetric_sink.h"
 #include "gfsubscriber_remote.h"
 #include "gfsubscriber_stub.h"
 #include "gfpublisher_remote.h"
@@ -12,10 +13,10 @@
 namespace Grafips
 {
 
-    class NullPublisher : public PublisherInterface
+    class NullPublisher : public PublisherInterface, public MetricSinkInterface
     {
       public:
-        void RegisterProvider(Provider *p) {}
+        void RegisterSource(MetricSourceInterface *p) {}
         void OnMetric(const DataSet &d) {}
         void Enable(int id) {}
         void Disable(int id) {}
@@ -23,10 +24,10 @@ namespace Grafips
         void Subscribe(SubscriberInterface *) {}
     };
 
-    class TestPublisher : public PublisherInterface
+    class TestPublisher : public PublisherInterface, public MetricSinkInterface
     {
       public:
-        void RegisterProvider(Provider *p) { m_p = p; }
+        void RegisterSource(MetricSourceInterface *p) { m_p = p; }
         void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
         void Enable(int id) { m_p->Enable(id); }
         virtual void Disable(int id) { m_p->Disable(id); }
@@ -34,15 +35,15 @@ namespace Grafips
             { m_p->GetDescriptions(descriptions); }
         void Subscribe(SubscriberInterface *) {}
         DataSet m_d;
-        Provider *m_p;
+        MetricSourceInterface *m_p;
     };
 
 
 
-    class CpuProviderFixture : public testing::Test
+    class CpuSourceFixture : public testing::Test
     {
       public:
-        CpuProviderFixture() 
+        CpuSourceFixture() 
             {
             }
       protected:
@@ -52,8 +53,8 @@ namespace Grafips
         void test_parse()
             {
                 NullPublisher pub;
-                CpuProvider p;
-                p.setPublisher(&pub);
+                CpuSource p;
+                p.SetMetricSink(&pub);
                 EXPECT_GT(p.m_systemStats.user, 0);
                 EXPECT_GT(p.m_systemStats.system, 0);
                 EXPECT_GT(p.m_systemStats.idle, 0);
@@ -67,8 +68,8 @@ namespace Grafips
         void test_publish()
             {
                 TestPublisher pub;
-                CpuProvider p;
-                p.setPublisher(&pub);
+                CpuSource p;
+                p.SetMetricSink(&pub);
 
                 MetricDescriptionSet metrics;
                 pub.GetDescriptions(&metrics);
@@ -90,12 +91,12 @@ namespace Grafips
             }
     };
 
-    TEST_F(CpuProviderFixture, test_parse )
+    TEST_F(CpuSourceFixture, test_parse )
     {
         test_parse();
     }
 
-    TEST_F(CpuProviderFixture, test_publish )
+    TEST_F(CpuSourceFixture, test_publish )
     {
         test_publish();
     }

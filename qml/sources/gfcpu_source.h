@@ -4,30 +4,30 @@
 #include <set>
 #include <mutex>
 
-#include "gfprovider.h"
+#include "gfimetric_source.h"
 #include "gfpublisher.h"
 
 namespace Grafips
 {
 
-    class CpuProvider : public Provider
+    class CpuSource : public MetricSourceInterface
     {
       public:
          void start();
          void stop();
 
-        CpuProvider();
-        ~CpuProvider();
+        CpuSource();
+        ~CpuSource();
         void GetDescriptions(std::vector<MetricDescription> *descriptions);
         void Enable(int id);
         void Disable(int id);
         void Poll();
         void Run();
 
-        friend class CpuProviderFixture;
+        friend class CpuSourceFixture;
 
-        PublisherInterface *publisher() { return m_publisher; }
-        void setPublisher(PublisherInterface *p);
+        MetricSinkInterface *MetricSink() { return m_metric_sink; }
+        void SetMetricSink(MetricSinkInterface *p);
 
       private:
         struct CpuLine
@@ -65,7 +65,7 @@ namespace Grafips
         std::vector<char> m_buf;
 
         // receives updates
-        PublisherInterface *m_publisher;
+        MetricSinkInterface *m_metric_sink;
 
         // tracks subscriptions
         std::set<int> m_enabled_cores;

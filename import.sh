@@ -30,7 +30,7 @@ cp $1/gfsocket.h os/gfsocket.h
 cp $1/gfthread.cpp os/gfthread.cpp
 cp $1/gfthread.h os/gfthread.h
 
-cp $1/gfcpu_provider.cpp qml/providers/gfcpu_provider.cpp
-cp $1/gfcpu_provider.h qml/providers/gfcpu_provider.h
-cp $1/gfprovider.cpp qml/providers/gfprovider.cpp
-cp $1/gfprovider.h qml/providers/gfprovider.h
+cp $1/gfcpu_source.cpp qml/sources/gfcpu_source.cpp
+cp $1/gfcpu_source.h qml/sources/gfcpu_source.h
+cp $1/gfprovider.cpp qml/sources/gfprovider.cpp
+cp $1/gfprovider.h qml/sources/gfprovider.h

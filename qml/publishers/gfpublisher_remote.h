@@ -23,7 +23,8 @@ namespace Grafips
     class SubscriberStub;
     class SubscriberSkeleton;
 
-    class PublisherStub : public QObject, public PublisherInterface
+    class PublisherStub : public QObject,
+                          public PublisherInterface
     {
         Q_OBJECT
         Q_PROPERTY(QString address READ address WRITE setAddress)
@@ -46,9 +47,6 @@ namespace Grafips
         QString address() const { return m_address; }
         void setAddress(const QString &a) { m_address = a; Connect(); }
 
-        // todo: try to remove
-        void RegisterProvider(Provider *p) { assert (false); }
-        void OnMetric(const DataSet &d) { assert (false); }
       private:
         void WriteMessage(const GrafipsProto::PublisherInvocation &m) const;
         void Connect();

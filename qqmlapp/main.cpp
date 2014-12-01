@@ -3,7 +3,7 @@
 #include <QtQml>
 #include <google/protobuf/stubs/common.h>
 
-#include "gfcpu_provider.h"
+#include "gfcpu_source.h"
 #include "gfpublisher_remote.h"
 #include "gfsubscriber.h"
 #include "gfgraph_view.h"

@@ -14,4 +14,4 @@ fi
 
 cp remote/*.h remote/*.cpp remote/*.proto $1
 cp os/*.h os/*.cpp $1
-cp qml/providers/*.h qml/providers/*.cpp $1
+cp qml/sources/*.h qml/sources/*.cpp $1

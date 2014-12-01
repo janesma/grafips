@@ -1,4 +1,4 @@
-#include "gfcpu_provider.h"
+#include "gfcpu_source.h"
 #include "gfpublisher_skel.h"
 #include "gfpublisher.h"
 
@@ -6,9 +6,9 @@ using namespace Grafips;
 
 int main(int argc, const char **argv)
 {
-    CpuProvider prov;
+    CpuSource prov;
     PublisherImpl pub;
-    prov.setPublisher(&pub);
+    prov.SetMetricSink(&pub);
     int port = 53136;
     if (argc > 1)
     {

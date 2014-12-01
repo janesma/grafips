@@ -13,5 +13,5 @@ add_dependencies(grafips_subscriber grafips_publishers)
 
 target_include_directories( grafips_subscriber PUBLIC .)
 
-target_link_libraries(grafips_subscriber grafips_providers grafips_publishers grafips_remote grafips_graph grafips_os protobuf)
+target_link_libraries(grafips_subscriber grafips_sources grafips_publishers grafips_remote grafips_graph grafips_os protobuf)
 
