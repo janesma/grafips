@@ -6,13 +6,15 @@
 #include "gfmetric.h"
 #include "gfipublisher.h"
 #include "gfimetric_sink.h"
+#include "gftraits.h"
 
 namespace Grafips
 {
     class MetricSourceInterface;
     class SubscriberInterface;
     class PublisherImpl : public PublisherInterface,
-                          public MetricSinkInterface
+                          public MetricSinkInterface,
+                          NoCopy, NoAssign, NoMove
     {
       public:
         void Subscribe(SubscriberInterface *);

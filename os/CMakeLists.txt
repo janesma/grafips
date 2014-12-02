@@ -8,6 +8,7 @@ add_library(grafips_os
   gfthread.cpp
   gfsocket.h
   gfsocket.cpp
+  gftraits.h
   )
 
 target_include_directories( grafips_os PUBLIC .)

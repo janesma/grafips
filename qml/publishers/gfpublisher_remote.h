@@ -10,7 +10,7 @@
 #include "gfsocket.h"
 #include "gfipublisher.h"
 #include "gfsubscriber.h"
-
+#include "gftraits.h"
 
 namespace GrafipsProto
 {
@@ -24,7 +24,8 @@ namespace Grafips
     class SubscriberSkeleton;
 
     class PublisherStub : public QObject,
-                          public PublisherInterface
+                          public PublisherInterface,
+                          NoAssign, NoCopy, NoMove
     {
         Q_OBJECT
         Q_PROPERTY(QString address READ address WRITE setAddress)

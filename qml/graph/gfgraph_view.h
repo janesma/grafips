@@ -6,13 +6,15 @@
 #include "gfgraph_set.h"
 #include "gfsubscriber.h"
 #include "gfpublisher_remote.h"
+#include "gftraits.h"
 
 namespace Grafips
 {
     class GraphView;
 
 // renders graph to texture for on-screen display
-    class GraphViewRenderer : public QQuickFramebufferObject::Renderer
+    class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
+                              NoCopy, NoAssign, NoMove
     {
       public:
         GraphViewRenderer(GraphSetSubscriber *s, const PublisherInterface &p);
@@ -36,7 +38,9 @@ namespace Grafips
         int m_width;
     };
 
-    class GraphView : public QQuickFramebufferObject
+    class GraphView : public QQuickFramebufferObject,
+                      NoCopy, NoAssign, NoMove
+
     {
         Q_OBJECT
         Q_PROPERTY(Grafips::GraphSetSubscriber* subscriber READ subscriber WRITE setSubscriber)

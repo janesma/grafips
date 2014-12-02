@@ -2,9 +2,11 @@
 #include <string>
 #include <vector>
 
+#include "gftraits.h"
+
 namespace Grafips
 {
-    class Socket
+    class Socket : NoAssign, NoCopy, NoMove
     {
       public:
         // Client-side constructor: connects to server.  For server-side
@@ -33,7 +35,7 @@ namespace Grafips
     };
 
 
-    class ServerSocket
+    class ServerSocket : NoAssign, NoCopy, NoMove
     {
       public:
         // establishes a server, waits for a client to connect

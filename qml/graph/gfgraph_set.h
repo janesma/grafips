@@ -4,13 +4,15 @@
 #include <mutex>
 #include <GLES2/gl2.h>
 
+#include "gftraits.h"
+
 namespace Grafips
 {
 
 // interpolates data, provides it to view
     class DataPoint;
 
-    class GraphSet
+    class GraphSet : NoCopy, NoAssign, NoMove
     {
       public:
         struct Point {

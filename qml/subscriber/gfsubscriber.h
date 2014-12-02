@@ -10,13 +10,15 @@
 
 #include "gfmetric.h"
 #include "gfisubscriber.h"
+#include "gftraits.h"
 
 namespace Grafips
 {
 
     class GraphSet;
 
-    class QMetric : public QObject
+    class QMetric : public QObject,
+                    NoCopy, NoAssign, NoMove
     {
         Q_OBJECT
         Q_PROPERTY(QString name READ name NOTIFY onName)
@@ -51,7 +53,8 @@ namespace Grafips
         bool m_enabled;
     };
 
-    class GraphSetSubscriber : public QObject, public SubscriberInterface
+    class GraphSetSubscriber : public QObject, public SubscriberInterface,
+                               NoCopy, NoAssign, NoMove
     {
         Q_OBJECT
         Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics READ metrics NOTIFY onEnabled)

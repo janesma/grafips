@@ -3,9 +3,11 @@
 #include <pthread.h>
 #include <string>
 
+#include "gftraits.h"
+
 namespace Grafips
 {
-    class Thread
+    class Thread : NoCopy, NoAssign, NoMove
     {
       public:
         Thread(const std::string &name);
