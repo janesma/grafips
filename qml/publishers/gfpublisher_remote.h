@@ -7,10 +7,10 @@
 #include <QObject>
 
 #include "gfmetric.h"
-#include "gfsocket.h"
+#include "os/gfsocket.h"
 #include "gfipublisher.h"
 #include "gfsubscriber.h"
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace GrafipsProto
 {

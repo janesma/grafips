@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
 #include "gtest/gtest.h" 
-#include "gfthread.h"
-#include "gfsocket.h"
+#include "os/gfthread.h"
+#include "os/gfsocket.h"
 
 using namespace Grafips;
 

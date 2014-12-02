@@ -4,7 +4,7 @@
 #include <mutex>
 #include <GLES2/gl2.h>
 
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace Grafips
 {

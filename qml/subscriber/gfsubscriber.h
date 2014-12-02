@@ -10,7 +10,7 @@
 
 #include "gfmetric.h"
 #include "gfisubscriber.h"
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace Grafips
 {

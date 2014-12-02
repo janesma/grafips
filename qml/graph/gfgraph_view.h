@@ -6,7 +6,7 @@
 #include "gfgraph_set.h"
 #include "gfsubscriber.h"
 #include "gfpublisher_remote.h"
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace Grafips
 {

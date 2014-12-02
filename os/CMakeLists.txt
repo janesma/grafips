@@ -11,7 +11,7 @@ add_library(grafips_os
   gftraits.h
   )
 
-target_include_directories( grafips_os PUBLIC .)
+target_include_directories( grafips_os PUBLIC ..)
 
 add_subdirectory(test)
 

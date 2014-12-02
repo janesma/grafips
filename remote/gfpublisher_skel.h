@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gfthread.h"
+#include "os/gfthread.h"
 
 namespace GrafipsProto
 {

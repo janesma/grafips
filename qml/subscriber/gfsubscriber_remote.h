@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "gfthread.h"
+#include "os/gfthread.h"
 
 namespace GrafipsProto
 {

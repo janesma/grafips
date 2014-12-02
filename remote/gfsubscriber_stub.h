@@ -4,9 +4,9 @@
 #include <vector>
 #include <mutex>
 
-#include "gfsocket.h"
+#include "os/gfsocket.h"
 #include "gfisubscriber.h"
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace GrafipsProto
 {

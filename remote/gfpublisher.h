@@ -6,7 +6,7 @@
 #include "gfmetric.h"
 #include "gfipublisher.h"
 #include "gfimetric_sink.h"
-#include "gftraits.h"
+#include "os/gftraits.h"
 
 namespace Grafips
 {
