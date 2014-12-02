@@ -10,7 +10,7 @@ namespace Grafips
     class Thread : NoCopy, NoAssign, NoMove
     {
       public:
-        Thread(const std::string &name);
+        explicit Thread(const std::string &name);
         virtual void Run() = 0;
         void Start();
         void Join();

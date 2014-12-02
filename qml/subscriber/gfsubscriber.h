@@ -27,9 +27,9 @@ namespace Grafips
       public:
         QMetric() : m_id(-1), m_name(), m_enabled(false) {}
 
-        QMetric(const MetricDescription &m) : m_id(m.id()), 
-                                              m_name(QString::fromStdString(m.display_name)), 
-                                              m_enabled(false) {}
+        explicit QMetric(const MetricDescription &m) : m_id(m.id()), 
+                                                       m_name(QString::fromStdString(m.display_name)), 
+                                                       m_enabled(false) {}
         QString name() { return m_name; }
         int met_id() { return m_id; }
         bool enabled() { return m_enabled; }

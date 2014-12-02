@@ -39,7 +39,7 @@ namespace Grafips
     {
       public:
         // establishes a server, waits for a client to connect
-        ServerSocket(int port);
+        explicit ServerSocket(int port);
         ~ServerSocket();
 
         Socket *Accept();
