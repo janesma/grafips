@@ -29,19 +29,6 @@ float black_color[4] = { 0, 0, 0, 1 };
 GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s,
                                      const PublisherInterface &p) : m_subscriber(s)
 {
-    std::vector<MetricDescription> descriptions;
-    p.GetDescriptions(&descriptions);
-
-    for (std::vector<MetricDescription>::iterator i = descriptions.begin();
-         i != descriptions.end(); ++i)
-    {
-        const int id = i->id();
-        GraphSet *gs = new GraphSet();
-        m_sets[id] = gs;
-        m_subscriber->AddSet(id, gs);
-    }
-
-
     glGenBuffers(1, &vbo);
     GL_CHECK();
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -249,7 +236,21 @@ GraphViewRenderer::PrintCompileError(GLint shader)
 void 
 GraphViewRenderer::synchronize(QQuickFramebufferObject * item) 
 {
-    //GraphView *g = dynamic_cast<GraphView*>(item);
+    // call the subscriber to make a one-time request for the metrics to be graphed.
+    if (! m_sets.empty())
+        return;
+
+    std::vector<int> ids;
+    m_subscriber->GetIDs(&ids);
+
+    for (std::vector<int>::iterator i = ids.begin();
+         i != ids.end(); ++i)
+    {
+        const int id = *i;
+        GraphSet *gs = new GraphSet();
+        m_sets[id] = gs;
+        m_subscriber->AddSet(id, gs);
+    }
 }
 
 GraphView::GraphView() : m_pub(NULL),

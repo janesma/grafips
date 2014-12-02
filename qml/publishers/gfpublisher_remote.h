@@ -34,7 +34,6 @@ namespace Grafips
         
         Q_INVOKABLE void Enable(int id);
         Q_INVOKABLE void Disable(int id);
-        void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
 
         // this method exists to work around clash between the interface (not a
         // qobject) and the GraphSetSubscriber implementation (is a qobject).  

@@ -49,17 +49,11 @@ PublisherImpl::Disable(int id)
 }
 
 void 
-PublisherImpl::GetDescriptions(std::vector<MetricDescription> *descriptions) const
-{
-    for (std::vector<MetricSourceInterface *>::const_iterator i = m_sources.begin(); i != m_sources.end(); ++i)
-        (*i)->GetDescriptions(descriptions);
-}
-
-void 
 PublisherImpl::Subscribe(SubscriberInterface *s)
 {
     m_subscriber = s;
     std::vector<MetricDescription> descriptions;
-    GetDescriptions(&descriptions);
+    for (std::vector<MetricSourceInterface *>::const_iterator i = m_sources.begin(); i != m_sources.end(); ++i)
+        (*i)->GetDescriptions(&descriptions);
     s->OnDescriptions(descriptions);
 }

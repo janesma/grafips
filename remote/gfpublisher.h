@@ -23,7 +23,6 @@ namespace Grafips
         void OnMetric(const DataSet &d);
          void Enable(int id);
          void Disable(int id);
-        void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
       private:
         SubscriberInterface *m_subscriber;
         typedef std::map <int, MetricSourceInterface*> MetricSourceMap;

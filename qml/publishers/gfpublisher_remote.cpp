@@ -96,46 +96,6 @@ PublisherStub::Disable(int id)
 }
 
 void
-PublisherStub::GetDescriptions(std::vector<MetricDescription> *descriptions) const
-{
-    GrafipsProto::PublisherInvocation m;
-    m.set_method(GrafipsProto::PublisherInvocation::kGetDescriptions);
-    WriteMessage(m);
-
-    uint32_t msg_len;
-    if (! m_socket->Read(&msg_len))
-    {
-        assert (false);
-        return;
-    }
-    m_buf.resize(msg_len);
-    if (! m_socket->ReadVec(&m_buf))
-    {
-        assert (false);
-        return;
-    }
-    google::protobuf::io::ArrayInputStream array_in(m_buf.data(), msg_len);
-    google::protobuf::io::CodedInputStream coded_in(&array_in);
-
-    google::protobuf::io::CodedInputStream::Limit msg_limit = coded_in.PushLimit(msg_len);
-    m.ParseFromCodedStream(&coded_in);
-    coded_in.PopLimit(msg_limit);
-    assert(m.method() == GrafipsProto::PublisherInvocation::kGetDescriptions);
-
-    const GrafipsProto::PublisherInvocation_GetDescriptions &args = m.getdescriptionsargs();
-    const int count = args.descriptions_size();
-    descriptions->clear();
-    for (int i = 0; i < count; ++i)
-    {
-        const GrafipsProto::MetricDescription &in_d = args.descriptions(i);
-        descriptions->push_back(MetricDescription(in_d.path(),
-                                                  in_d.help_text(),
-                                                  in_d.display_name(),
-                                                  (Grafips::MetricType) in_d.type()));
-    }
-}
-
-void
 PublisherStub::Subscribe(SubscriberInterface *subs)
 {
     m_subscriber = new SubscriberSkeleton(0, subs);

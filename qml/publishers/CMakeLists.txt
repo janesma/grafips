@@ -5,7 +5,9 @@ project(grafips_publishers)
 add_library(grafips_publishers
   gfpublisher_remote.cpp
   gfpublisher_remote.h
-)
+  gfmetric_router.cpp
+  gfmetric_router.h
+  )
 
 
 target_include_directories( grafips_publishers PUBLIC . )

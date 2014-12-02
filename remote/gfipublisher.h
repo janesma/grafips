@@ -18,7 +18,6 @@ namespace Grafips
         virtual ~PublisherInterface() {}
         virtual void Enable(int id) = 0;
         virtual void Disable(int id) = 0;
-        virtual void GetDescriptions(std::vector<MetricDescription> *descriptions) const = 0;
         virtual void Subscribe(SubscriberInterface *) = 0;
     };
 }

@@ -199,9 +199,6 @@ namespace Grafips
 
             pub_stub.Flush();
             
-            std::vector<MetricDescription> desc;
-            pub_stub.GetDescriptions(&desc);
-            
             SubscriberMock sub;
             pub_stub.Subscribe(&sub);
 

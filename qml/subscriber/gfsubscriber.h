@@ -71,6 +71,8 @@ namespace Grafips
         void OnDescriptions(const std::vector<MetricDescription> &descriptions);
         QQmlListProperty<QMetric> metrics();
 
+        void GetIDs(std::vector<int> *ids) const;
+        
       signals:
         void onEnabled();
 
@@ -78,6 +80,6 @@ namespace Grafips
         QList<QMetric *> m_metrics;
         std::vector<MetricDescription> m_metric_descriptions;
         std::map<int, GraphSet *> m_dataSets;
-        std::mutex m_protect;
+        mutable std::mutex m_protect;
     };
 }

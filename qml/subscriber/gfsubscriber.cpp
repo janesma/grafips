@@ -73,3 +73,14 @@ GraphSetSubscriber::GraphSetSubscriber()
 GraphSetSubscriber::~GraphSetSubscriber()
 {
 }
+
+void
+GraphSetSubscriber::GetIDs(std::vector<int> *ids) const
+{
+    std::lock_guard<std::mutex>l(m_protect);
+    for (std::vector<MetricDescription>::const_iterator i = m_metric_descriptions.begin();
+         i != m_metric_descriptions.end(); ++i)
+    {
+        ids->push_back(i->id());
+    }
+}
