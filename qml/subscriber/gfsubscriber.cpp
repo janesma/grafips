@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <mutex>
 #include "gfpublisher.h"
-#include "gfgraph_set.h"
+#include "qml/graph/gfgraph_set.h"
 
 using namespace Grafips;
 

@@ -9,6 +9,8 @@ add_library(grafips_os
   gfsocket.h
   gfsocket.cpp
   gftraits.h
+  gfmutex.h
+  gfmutex.cpp
   )
 
 target_include_directories( grafips_os PUBLIC ..)

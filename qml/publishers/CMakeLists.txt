@@ -12,7 +12,7 @@ add_library(grafips_publishers
   )
 
 
-target_include_directories( grafips_publishers PUBLIC . )
+target_include_directories( grafips_publishers PUBLIC ../.. )
 
 target_link_libraries(grafips_publishers
   grafips_os

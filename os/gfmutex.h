@@ -25,30 +25,31 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "os/gfthread.h"
+#ifndef OS_GFMUTEX_H_
+#define OS_GFMUTEX_H_
 
-#include <assert.h>
-#include <string>
+#include <pthread.h>
 
-using Grafips::Thread;
+#include "os/gftraits.h"
 
-Thread::Thread(const std::string &name) : m_name(name) {}
+namespace Grafips {
+class Mutex : NoCopy, NoAssign, NoMove {
+ public:
+  Mutex();
+  ~Mutex();
+  void Lock();
+  void Unlock();
+ private:
+  pthread_mutex_t m_mut;
+};
 
-void *start_thread(void*ctx);
-void *start_thread(void*ctx) {
-  reinterpret_cast<Thread*>(ctx)->Run();
-  return NULL;
-}
+class ScopedLock : NoCopy, NoAssign, NoMove {
+ public:
+  explicit ScopedLock(Mutex *m);
+  ~ScopedLock();
+ private:
+  Mutex * m_mut;
+};
+}  // namespace Grafips
 
-void
-Thread::Start() {
-  const int result = pthread_create(&m_thread, NULL, &start_thread, this);
-  assert(result == 0);
-}
-
-void
-Thread::Join() {
-  pthread_join(m_thread, NULL);
-}
-
-
+#endif  // OS_GFMUTEX_H_
