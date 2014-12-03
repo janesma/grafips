@@ -12,25 +12,11 @@ else
     exit
 fi
 
-cp $1/gfipublisher.h remote/gfipublisher.h
-cp $1/gfisubscriber.h remote/gfisubscriber.h
-cp $1/gfmetric.h remote/gfmetric.h
-cp $1/gfmetric.proto remote/gfmetric.proto
-cp $1/gfpublisher.cpp remote/gfpublisher.cpp
-cp $1/gfpublisher.h remote/gfpublisher.h
-cp $1/gfpublisher.proto remote/gfpublisher.proto
-cp $1/gfpublisher_skel.cpp remote/gfpublisher_skel.cpp
-cp $1/gfpublisher_skel.h remote/gfpublisher_skel.h
-cp $1/gfsubscriber.proto remote/gfsubscriber.proto
-cp $1/gfsubscriber_stub.cpp remote/gfsubscriber_stub.cpp
-cp $1/gfsubscriber_stub.h remote/gfsubscriber_stub.h
+cp $1/remote/*.h remote
+cp $1/os/*.h os
+cp $1/sources/*.h sources
+cp $1/remote/*.cpp remote
+cp $1/os/*.cpp os
+cp $1/sources/*.cpp sources
 
-cp $1/gfsocket.cpp os/gfsocket.cpp
-cp $1/gfsocket.h os/gfsocket.h
-cp $1/gfthread.cpp os/gfthread.cpp
-cp $1/gfthread.h os/gfthread.h
-
-cp $1/gfcpu_source.cpp qml/sources/gfcpu_source.cpp
-cp $1/gfcpu_source.h qml/sources/gfcpu_source.h
-cp $1/gfprovider.cpp qml/sources/gfprovider.cpp
-cp $1/gfprovider.h qml/sources/gfprovider.h
+cp $1/remote/*.proto remote

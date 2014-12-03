@@ -12,6 +12,6 @@ else
     exit
 fi
 
-cp remote/*.h remote/*.cpp remote/*.proto $1
-cp os/*.h os/*.cpp $1
-cp qml/sources/*.h qml/sources/*.cpp $1
+cp remote/*.h remote/*.cpp remote/*.proto $1/remote
+cp os/*.h os/*.cpp $1/os
+cp sources/*.h sources/*.cpp $1/sources
