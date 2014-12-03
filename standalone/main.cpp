@@ -16,7 +16,7 @@ int main(int argc, const char **argv)
     }
     PublisherSkeleton skel(port, &pub);
     skel.Start();
-    prov.start();
+    prov.Start();
 
     skel.Join();
     return 0;
