@@ -25,46 +25,32 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_PUBLISHERS_GFMETRIC_ROUTER_H_
-#define QML_PUBLISHERS_GFMETRIC_ROUTER_H_
+#include "publishers/gfpattern.h"
 
-#include <QObject>
-#include <QString>
-#include <QList>
-
-#include <map>
+#include <string>
 #include <vector>
 
-#include "remote/gfipublisher.h"
-#include "remote/gfisubscriber.h"
+using Grafips::Pattern;
+using Grafips::PatternSet;
 
-namespace Grafips {
-class GraphSetSubscriber;
+Pattern::Pattern(const QString &filter) {
+}
 
-class MetricRouter : public QObject,
-                     public PublisherInterface,
-                     public SubscriberInterface,
-                     NoCopy, NoAssign, NoMove {
-  Q_OBJECT
- public:
-  MetricRouter();
-  ~MetricRouter();
-  // PublisherInterface
-  void Enable(int id);
-  void Disable(int id);
-  void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
-  void Subscribe(SubscriberInterface *s);
+bool
+Pattern::Matches(const std::string &path) const {
+    return false;
+}
 
-  // SubscriberInterface
-  void Clear(int id);
-  void OnMetric(const DataSet &d);
-  void OnDescriptions(const std::vector<MetricDescription> &descriptions);
+PatternSet::PatternSet(const QList<QString> &filters) {
+}
 
-  Q_INVOKABLE void AddGraph(GraphSetSubscriber* g, QList<QString> filters);
+bool
+PatternSet::Matches(const std::string &path) const {
+    for (std::vector<Pattern *>::const_iterator i = m_patterns.begin();
+         i != m_patterns.end(); ++i) {
+        if ((*i)->Matches(path))
+            return true;
+    }
+    return false;
+}
 
- private:
-  std::map<int, GraphSetSubscriber*> m_routes;
-};
-}  // namespace Grafips
-
-#endif  // QML_PUBLISHERS_GFMETRIC_ROUTER_H_

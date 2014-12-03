@@ -25,27 +25,46 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_SOURCES_GFIMETRIC_SOURCE_H_
-#define QML_SOURCES_GFIMETRIC_SOURCE_H_
+#ifndef PUBLISHERS_GFMETRIC_ROUTER_H_
+#define PUBLISHERS_GFMETRIC_ROUTER_H_
 
+#include <QObject>
+#include <QString>
+#include <QList>
+
+#include <map>
 #include <vector>
-#include <string>
 
-#include "remote/gfmetric.h"
+#include "remote/gfipublisher.h"
+#include "remote/gfisubscriber.h"
 
 namespace Grafips {
+class GraphSetSubscriber;
 
-// polls raw data sources, hands data to publisher, which resides in
-// same process
-class MetricSourceInterface {
+class MetricRouter : public QObject,
+                     public PublisherInterface,
+                     public SubscriberInterface,
+                     NoCopy, NoAssign, NoMove {
+  Q_OBJECT
  public:
-  virtual ~MetricSourceInterface() {}
-  virtual void GetDescriptions(
-      std::vector<MetricDescription> *descriptions) = 0;
-  virtual void Enable(int id) = 0;
-  virtual void Disable(int id) = 0;
-  virtual void Poll() = 0;
+  MetricRouter();
+  ~MetricRouter();
+  // PublisherInterface
+  void Enable(int id);
+  void Disable(int id);
+  void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
+  void Subscribe(SubscriberInterface *s);
+
+  // SubscriberInterface
+  void Clear(int id);
+  void OnMetric(const DataSet &d);
+  void OnDescriptions(const std::vector<MetricDescription> &descriptions);
+
+  Q_INVOKABLE void AddGraph(GraphSetSubscriber* g, QList<QString> filters);
+
+ private:
+  std::map<int, GraphSetSubscriber*> m_routes;
 };
 }  // namespace Grafips
 
-#endif  // QML_SOURCES_GFIMETRIC_SOURCE_H_
+#endif  // PUBLISHERS_GFMETRIC_ROUTER_H_

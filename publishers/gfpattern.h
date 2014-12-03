@@ -25,64 +25,35 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_PUBLISHERS_GFPUBLISHER_REMOTE_H_
-#define QML_PUBLISHERS_GFPUBLISHER_REMOTE_H_
+#ifndef PUBLISHERS_GFPATTERN_H_
+#define PUBLISHERS_GFPATTERN_H_
 
-#include <QObject>
-#include <assert.h>
+#include <QString>
+#include <QList>
 
 #include <string>
 #include <vector>
 
-#include "remote/gfmetric.h"
-#include "os/gfsocket.h"
-#include "remote/gfipublisher.h"
-#include "qml/subscriber/gfsubscriber.h"
 #include "os/gftraits.h"
-#include "os/gfmutex.h"
-
-namespace GrafipsProto {
-class PublisherInvocation;
-}
 
 namespace Grafips {
-class SubscriberInterface;
-class SubscriberStub;
-class SubscriberSkeleton;
 
-class PublisherStub : public QObject,
-                      public PublisherInterface,
-                      NoAssign, NoCopy, NoMove {
-  Q_OBJECT
-  Q_PROPERTY(QString address READ address WRITE setAddress)
+class Pattern : NoCopy, NoAssign, NoMove {
  public:
-  PublisherStub();
-  ~PublisherStub();
-
-  Q_INVOKABLE void Enable(int id);
-  Q_INVOKABLE void Disable(int id);
-
-  // this method exists to work around clash between the interface (not a
-  // qobject) and the GraphSetSubscriber implementation (is a qobject).
-  Q_INVOKABLE void SubscribeGraph(GraphSetSubscriber *p) { Subscribe(p); }
-
-  void Subscribe(SubscriberInterface *s);
-
-  void Flush() const;
-
-  QString address() const { return m_address; }
-  void setAddress(const QString &a) { m_address = a; Connect(); }
-
+  explicit Pattern(const QString &filter);
+  bool Matches(const std::string &path) const;
  private:
-  void WriteMessage(const GrafipsProto::PublisherInvocation &m) const;
-  void Connect();
-
-  mutable Socket *m_socket;
-  mutable std::vector<unsigned char> m_buf;
-  mutable Mutex m_protect;
-  SubscriberSkeleton *m_subscriber;
-  QString m_address;
+  std::vector<std::string> m_tokens;
 };
+
+class PatternSet : NoCopy, NoAssign, NoMove {
+ public:
+  explicit PatternSet(const QList<QString> &filters);
+  bool Matches(const std::string &path) const;
+ private:
+  std::vector<Pattern *> m_patterns;
+};
+
 }  // namespace Grafips
 
-#endif  // QML_PUBLISHERS_GFPUBLISHER_REMOTE_H_
+#endif  // PUBLISHERS_GFPATTERN_H_

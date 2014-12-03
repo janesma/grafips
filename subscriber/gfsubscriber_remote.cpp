@@ -25,7 +25,7 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/subscriber/gfsubscriber_remote.h"
+#include "subscriber/gfsubscriber_remote.h"
 
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/io/coded_stream.h>

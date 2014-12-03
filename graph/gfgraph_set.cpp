@@ -26,7 +26,7 @@
 //  **********************************************************************/
 
 
-#include "qml/graph/gfgraph_set.h"
+#include "graph/gfgraph_set.h"
 
 #include <float.h>
 #include <map>

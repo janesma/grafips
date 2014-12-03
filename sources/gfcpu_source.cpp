@@ -25,7 +25,7 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/sources/gfcpu_source.h"
+#include "sources/gfcpu_source.h"
 
 #include <assert.h>
 #include <fcntl.h>

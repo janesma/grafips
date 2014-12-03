@@ -25,5 +25,5 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/publishers/gfmetric_router.h"
+#include "publishers/gfmetric_router.h"
 

@@ -25,13 +25,13 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_SOURCES_GFCPU_SOURCE_H_
-#define QML_SOURCES_GFCPU_SOURCE_H_
+#ifndef SOURCES_GFCPU_SOURCE_H_
+#define SOURCES_GFCPU_SOURCE_H_
 
 #include <set>
 #include <vector>
 
-#include "qml/sources/gfimetric_source.h"
+#include "sources/gfimetric_source.h"
 #include "remote/gfpublisher.h"
 #include "os/gfthread.h"
 #include "os/gfmutex.h"
@@ -108,4 +108,4 @@ class CpuSource : public MetricSourceInterface, public Thread {
 };
 }  // namespace Grafips
 
-#endif  // QML_SOURCES_GFCPU_SOURCE_H_
+#endif  // SOURCES_GFCPU_SOURCE_H_

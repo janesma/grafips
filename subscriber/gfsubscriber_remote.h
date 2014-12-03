@@ -25,35 +25,36 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_PUBLISHERS_GFPATTERN_H_
-#define QML_PUBLISHERS_GFPATTERN_H_
+#ifndef SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_
+#define SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_
 
-#include <QString>
-#include <QList>
+#include <QObject>
 
-#include <string>
-#include <vector>
+#include "os/gfthread.h"
 
-#include "os/gftraits.h"
+namespace GrafipsProto {
+class SubscriberInvocation;
+class SubscriberInterface;
+}
 
 namespace Grafips {
+class Socket;
+class ServerSocket;
+class SubscriberInterface;
 
-class Pattern : NoCopy, NoAssign, NoMove {
+class SubscriberSkeleton : public QObject, public Thread {
  public:
-  explicit Pattern(const QString &filter);
-  bool Matches(const std::string &path) const;
+  SubscriberSkeleton(int port, SubscriberInterface *target);
+  ~SubscriberSkeleton();
+  void Run();
+  void Stop();
+  int GetPort() const;
  private:
-  std::vector<std::string> m_tokens;
+  ServerSocket *m_server;
+  Socket *m_socket;
+  SubscriberInterface *m_target;
+  bool m_running;
 };
-
-class PatternSet : NoCopy, NoAssign, NoMove {
- public:
-  explicit PatternSet(const QList<QString> &filters);
-  bool Matches(const std::string &path) const;
- private:
-  std::vector<Pattern *> m_patterns;
-};
-
 }  // namespace Grafips
 
-#endif  // QML_PUBLISHERS_GFPATTERN_H_
+#endif  // SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_

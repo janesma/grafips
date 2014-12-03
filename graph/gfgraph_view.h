@@ -25,16 +25,16 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_GRAPH_GFGRAPH_VIEW_H_
-#define QML_GRAPH_GFGRAPH_VIEW_H_
+#ifndef GRAPH_GFGRAPH_VIEW_H_
+#define GRAPH_GFGRAPH_VIEW_H_
 
 #include <QtQuick/QQuickFramebufferObject>
 
 #include <map>
 
-#include "qml/graph/gfgraph_set.h"
-#include "qml/subscriber/gfsubscriber.h"
-#include "qml/publishers/gfpublisher_remote.h"
+#include "graph/gfgraph_set.h"
+#include "subscriber/gfsubscriber.h"
+#include "publishers/gfpublisher_remote.h"
 #include "os/gftraits.h"
 
 namespace Grafips {
@@ -88,4 +88,4 @@ class GraphView : public QQuickFramebufferObject,
 };
 }  // namespace Grafips
 
-#endif  // QML_GRAPH_GFGRAPH_VIEW_H_
+#endif  // GRAPH_GFGRAPH_VIEW_H_

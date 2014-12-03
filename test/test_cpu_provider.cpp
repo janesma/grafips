@@ -7,7 +7,7 @@
 #include "gfimetric_sink.h"
 #include "gfsubscriber_remote.h"
 #include "gfsubscriber_stub.h"
-#include "qml/publishers/gfpublisher_remote.h"
+#include "publishers/gfpublisher_remote.h"
 #include "gfpublisher_skel.h"
 
 namespace Grafips

@@ -4,9 +4,9 @@
 #include <google/protobuf/stubs/common.h>
 
 #include "gfcpu_source.h"
-#include "qml/publishers/gfpublisher_remote.h"
+#include "publishers/gfpublisher_remote.h"
 #include "gfsubscriber.h"
-#include "qml/graph/gfgraph_view.h"
+#include "graph/gfgraph_view.h"
 
 
 int main(int argc, char *argv[])

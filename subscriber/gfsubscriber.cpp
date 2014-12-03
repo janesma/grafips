@@ -25,13 +25,13 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/subscriber/gfsubscriber.h"
+#include "subscriber/gfsubscriber.h"
 
 #include <assert.h>
 #include <vector>
 
 #include "remote/gfpublisher.h"
-#include "qml/graph/gfgraph_set.h"
+#include "graph/gfgraph_set.h"
 
 using Grafips::GraphSetSubscriber;
 using Grafips::QMetric;

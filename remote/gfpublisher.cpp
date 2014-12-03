@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include "qml/sources/gfimetric_source.h"
+#include "sources/gfimetric_source.h"
 #include "remote/gfisubscriber.h"
 
 using Grafips::PublisherImpl;

@@ -25,43 +25,64 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_GRAPH_GFGRAPH_SET_H_
-#define QML_GRAPH_GFGRAPH_SET_H_
+#ifndef PUBLISHERS_GFPUBLISHER_REMOTE_H_
+#define PUBLISHERS_GFPUBLISHER_REMOTE_H_
 
-#include <GLES2/gl2.h>
+#include <QObject>
+#include <assert.h>
 
-#include <map>
+#include <string>
 #include <vector>
 
+#include "remote/gfmetric.h"
+#include "os/gfsocket.h"
+#include "remote/gfipublisher.h"
+#include "subscriber/gfsubscriber.h"
 #include "os/gftraits.h"
 #include "os/gfmutex.h"
 
+namespace GrafipsProto {
+class PublisherInvocation;
+}
+
 namespace Grafips {
+class SubscriberInterface;
+class SubscriberStub;
+class SubscriberSkeleton;
 
-class DataPoint;
-
-// interpolates data, provides it to view
-class GraphSet : NoCopy, NoAssign, NoMove {
+class PublisherStub : public QObject,
+                      public PublisherInterface,
+                      NoAssign, NoCopy, NoMove {
+  Q_OBJECT
+  Q_PROPERTY(QString address READ address WRITE setAddress)
  public:
-  struct Point {
-    GLfloat x;
-    GLfloat y;
-  };
-  typedef std::vector<Point> PointVec;
+  PublisherStub();
+  ~PublisherStub();
 
-  GraphSet();
-  void Add(const DataPoint &d);
-  void SetLimit(int max_data_age);
-  void SetWidth(int w) { m_width = w; }
-  void GetData(PointVec *data, unsigned int request_time_ms);
-  void Clear();
+  Q_INVOKABLE void Enable(int id);
+  Q_INVOKABLE void Disable(int id);
+
+  // this method exists to work around clash between the interface (not a
+  // qobject) and the GraphSetSubscriber implementation (is a qobject).
+  Q_INVOKABLE void SubscribeGraph(GraphSetSubscriber *p) { Subscribe(p); }
+
+  void Subscribe(SubscriberInterface *s);
+
+  void Flush() const;
+
+  QString address() const { return m_address; }
+  void setAddress(const QString &a) { m_address = a; Connect(); }
 
  private:
-  Mutex m_protect;
-  std::map<unsigned int, float> m_data;
-  int m_max_data_age, m_width, m_time_correction;
-};
+  void WriteMessage(const GrafipsProto::PublisherInvocation &m) const;
+  void Connect();
 
+  mutable Socket *m_socket;
+  mutable std::vector<unsigned char> m_buf;
+  mutable Mutex m_protect;
+  SubscriberSkeleton *m_subscriber;
+  QString m_address;
+};
 }  // namespace Grafips
 
-#endif  // QML_GRAPH_GFGRAPH_SET_H_
+#endif  // PUBLISHERS_GFPUBLISHER_REMOTE_H_

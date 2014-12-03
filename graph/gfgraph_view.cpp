@@ -25,7 +25,7 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/graph/gfgraph_view.h"
+#include "graph/gfgraph_view.h"
 
 #include <assert.h>
 

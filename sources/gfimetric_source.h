@@ -25,36 +25,27 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_
-#define QML_SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_
+#ifndef SOURCES_GFIMETRIC_SOURCE_H_
+#define SOURCES_GFIMETRIC_SOURCE_H_
 
-#include <QObject>
+#include <vector>
+#include <string>
 
-#include "os/gfthread.h"
-
-namespace GrafipsProto {
-class SubscriberInvocation;
-class SubscriberInterface;
-}
+#include "remote/gfmetric.h"
 
 namespace Grafips {
-class Socket;
-class ServerSocket;
-class SubscriberInterface;
 
-class SubscriberSkeleton : public QObject, public Thread {
+// polls raw data sources, hands data to publisher, which resides in
+// same process
+class MetricSourceInterface {
  public:
-  SubscriberSkeleton(int port, SubscriberInterface *target);
-  ~SubscriberSkeleton();
-  void Run();
-  void Stop();
-  int GetPort() const;
- private:
-  ServerSocket *m_server;
-  Socket *m_socket;
-  SubscriberInterface *m_target;
-  bool m_running;
+  virtual ~MetricSourceInterface() {}
+  virtual void GetDescriptions(
+      std::vector<MetricDescription> *descriptions) = 0;
+  virtual void Enable(int id) = 0;
+  virtual void Disable(int id) = 0;
+  virtual void Poll() = 0;
 };
 }  // namespace Grafips
 
-#endif  // QML_SUBSCRIBER_GFSUBSCRIBER_REMOTE_H_
+#endif  // SOURCES_GFIMETRIC_SOURCE_H_

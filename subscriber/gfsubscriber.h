@@ -25,8 +25,8 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef QML_SUBSCRIBER_GFSUBSCRIBER_H_
-#define QML_SUBSCRIBER_GFSUBSCRIBER_H_
+#ifndef SUBSCRIBER_GFSUBSCRIBER_H_
+#define SUBSCRIBER_GFSUBSCRIBER_H_
 
 #include <QObject>
 #include <QString>
@@ -113,4 +113,4 @@ class GraphSetSubscriber : public QObject, public SubscriberInterface,
   mutable Mutex m_protect;
 };
 }  // namespace Grafips
-#endif  // QML_SUBSCRIBER_GFSUBSCRIBER_H_
+#endif  // SUBSCRIBER_GFSUBSCRIBER_H_

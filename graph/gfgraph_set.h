@@ -25,32 +25,43 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "qml/publishers/gfpattern.h"
+#ifndef GRAPH_GFGRAPH_SET_H_
+#define GRAPH_GFGRAPH_SET_H_
 
-#include <string>
+#include <GLES2/gl2.h>
+
+#include <map>
 #include <vector>
 
-using Grafips::Pattern;
-using Grafips::PatternSet;
+#include "os/gftraits.h"
+#include "os/gfmutex.h"
 
-Pattern::Pattern(const QString &filter) {
-}
+namespace Grafips {
 
-bool
-Pattern::Matches(const std::string &path) const {
-    return false;
-}
+class DataPoint;
 
-PatternSet::PatternSet(const QList<QString> &filters) {
-}
+// interpolates data, provides it to view
+class GraphSet : NoCopy, NoAssign, NoMove {
+ public:
+  struct Point {
+    GLfloat x;
+    GLfloat y;
+  };
+  typedef std::vector<Point> PointVec;
 
-bool
-PatternSet::Matches(const std::string &path) const {
-    for (std::vector<Pattern *>::const_iterator i = m_patterns.begin();
-         i != m_patterns.end(); ++i) {
-        if ((*i)->Matches(path))
-            return true;
-    }
-    return false;
-}
+  GraphSet();
+  void Add(const DataPoint &d);
+  void SetLimit(int max_data_age);
+  void SetWidth(int w) { m_width = w; }
+  void GetData(PointVec *data, unsigned int request_time_ms);
+  void Clear();
 
+ private:
+  Mutex m_protect;
+  std::map<unsigned int, float> m_data;
+  int m_max_data_age, m_width, m_time_correction;
+};
+
+}  // namespace Grafips
+
+#endif  // GRAPH_GFGRAPH_SET_H_
