@@ -35,6 +35,7 @@
 #include <map>
 #include <vector>
 
+#include "os/gftraits.h"
 #include "remote/gfipublisher.h"
 #include "remote/gfisubscriber.h"
 

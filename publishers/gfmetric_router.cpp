@@ -27,3 +27,29 @@
 
 #include "publishers/gfmetric_router.h"
 
+#include <vector>
+
+using Grafips::MetricRouter;
+
+MetricRouter::MetricRouter() {}
+MetricRouter::~MetricRouter() {}
+void
+MetricRouter::Enable(int id) {}
+void
+MetricRouter::Disable(int id) {}
+void
+MetricRouter::GetDescriptions(
+    std::vector<MetricDescription> *descriptions) const {}
+void
+MetricRouter::Subscribe(SubscriberInterface *s) {}
+
+void
+MetricRouter::Clear(int id) {}
+void
+MetricRouter::OnMetric(const DataSet &d) {}
+void
+MetricRouter::OnDescriptions(
+    const std::vector<MetricDescription> &descriptions) {}
+
+void
+MetricRouter::AddGraph(GraphSetSubscriber* g, QList<QString> filters) {}

@@ -27,6 +27,9 @@
 
 #include "publishers/gfpattern.h"
 
+#include <assert.h>
+#include <QStringList>
+
 #include <string>
 #include <vector>
 
@@ -34,14 +37,54 @@ using Grafips::Pattern;
 using Grafips::PatternSet;
 
 Pattern::Pattern(const QString &filter) {
+  QStringList tokens = filter.split("/");
+  for (QStringList::const_iterator i = tokens.begin();
+       i != tokens.end(); ++i) {
+    if (i->length() > 0)
+      m_tokens.push_back(i->toStdString());
+  }
 }
 
 bool
 Pattern::Matches(const std::string &path) const {
-    return false;
+  std::vector<char> path_copy(path.length() + 1);
+  strncpy(path_copy.data(), path.c_str(), path_copy.size());
+  assert(path_copy[path.length()] == '\0');
+  
+  char *token = NULL, *saveptr = NULL;
+  unsigned int index = 0;
+
+  token = strtok_r(path_copy.data(), "/", &saveptr);
+
+  while ( true ) {
+    if (!token) {
+      // got to the end of the path, so we have a match if all the
+      // tokens matched
+      return (index == m_tokens.size());
+    }
+    if (index >= m_tokens.size())
+      // more path entries than the pattern
+      return false;
+
+    if (0 != strncmp(m_tokens[index].c_str(), "*", 1)) {
+      // pattern specifies a non-wildcard for this token, so we must
+      // compare
+      if (0 != strcmp(m_tokens[index].c_str(), token))
+        return false;
+    }
+
+    // else we have a match
+    ++index;
+    token = strtok_r(NULL, "/", &saveptr);
+  }
+  assert(false);
 }
 
 PatternSet::PatternSet(const QList<QString> &filters) {
+  for (QList<QString>::const_iterator i = filters.begin();
+       i != filters.end(); ++i) {
+    m_patterns.push_back(new Pattern(*i));
+  }
 }
 
 bool
