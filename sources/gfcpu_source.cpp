@@ -44,6 +44,7 @@ static const int READ_BUF_SIZE = 4096;
 
 CpuSource::CpuSource() : Thread("cpu source"),
                          m_metric_sink(NULL),
+                         m_last_publish_ms(0),
                          m_running(true) {
     m_cpu_info_handle = open("/proc/stat", O_RDONLY);
     m_buf.resize(READ_BUF_SIZE);
@@ -144,7 +145,7 @@ CpuSource::IsEnabled() const {
 void
 CpuSource::GetDescriptions(std::vector<MetricDescription> *descriptions) {
   ScopedLock s(&m_protect);
-  descriptions->push_back(MetricDescription("/cpu/system/utilization",
+  descriptions->push_back(MetricDescription("cpu/system/utilization",
                                             "Displays percent cpu "
                                             "activity for the system",
                                             "CPU Busy", GR_METRIC_PERCENT));
@@ -152,7 +153,7 @@ CpuSource::GetDescriptions(std::vector<MetricDescription> *descriptions) {
 
   for (unsigned int i = 0; i < m_core_stats.size(); ++i) {
     std::stringstream s;
-    s << "/cpu/core" << i << "/utilization";
+    s << "cpu/core/" << i << "/utilization";
     descriptions->push_back(MetricDescription(s.str(),
                                               "Displays percent cpu "
                                               "activity for the core",
