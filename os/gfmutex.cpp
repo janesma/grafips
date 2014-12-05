@@ -33,8 +33,12 @@ using Grafips::Mutex;
 using Grafips::ScopedLock;
 
 Mutex::Mutex() {
-  const int ret = pthread_mutex_init(&m_mut, NULL);
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+  const int ret = pthread_mutex_init(&m_mut, &attr);
   assert(ret == 0);
+  pthread_mutexattr_destroy(&attr);
 }
 
 Mutex::~Mutex() {
