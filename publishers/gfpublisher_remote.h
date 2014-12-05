@@ -28,7 +28,6 @@
 #ifndef PUBLISHERS_GFPUBLISHER_REMOTE_H_
 #define PUBLISHERS_GFPUBLISHER_REMOTE_H_
 
-#include <QObject>
 #include <assert.h>
 
 #include <string>
@@ -50,21 +49,14 @@ class SubscriberInterface;
 class SubscriberStub;
 class SubscriberSkeleton;
 
-class PublisherStub : public QObject,
-                      public PublisherInterface,
+class PublisherStub : public PublisherInterface,
                       NoAssign, NoCopy, NoMove {
-  Q_OBJECT
-  Q_PROPERTY(QString address READ address WRITE setAddress)
  public:
   PublisherStub();
   ~PublisherStub();
 
-  Q_INVOKABLE void Enable(int id);
-  Q_INVOKABLE void Disable(int id);
-
-  // this method exists to work around clash between the interface (not a
-  // qobject) and the GraphSetSubscriber implementation (is a qobject).
-  Q_INVOKABLE void SubscribeGraph(GraphSetSubscriber *p) { Subscribe(p); }
+  void Enable(int id);
+  void Disable(int id);
 
   void Subscribe(SubscriberInterface *s);
 

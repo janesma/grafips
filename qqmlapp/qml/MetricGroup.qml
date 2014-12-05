@@ -9,7 +9,8 @@ Item {
     Layout.minimumHeight:20
     Layout.preferredHeight: 400
     property string color
-    property PublisherStub publisher
+    property MetricRouter publisher
+    property variant filters: [ "foo" ]
 
     function refresh() {
         visible = false
@@ -37,7 +38,7 @@ Item {
     }
 
     function start() {
-        publisher.SubscribeGraph(mySubscriber);
+        publisher.AddGraph(mySubscriber, filters);
     }
 
     GraphSetSubscriber {

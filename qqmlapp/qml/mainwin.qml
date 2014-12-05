@@ -9,7 +9,7 @@ ApplicationWindow {
     height: 500
     visible: true
 
-    PublisherStub {
+    MetricRouter {
         id: mainPublisher
     }
 
@@ -44,6 +44,7 @@ ApplicationWindow {
                     mainView.visible = true
                     connectionDialog.visible = false
                     cpu.start();
+                    cpuCore.start();
                 }
             }
         }
@@ -59,6 +60,14 @@ ApplicationWindow {
             id: cpu
             color: "red"
             publisher: mainPublisher
+            filters: ["cpu/system/utilization"]
+        }
+
+        MetricGroup {
+            id: cpuCore
+            color: "red"
+            publisher: mainPublisher
+            filters: ["cpu/core/*/utilization"]
         }
 
         Rectangle {

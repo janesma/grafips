@@ -31,7 +31,7 @@
 #include <google/protobuf/stubs/common.h>
 
 #include "sources/gfcpu_source.h"
-#include "publishers/gfpublisher_remote.h"
+#include "publishers/gfmetric_router.h"
 #include "subscriber/gfsubscriber.h"
 #include "graph/gfgraph_view.h"
 
@@ -39,7 +39,7 @@
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<Grafips::PublisherStub>("Grafips", 1, 0, "PublisherStub");
+    qmlRegisterType<Grafips::MetricRouter>("Grafips", 1, 0, "MetricRouter");
 
     qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");
     qmlRegisterType<Grafips::GraphSetSubscriber>("Grafips", 1, 0,

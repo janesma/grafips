@@ -34,7 +34,7 @@
 
 #include "graph/gfgraph_set.h"
 #include "subscriber/gfsubscriber.h"
-#include "publishers/gfpublisher_remote.h"
+#include "publishers/gfmetric_router.h"
 #include "os/gftraits.h"
 
 namespace Grafips {
@@ -70,7 +70,7 @@ class GraphView : public QQuickFramebufferObject,
   Q_OBJECT
   Q_PROPERTY(Grafips::GraphSetSubscriber* subscriber
              READ subscriber WRITE setSubscriber)
-  Q_PROPERTY(Grafips::PublisherStub* publisher
+  Q_PROPERTY(Grafips::MetricRouter* publisher
              READ publisher WRITE setPublisher)
  public:
   GraphView();
@@ -78,12 +78,12 @@ class GraphView : public QQuickFramebufferObject,
 
   GraphSetSubscriber *subscriber() {return m_subscriber;}
   void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
-  PublisherStub *publisher() {return m_pub;}
-  void setPublisher(PublisherStub *p) {m_pub = p;}
+  MetricRouter *publisher() {return m_pub;}
+  void setPublisher(MetricRouter *p) {m_pub = p;}
   Renderer *createRenderer() const;
 
  private:
-  PublisherStub *m_pub;
+  MetricRouter *m_pub;
   GraphSetSubscriber *m_subscriber;
 };
 }  // namespace Grafips

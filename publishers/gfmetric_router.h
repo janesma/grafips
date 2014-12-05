@@ -38,6 +38,7 @@
 #include "os/gftraits.h"
 #include "remote/gfipublisher.h"
 #include "remote/gfisubscriber.h"
+#include "publishers/gfpublisher_remote.h"
 
 namespace Grafips {
 class GraphSetSubscriber;
@@ -47,13 +48,13 @@ class MetricRouter : public QObject,
                      public SubscriberInterface,
                      NoCopy, NoAssign, NoMove {
   Q_OBJECT
+  Q_PROPERTY(QString address READ address WRITE setAddress)
  public:
   MetricRouter();
   ~MetricRouter();
   // PublisherInterface
-  void Enable(int id);
-  void Disable(int id);
-  void GetDescriptions(std::vector<MetricDescription> *descriptions) const;
+  Q_INVOKABLE void Enable(int id);
+  Q_INVOKABLE void Disable(int id);
   void Subscribe(SubscriberInterface *s);
 
   // SubscriberInterface
@@ -62,9 +63,18 @@ class MetricRouter : public QObject,
   void OnDescriptions(const std::vector<MetricDescription> &descriptions);
 
   Q_INVOKABLE void AddGraph(GraphSetSubscriber* g, QList<QString> filters);
+  QString address() const { return m_pub.address(); }
+  void setAddress(const QString &a);
 
  private:
+  void NotifyMetrics(GraphSetSubscriber* g,
+                     const QList<QString> &filters);
+
   std::map<int, GraphSetSubscriber*> m_routes;
+  typedef std::map<GraphSetSubscriber*, QList<QString> > FilterMap;
+  FilterMap m_filters;
+  PublisherStub m_pub;
+  MetricDescriptionSet m_descriptions;
 };
 }  // namespace Grafips
 
