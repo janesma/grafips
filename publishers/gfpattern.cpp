@@ -50,7 +50,7 @@ Pattern::Matches(const std::string &path) const {
   std::vector<char> path_copy(path.length() + 1);
   strncpy(path_copy.data(), path.c_str(), path_copy.size());
   assert(path_copy[path.length()] == '\0');
-  
+
   char *token = NULL, *saveptr = NULL;
   unsigned int index = 0;
 
@@ -84,6 +84,13 @@ PatternSet::PatternSet(const QList<QString> &filters) {
   for (QList<QString>::const_iterator i = filters.begin();
        i != filters.end(); ++i) {
     m_patterns.push_back(new Pattern(*i));
+  }
+}
+
+PatternSet::~PatternSet() {
+  while (!m_patterns.empty()) {
+    delete m_patterns.back();
+    m_patterns.pop_back();
   }
 }
 

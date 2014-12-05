@@ -49,6 +49,7 @@ class Pattern : NoCopy, NoAssign, NoMove {
 class PatternSet : NoCopy, NoAssign, NoMove {
  public:
   explicit PatternSet(const QList<QString> &filters);
+  ~PatternSet();
   bool Matches(const std::string &path) const;
  private:
   std::vector<Pattern *> m_patterns;
