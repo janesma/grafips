@@ -103,7 +103,8 @@ MetricRouter::NotifyMetrics(GraphSetSubscriber* g,
        i != m_descriptions.end(); ++i) {
     if (pattern.Matches(i->path)) {
       // only one graph may display a given metric
-      assert(m_routes.find(i->id()) == m_routes.end() || m_routes[i->id()] == g);
+      assert(m_routes.find(i->id()) == m_routes.end() ||
+             m_routes[i->id()] == g);
       m_routes[i->id()] = g;
 
       matching_metrics.push_back(*i);
