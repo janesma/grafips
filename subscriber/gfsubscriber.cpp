@@ -58,10 +58,11 @@ GraphSetSubscriber::OnMetric(const DataSet &d) {
 
 
 void
-GraphSetSubscriber::OnDescriptions(
-    const std::vector<MetricDescription> &descriptions) {
-  ScopedLock l(&m_protect);
-  m_metric_descriptions = descriptions;
+GraphSetSubscriber::OnDescriptions(const MetricDescriptionSet &descriptions) {
+  {
+    ScopedLock l(&m_protect);
+    m_metric_descriptions = descriptions;
+  }
   emit NotifyDescriptions();
 }
 

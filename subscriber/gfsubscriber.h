@@ -98,7 +98,7 @@ class GraphSetSubscriber : public QObject, public SubscriberInterface,
   void RemoveSet(int id);
   void Clear(int id);
   void OnMetric(const DataSet &d);
-  void OnDescriptions(const std::vector<MetricDescription> &descriptions);
+  void OnDescriptions(const MetricDescriptionSet &descriptions);
   QQmlListProperty<QMetric> metrics();
 
   void GetIDs(std::vector<int> *ids) const;
