@@ -25,6 +25,8 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
+#include <unistd.h>
+
 #include "sources/gfcpu_source.h"
 #include "remote/gfpublisher_skel.h"
 #include "remote/gfpublisher.h"
@@ -32,10 +34,35 @@
 using Grafips::CpuSource;
 using Grafips::PublisherImpl;
 using Grafips::PublisherSkeleton;
+using Grafips::Thread;
+
+class PollThread : public Thread {
+ public:
+  PollThread(CpuSource *c) : Thread("PollThread"),
+                             m_running(false),
+                             m_cpu(c) {}
+  void Run() {
+    m_running = true;
+    while (m_running) {
+      m_cpu->Poll();
+      usleep(1000000);
+    }
+  }
+  void Stop() {
+    m_running = false;
+    Join();
+  }
+ private:
+  bool m_running;
+  CpuSource *m_cpu;
+    
+};
 
 int main(int argc, const char **argv) {
     CpuSource prov;
     PublisherImpl pub;
+    PollThread thread(&prov);
+    
     prov.SetMetricSink(&pub);
     int port = 53136;
     if (argc > 1) {
@@ -43,8 +70,10 @@ int main(int argc, const char **argv) {
     }
     PublisherSkeleton skel(port, &pub);
     skel.Start();
-    prov.Start();
+    thread.Start();
 
     skel.Join();
+    thread.Stop();
+    
     return 0;
 }

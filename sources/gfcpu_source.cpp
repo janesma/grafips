@@ -42,8 +42,7 @@ using Grafips::CpuSource;
 
 static const int READ_BUF_SIZE = 4096;
 
-CpuSource::CpuSource() : Thread("cpu source"),
-                         m_metric_sink(NULL),
+CpuSource::CpuSource() : m_metric_sink(NULL),
                          m_last_publish_ms(0),
                          m_running(true) {
     m_cpu_info_handle = open("/proc/stat", O_RDONLY);
@@ -55,12 +54,6 @@ void
 CpuSource::SetMetricSink(MetricSinkInterface *p) {
     m_metric_sink = p;
     m_metric_sink->RegisterSource(this);
-}
-
-void
-CpuSource::stop() {
-    m_running = false;
-    Join();
 }
 
 CpuSource::~CpuSource() {
@@ -229,10 +222,3 @@ CpuSource::Publish(unsigned int ms) {
     m_metric_sink->OnMetric(d);
 }
 
-
-void CpuSource::Run() {
-    while (m_running) {
-        Poll();
-        usleep(1000000);
-    }
-}
