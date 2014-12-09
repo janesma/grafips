@@ -28,23 +28,27 @@
 #include <unistd.h>
 
 #include "sources/gfcpu_source.h"
+#include "sources/gfgl_source.h"
 #include "remote/gfpublisher_skel.h"
 #include "remote/gfpublisher.h"
 
 using Grafips::CpuSource;
+using Grafips::GlSource;
 using Grafips::PublisherImpl;
 using Grafips::PublisherSkeleton;
 using Grafips::Thread;
 
 class PollThread : public Thread {
  public:
-  PollThread(CpuSource *c) : Thread("PollThread"),
-                             m_running(false),
-                             m_cpu(c) {}
+  PollThread(CpuSource *c, GlSource *g) : Thread("PollThread"),
+                                          m_running(false),
+                                          m_cpu(c),
+                                          m_gl(g) {}
   void Run() {
     m_running = true;
     while (m_running) {
       m_cpu->Poll();
+      m_gl->glSwapBuffers();
       usleep(1000000);
     }
   }
@@ -55,13 +59,14 @@ class PollThread : public Thread {
  private:
   bool m_running;
   CpuSource *m_cpu;
-    
+  GlSource *m_gl;
 };
 
 int main(int argc, const char **argv) {
     CpuSource prov;
     PublisherImpl pub;
-    PollThread thread(&prov);
+    GlSource glprov(&pub);
+    PollThread thread(&prov, &glprov);
     
     prov.SetMetricSink(&pub);
     int port = 53136;

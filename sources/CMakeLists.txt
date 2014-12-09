@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(grafips_sources)
 
 add_library(grafips_sources
+  gfgl_source.cpp
+  gfgl_source.h
   gfcpu_source.cpp
   gfcpu_source.h
   gfimetric_source.h

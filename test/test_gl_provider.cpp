@@ -25,27 +25,41 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef REMOTE_GFIPUBLISHER_H_
-#define REMOTE_GFIPUBLISHER_H_
+#include <gtest/gtest.h>
+#include <QString>
 
 #include <vector>
-#include <map>
 
-#include "remote/gfmetric.h"
+#include "sources/gfgl_source.h"
+#include "grafips/test/test_mock.h"
 
-namespace Grafips {
 
-class SubscriberInterface;
+using Grafips::TestPublisher;
+using Grafips::GlSource;
+using Grafips::MetricDescriptionSet;
 
-// collates metrics from sources, distributes to subscriber (which may be
-// off-proc or off-machine)
-class PublisherInterface {
- public:
-  virtual ~PublisherInterface() {}
-  virtual void Enable(int id) = 0;
-  virtual void Disable(int id) = 0;
-  virtual void Subscribe(SubscriberInterface *) = 0;
-};
-}  // namespace Grafips
+TEST(GlSourceFixture, test_descriptions ) {
+  TestPublisher pub;
+  GlSource source(&pub);
+  MetricDescriptionSet descriptions;
+  source.GetDescriptions(&descriptions);
 
-#endif  // REMOTE_GFIPUBLISHER_H_
+  source.Enable(descriptions[0].id());
+
+  source.glSwapBuffers();
+  EXPECT_TRUE(pub.m_d.empty());
+
+  usleep(100000);
+  source.glSwapBuffers();
+  EXPECT_LT(pub.m_d[0].data, 12.0);
+  EXPECT_GT(pub.m_d[0].data, 9.6);
+
+  pub.m_d.clear();
+  source.Enable(descriptions[1].id());
+  source.Disable(descriptions[0].id());
+  usleep(100000);
+  source.glSwapBuffers();
+  EXPECT_LT(pub.m_d[0].data, 120.0);
+  EXPECT_GT(pub.m_d[0].data, 90.6);
+  
+}

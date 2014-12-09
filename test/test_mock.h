@@ -25,27 +25,32 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef REMOTE_GFIPUBLISHER_H_
-#define REMOTE_GFIPUBLISHER_H_
+#ifndef _GRAFIPS_TEST_TEST_MOCK_H__
+#define _GRAFIPS_TEST_TEST_MOCK_H__
 
-#include <vector>
-#include <map>
-
+#include "remote/gfipublisher.h"
+#include "remote/gfimetric_sink.h"
+#include "remote/gfisubscriber.h"
+#include "sources/gfimetric_source.h"
 #include "remote/gfmetric.h"
 
 namespace Grafips {
 
-class SubscriberInterface;
-
-// collates metrics from sources, distributes to subscriber (which may be
-// off-proc or off-machine)
-class PublisherInterface {
+class TestPublisher : public PublisherInterface, public MetricSinkInterface {
  public:
-  virtual ~PublisherInterface() {}
-  virtual void Enable(int id) = 0;
-  virtual void Disable(int id) = 0;
-  virtual void Subscribe(SubscriberInterface *) = 0;
+  void RegisterSource(MetricSourceInterface *p) { m_p = p; }
+  void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
+  void Enable(int id) { m_p->Enable(id); }
+  void Disable(int id) { m_p->Disable(id); }
+  void Subscribe(SubscriberInterface *s) {
+    MetricDescriptionSet descriptions;
+    m_p->GetDescriptions(&descriptions);
+    s->OnDescriptions(descriptions);
+  }
+  DataSet m_d;
+  MetricSourceInterface *m_p;
 };
+
 }  // namespace Grafips
 
-#endif  // REMOTE_GFIPUBLISHER_H_
+#endif  // _GRAFIPS_TEST_TEST_MOCK_H__

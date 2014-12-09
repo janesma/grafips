@@ -45,6 +45,8 @@ ApplicationWindow {
                     connectionDialog.visible = false
                     cpu.start();
                     cpuCore.start();
+                    glFt.start();
+                    glFps.start();
                 }
             }
         }
@@ -69,7 +71,18 @@ ApplicationWindow {
             publisher: mainPublisher
             filters: ["cpu/core/*/utilization"]
         }
-
+        MetricGroup {
+            id: glFt
+            color: "red"
+            publisher: mainPublisher
+            filters: ["gl/frame_time"]
+        }
+        MetricGroup {
+            id: glFps
+            color: "red"
+            publisher: mainPublisher
+            filters: ["gl/fps"]
+        }
         Rectangle {
             Layout.fillWidth:  true
             Layout.fillHeight: true

@@ -25,27 +25,29 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef REMOTE_GFIPUBLISHER_H_
-#define REMOTE_GFIPUBLISHER_H_
+#ifndef SOURCES_GFGL_SOURCE_H_
+#define SOURCES_GFGL_SOURCE_H_
 
-#include <vector>
-#include <map>
+#include <set>
 
-#include "remote/gfmetric.h"
+#include "sources/gfimetric_source.h"
 
 namespace Grafips {
+class MetricSinkInterface;
 
-class SubscriberInterface;
-
-// collates metrics from sources, distributes to subscriber (which may be
-// off-proc or off-machine)
-class PublisherInterface {
+// GlSource produces metrics based on the GL API
+class GlSource : public MetricSourceInterface {
  public:
-  virtual ~PublisherInterface() {}
-  virtual void Enable(int id) = 0;
-  virtual void Disable(int id) = 0;
-  virtual void Subscribe(SubscriberInterface *) = 0;
+  explicit GlSource(MetricSinkInterface *sink);
+  ~GlSource();
+  void GetDescriptions(MetricDescriptionSet *descriptions);
+  void Enable(int id);
+  void Disable(int id);
+  void glSwapBuffers();
+ private:
+  MetricSinkInterface *m_sink;
+  uint64_t m_last_time_ns;
+  std::set<int> m_enabled_ids;
 };
-}  // namespace Grafips
-
-#endif  // REMOTE_GFIPUBLISHER_H_
+}  // end namespace Grafips
+#endif  // SOURCES_GFGL_SOURCE_H_
