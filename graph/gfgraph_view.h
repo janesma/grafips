@@ -62,7 +62,8 @@ class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
   static const char *fshader;
 
   GLuint vbo;
-  GLint attribute_coord2d, uniform_x_range, uniform_max_y, uniform_line_color, prog;
+  GLint attribute_coord2d, uniform_x_range, uniform_max_y,
+    uniform_line_color, prog;
   int m_width;
   GraphSet::PointVec m_data;
 };

@@ -67,7 +67,7 @@ int main(int argc, const char **argv) {
     PublisherImpl pub;
     GlSource glprov(&pub);
     PollThread thread(&prov, &glprov);
-    
+
     prov.SetMetricSink(&pub);
     int port = 53136;
     if (argc > 1) {
@@ -79,6 +79,6 @@ int main(int argc, const char **argv) {
 
     skel.Join();
     thread.Stop();
-    
+
     return 0;
 }

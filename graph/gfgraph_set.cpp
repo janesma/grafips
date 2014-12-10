@@ -49,8 +49,7 @@ GraphSet::Add(const DataPoint &d) {
   const unsigned int max_age = current_time - (1.1 * m_max_data_age);
   // Drop any data which is too old to be displayed.
   while (!m_data.empty() &&
-         (unsigned int)(m_data.begin()->first) < max_age)
-  {
+         (unsigned int)(m_data.begin()->first) < max_age) {
     std::map<unsigned int, float>::iterator front = m_data.begin();
     assert(m_range.find(front->second) != m_range.end());
     m_range.erase(m_range.find(front->second));

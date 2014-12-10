@@ -61,5 +61,4 @@ TEST(GlSourceFixture, test_descriptions ) {
   source.glSwapBuffers();
   EXPECT_LT(pub.m_d[0].data, 120.0);
   EXPECT_GT(pub.m_d[0].data, 90.6);
-  
 }

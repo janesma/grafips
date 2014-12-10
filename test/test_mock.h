@@ -25,8 +25,8 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef _GRAFIPS_TEST_TEST_MOCK_H__
-#define _GRAFIPS_TEST_TEST_MOCK_H__
+#ifndef TEST_TEST_MOCK_H__
+#define TEST_TEST_MOCK_H__
 
 #include "remote/gfipublisher.h"
 #include "remote/gfimetric_sink.h"
@@ -53,4 +53,4 @@ class TestPublisher : public PublisherInterface, public MetricSinkInterface {
 
 }  // namespace Grafips
 
-#endif  // _GRAFIPS_TEST_TEST_MOCK_H__
+#endif  // TEST_TEST_MOCK_H__
