@@ -32,6 +32,7 @@
 
 #include <map>
 #include <vector>
+#include <set>
 
 #include "os/gftraits.h"
 #include "os/gfmutex.h"
@@ -52,14 +53,14 @@ class GraphSet : NoCopy, NoAssign, NoMove {
   GraphSet();
   void Add(const DataPoint &d);
   void SetLimit(int max_data_age);
-  void SetWidth(int w) { m_width = w; }
   void GetData(PointVec *data, unsigned int request_time_ms);
   void Clear();
 
  private:
   Mutex m_protect;
   std::map<unsigned int, float> m_data;
-  int m_max_data_age, m_width, m_time_correction;
+  std::multiset<float> m_range;
+  int m_max_data_age, m_time_correction;
 };
 
 }  // namespace Grafips

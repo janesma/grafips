@@ -53,7 +53,7 @@ class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
  private:
   void CheckError(const char * file, int line);
   void PrintCompileError(GLint shader);
-  void RenderPoints(const GraphSet::PointVec &data, const float* color);
+  void RenderPoints(const GraphSet::PointVec &data, const float* color, unsigned int time);
 
   GraphSetSubscriber *m_subscriber;
   std::map<int, GraphSet *> m_sets;
@@ -61,7 +61,7 @@ class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
   static const char *fshader;
 
   GLuint vbo;
-  GLint attribute_coord2d, uniform_time, uniform_line_color, prog;
+  GLint attribute_coord2d, uniform_x_range, uniform_max_y, uniform_line_color, prog;
   int m_width;
 };
 

@@ -28,6 +28,8 @@
 
 #include "graph/gfgraph_set.h"
 
+#include <assert.h>
+
 #include <float.h>
 #include <map>
 #include <vector>
@@ -48,9 +50,15 @@ GraphSet::Add(const DataPoint &d) {
   // Drop any data which is too old to be displayed.
   while (!m_data.empty() &&
          (unsigned int)(m_data.begin()->first) < max_age)
-    m_data.erase(m_data.begin());
+  {
+    std::map<unsigned int, float>::iterator front = m_data.begin();
+    assert(m_range.find(front->second) != m_range.end());
+    m_range.erase(m_range.find(front->second));
+    m_data.erase(front);
+  }
 
   m_data[d.time_val] = d.data;
+  m_range.emplace(d.data);
 }
 
 void
@@ -90,19 +98,11 @@ GraphSet::GetData(PointVec *data, unsigned int request_time_ms) {
   std::vector<Point>::iterator dest = data->begin();
   for (std::map<unsigned int, float>::const_iterator i = m_data.begin();
        i != m_data.end(); ++i, ++dest) {
-    // cast to int to prevent underflow, if data is newer than request
-    const float age = static_cast<int>(request_time_ms) -
-                      static_cast<int>(m_time_correction + i->first);
-    const float f_max_age = m_max_data_age;
-    const float age_scaled = (2.0 * age / f_max_age) - 1.0;
-    dest->x = -1.0 * age_scaled;
+    // x value is the age in ms
+    dest->x = static_cast<int>(request_time_ms) -
+              static_cast<int>(m_time_correction + i->first);
 
-    // for now, don't scale
-    // const float val_range = max - min;
-    // const float val_scaled = (2.0 * (i->second - min) / val_range) - 1.0;
-    // dest->y = val_scaled;
-
-    dest->y = -1.0 * (2.0 * i->second - 1.0);
+    dest->y = i->second;
   }
 }
 
