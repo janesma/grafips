@@ -55,9 +55,10 @@ class GraphSet : NoCopy, NoAssign, NoMove {
   void SetLimit(int max_data_age);
   void GetData(PointVec *data, unsigned int request_time_ms);
   void Clear();
+  float GetMax() const;
 
  private:
-  Mutex m_protect;
+  mutable Mutex m_protect;
   std::map<unsigned int, float> m_data;
   std::multiset<float> m_range;
   int m_max_data_age, m_time_correction;

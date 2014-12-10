@@ -28,6 +28,7 @@
 #include "graph/gfgraph_view.h"
 
 #include <assert.h>
+#include <math.h>
 
 // #include <iostream>
 #include <QtOpenGL>
@@ -128,7 +129,7 @@ GraphViewRenderer::~GraphViewRenderer() {
 void
 GraphViewRenderer::RenderPoints(const GraphSet::PointVec &data,
                                 const float* color,
-                                unsigned int time) {
+                                float max_y) {
     if (data.empty() )
         return;
 
@@ -174,7 +175,7 @@ GraphViewRenderer::RenderPoints(const GraphSet::PointVec &data,
     glUniform1f(uniform_x_range, 60000);
     GL_CHECK();
 
-    glUniform1f(uniform_max_y, 1);
+    glUniform1f(uniform_max_y, max_y);
     GL_CHECK();
 
     glDrawArrays(GL_LINE_STRIP, 0, data.size());
@@ -193,61 +194,77 @@ GraphViewRenderer::RenderPoints(const GraphSet::PointVec &data,
 
 void
 GraphViewRenderer::render() {
-    glClearColor(1, 1, 1, 1);
-    GL_CHECK();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    GL_CHECK();
+  float max = 0;
+  for (std::map<int, GraphSet *>::const_iterator set = m_sets.begin();
+       set != m_sets.end(); ++set) {
+    const float set_max = set->second->GetMax();
+    if (set_max > max)
+      max = set_max;
+  }
 
-    glUseProgram(prog);
-    GL_CHECK();
+  // don't scale past 100% if the data doesn't exceed 100%
+  if (max * 1.2 < 1.0 || max > 1.01)
+    max *= 1.2;
+         
+  glClearColor(1, 1, 1, 1);
+  GL_CHECK();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  GL_CHECK();
 
-    static GraphSet::PointVec data;
+  glUseProgram(prog);
+  GL_CHECK();
 
-    // render the cross-lines representing 25,50,75 %
-    glLineWidth(2);
-    const unsigned int t = get_ms_time();
-    data.resize(2);
-    data[0].x = 100 * 1000; data[0].y = .25;
-    data[1].x = 0; data[1].y = .25;
-    RenderPoints(data, tick_lines_color, t);
+  // render the cross-lines representing 25,50,75 %
+  const int power_of_ten_exponent = log10(max) - 1;
+  const float power_of_ten = exp10f(power_of_ten_exponent);
+  float horizontal_line_interval = 0;
+  if (max / power_of_ten < 5)
+    horizontal_line_interval = power_of_ten;
+  else
+    horizontal_line_interval = 2 * power_of_ten;
 
-    data[0].x = 100 * 1000; data[0].y = .5;
-    data[1].x = 0; data[1].y = .5;
-    RenderPoints(data, tick_lines_color, t);
+  float horizontal_line = horizontal_line_interval;
+  glLineWidth(2);
+  m_data.resize(2);
+  m_data[0].x = 100 * 1000;
+  m_data[1].x = 0;
+  while (horizontal_line && horizontal_line < max) {
+    m_data[0].y = horizontal_line;
+    m_data[1].y = horizontal_line;
+    RenderPoints(m_data, tick_lines_color, max);
+    horizontal_line += horizontal_line_interval;
+  }
 
-    data[0].x = 100 * 1000; data[0].y = .75;
-    data[1].x = 0; data[1].y = .75;
-    RenderPoints(data, tick_lines_color, t);
+  // render the per-10s vertical lines
+  const unsigned int t = get_ms_time();
+  unsigned int age_of_10_sec = t % 10000;
+  // const float offset_t = 1.0  - (static_cast<float>(t % 10000))/10000.0;
+  // const float line_distance = 2.0 * 10.0 / 60.0;
 
-    // render the per-10s vertical lines
-    unsigned int age_of_10_sec = t % 10000;
-    // const float offset_t = 1.0  - (static_cast<float>(t % 10000))/10000.0;
-    // const float line_distance = 2.0 * 10.0 / 60.0;
+  // vertical line 
+  m_data[0].y = -1;
+  m_data[1].y = 2 * max;
+  m_data[0].x = age_of_10_sec;
+  m_data[1].x = age_of_10_sec;
 
-    // vertical line 
-    data[0].y = -1;
-    data[1].y = 2;
-    data[0].x = age_of_10_sec;
-    data[1].x = age_of_10_sec;
+  // m_data[1].x = m_data[0].x; m_data[1].y = 1;
+  while (age_of_10_sec < 60 * 1000) {
+    // std::cout << m_data[0].x << ", " << m_data[0].y << " : ";
+    // std::cout << m_data[1].x << ", " << m_data[1].y << std::endl;
+    RenderPoints(m_data, tick_lines_color, max);
+    age_of_10_sec += 10 * 1000;
+    m_data[0].x = age_of_10_sec;
+    m_data[1].x = age_of_10_sec;
+  }
 
-    // data[1].x = data[0].x; data[1].y = 1;
-    while (age_of_10_sec < 60 * 1000) {
-        // std::cout << data[0].x << ", " << data[0].y << " : ";
-        // std::cout << data[1].x << ", " << data[1].y << std::endl;
-      RenderPoints(data, tick_lines_color, t);
-      age_of_10_sec += 10 * 1000;
-      data[0].x = age_of_10_sec;
-      data[1].x = age_of_10_sec;
-    }
+  glLineWidth(1);
 
-    glLineWidth(1);
-
-    for (std::map<int, GraphSet *>::iterator set = m_sets.begin();
-         set != m_sets.end(); ++set) {
-        set->second->GetData(&data, t);
-        RenderPoints(data, black_color, t);
-    }
-    update();
+  for (std::map<int, GraphSet *>::iterator set = m_sets.begin();
+       set != m_sets.end(); ++set) {
+    set->second->GetData(&m_data, t);
+    RenderPoints(m_data, black_color, max);
+  }
+  update();
 }
 
 void

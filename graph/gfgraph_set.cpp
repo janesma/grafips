@@ -111,3 +111,11 @@ GraphSet::Clear() {
   ScopedLock l(&m_protect);
   m_data.clear();
 }
+
+float
+GraphSet::GetMax() const {
+  ScopedLock l(&m_protect);
+  if (m_range.empty())
+    return 0;
+  return *(m_range.rbegin());
+}
