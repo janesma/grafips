@@ -123,8 +123,8 @@ CpuSource::ParseCpuLine(CpuLine *dest, char **savePtr) {
     if (total == 0) {
         current.utilization = 0;
     } else {
-        current.utilization = active / total;
-        assert(current.utilization < 100);
+        current.utilization = active / total * 100.0;
+        assert(current.utilization <= 100);
         assert(current.utilization >= 0);
     }
     memcpy(dest, &current, sizeof(CpuLine));
@@ -145,12 +145,13 @@ CpuSource::GetDescriptions(std::vector<MetricDescription> *descriptions) {
   m_sysId = descriptions->back().id();
 
   for (unsigned int i = 0; i < m_core_stats.size(); ++i) {
-    std::stringstream s;
+    std::stringstream s, name;
     s << "cpu/core/" << i << "/utilization";
+    name << "CPU Core " << i << " Busy";
     descriptions->push_back(MetricDescription(s.str(),
                                               "Displays percent cpu "
                                               "activity for the core",
-                                              "CPU Core Busy",
+                                              name.str(),
                                               GR_METRIC_PERCENT));
     if (m_ids.size() <= i)
       m_ids.push_back(descriptions->back().id());

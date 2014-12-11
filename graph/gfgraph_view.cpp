@@ -30,7 +30,6 @@
 #include <assert.h>
 #include <math.h>
 
-// #include <iostream>
 #include <QtOpenGL>
 #include <GLES2/gl2.h>
 
@@ -63,9 +62,13 @@ GraphViewRenderer::fshader = "uniform vec4 line_color;"
 float tick_lines_color[4] = { 0, 0, 0, .2 };
 float black_color[4] = { 0, 0, 0, 1 };
 
-GraphViewRenderer::GraphViewRenderer(GraphSetSubscriber *s,
+GraphViewRenderer::GraphViewRenderer(const GraphView *v,
+                                     GraphSetSubscriber *s,
                                      const PublisherInterface &p)
-    : m_subscriber(s) {
+    : m_subscriber(s),
+      m_graph_max(0) {
+  connect(this, SIGNAL(maxChanged()),
+          v, SLOT(update()));
   glGenBuffers(1, &vbo);
   GL_CHECK();
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -193,7 +196,7 @@ GraphViewRenderer::RenderPoints(const GraphSet::PointVec &data,
 }
 
 void
-GraphViewRenderer::render() {
+GraphViewRenderer::UpdateMax() {
   float max = 0;
   for (std::map<int, GraphSet *>::const_iterator set = m_sets.begin();
        set != m_sets.end(); ++set) {
@@ -202,9 +205,31 @@ GraphViewRenderer::render() {
       max = set_max;
   }
 
-  // don't scale past 100% if the data doesn't exceed 100%
-  if (max * 1.2 < 1.0 || max > 1.01)
-    max *= 1.2;
+  if (max <= m_graph_max && max > m_graph_max * .9)
+    // max is still in the range being graphed
+    return;
+
+  const int power_of_ten_exponent = log10(max) - 1;
+  const float power_of_ten = exp10f(power_of_ten_exponent);
+  int mantissa = max / power_of_ten;
+
+  // add a bit of space to the top of the graph, but don't scale past
+  // 100%
+  if (max < 98 || max > 101) {
+    mantissa += 1;
+  }
+
+  if ((mantissa) * power_of_ten != m_graph_max) {
+    m_graph_max = mantissa * power_of_ten;
+    emit maxChanged();
+  }
+}
+
+void
+GraphViewRenderer::render() {
+  UpdateMax();
+
+  float horizontal_line_interval = m_graph_max / 5;
 
   glClearColor(1, 1, 1, 1);
   GL_CHECK();
@@ -214,24 +239,16 @@ GraphViewRenderer::render() {
   glUseProgram(prog);
   GL_CHECK();
 
-  // render the cross-lines representing 25,50,75 %
-  const int power_of_ten_exponent = log10(max) - 1;
-  const float power_of_ten = exp10f(power_of_ten_exponent);
-  float horizontal_line_interval = 0;
-  if (max / power_of_ten < 5)
-    horizontal_line_interval = power_of_ten;
-  else
-    horizontal_line_interval = 2 * power_of_ten;
-
+  // render the cross-lines representing 20,40,60,80 %
   float horizontal_line = horizontal_line_interval;
   glLineWidth(2);
   m_data.resize(2);
   m_data[0].x = 100 * 1000;
   m_data[1].x = 0;
-  while (horizontal_line && horizontal_line < max) {
+  while (horizontal_line && horizontal_line < m_graph_max) {
     m_data[0].y = horizontal_line;
     m_data[1].y = horizontal_line;
-    RenderPoints(m_data, tick_lines_color, max);
+    RenderPoints(m_data, tick_lines_color, m_graph_max);
     horizontal_line += horizontal_line_interval;
   }
 
@@ -243,7 +260,7 @@ GraphViewRenderer::render() {
 
   // vertical line
   m_data[0].y = -1;
-  m_data[1].y = 2 * max;
+  m_data[1].y = 2 * m_graph_max;
   m_data[0].x = age_of_10_sec;
   m_data[1].x = age_of_10_sec;
 
@@ -251,7 +268,7 @@ GraphViewRenderer::render() {
   while (age_of_10_sec < 60 * 1000) {
     // std::cout << m_data[0].x << ", " << m_data[0].y << " : ";
     // std::cout << m_data[1].x << ", " << m_data[1].y << std::endl;
-    RenderPoints(m_data, tick_lines_color, max);
+    RenderPoints(m_data, tick_lines_color, m_graph_max);
     age_of_10_sec += 10 * 1000;
     m_data[0].x = age_of_10_sec;
     m_data[1].x = age_of_10_sec;
@@ -262,7 +279,7 @@ GraphViewRenderer::render() {
   for (std::map<int, GraphSet *>::iterator set = m_sets.begin();
        set != m_sets.end(); ++set) {
     set->second->GetData(&m_data, t);
-    RenderPoints(m_data, black_color, max);
+    RenderPoints(m_data, black_color, m_graph_max);
   }
   update();
 }
@@ -290,6 +307,13 @@ GraphViewRenderer::PrintCompileError(GLint shader) {
 
 void
 GraphViewRenderer::synchronize(QQuickFramebufferObject * item) {
+  // inform the GraphView of the max, so it can draw the y-axis units
+  if (0 != m_graph_max) {
+    GraphView *gv = dynamic_cast<GraphView*>(item);
+    assert(gv != NULL);
+    gv->setGraphMax(m_graph_max);
+  }
+
   // call the subscriber to make a one-time request for the metrics
   // to be graphed.
   if (!m_sets.empty())
@@ -318,9 +342,17 @@ GraphView::createRenderer() const {
   assert(m_pub);
   assert(m_subscriber);
   QQuickFramebufferObject::Renderer * renderer =
-      new GraphViewRenderer(m_subscriber, *m_pub);
+      new GraphViewRenderer(this, m_subscriber, *m_pub);
   return renderer;
 }
 
 GraphView::~GraphView() {
+}
+
+void
+GraphView::setGraphMax(float m) {
+  if (m_graph_max == m)
+    return;
+  m_graph_max = m;
+  emit onGraphMax();
 }

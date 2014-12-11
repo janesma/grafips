@@ -44,7 +44,6 @@ ApplicationWindow {
                     mainView.visible = true
                     connectionDialog.visible = false
                     cpu.start();
-                    cpuCore.start();
                     glFt.start();
                     glFps.start();
                 }
@@ -62,14 +61,8 @@ ApplicationWindow {
             id: cpu
             color: "red"
             publisher: mainPublisher
-            filters: ["cpu/system/utilization"]
-        }
-
-        MetricGroup {
-            id: cpuCore
-            color: "red"
-            publisher: mainPublisher
-            filters: ["cpu/core/*/utilization"]
+            filters: ["cpu/system/utilization",
+                      "cpu/core/*/utilization"]
         }
         MetricGroup {
             id: glFt
@@ -82,20 +75,6 @@ ApplicationWindow {
             color: "red"
             publisher: mainPublisher
             filters: ["gl/fps"]
-        }
-        Rectangle {
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            Layout.minimumHeight:20
-            Layout.preferredHeight: 100
-            color: "green"
-        }
-        Rectangle {
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            Layout.minimumHeight:20
-            Layout.preferredHeight: 100
-            color: "yellow"
         }
     }
 }

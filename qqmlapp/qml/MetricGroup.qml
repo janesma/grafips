@@ -12,6 +12,13 @@ Item {
     property MetricRouter publisher
     property variant filters: [ "foo" ]
 
+    function formatFloat(num) {
+        if (num < 10) {
+            return num.toPrecision(2);
+        }
+        return num.toFixed(0);
+    }
+
     function refresh() {
         visible = false
         visible = true
@@ -75,14 +82,36 @@ Item {
             publisher: currentGroup.publisher
         }
 
-        Renderer {
-            visible: true
+
+        Rectangle {
+            id: scale
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
+            width: axisText.width
+            Text {
+                id: axisText
+                visible: false
+                lineHeightMode: Text.FixedHeight
+                lineHeight: scale.height / 5.0
+                text: formatFloat(graphView.graphMax) + "\n"
+                    + formatFloat(graphView.graphMax * 0.8) + "\n"
+                    + formatFloat(graphView.graphMax * 0.6) + "\n"
+                    + formatFloat(graphView.graphMax * 0.4) + "\n"
+                    + formatFloat(graphView.graphMax * 0.2)
+            }
+        }
+
+        Renderer {
+            id: graphView
+            visible: true
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: scale.left
             anchors.left: currentList.right
             subscriber: mySubscriber
             publisher: currentGroup.publisher
+            onOnGraphMax : { axisText.visible = true; }
         }
     }
 }

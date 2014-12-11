@@ -41,20 +41,28 @@ namespace Grafips {
 class GraphView;
 
 // renders graph to texture for on-screen display
-class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
+class GraphViewRenderer : public QObject,
+                          public QQuickFramebufferObject::Renderer,
                           NoCopy, NoAssign, NoMove {
+  Q_OBJECT
  public:
-  GraphViewRenderer(GraphSetSubscriber *s, const PublisherInterface &p);
+  GraphViewRenderer(const GraphView *v, GraphSetSubscriber *s,
+                    const PublisherInterface &p);
   ~GraphViewRenderer();
   void render();
   void synchronize(QQuickFramebufferObject * item);
   // to ensure that we get a multisample fbo
   QOpenGLFramebufferObject * createFramebufferObject(const QSize & size);
+
+ signals:
+  void maxChanged();
+
  private:
   void CheckError(const char * file, int line);
   void PrintCompileError(GLint shader);
   void RenderPoints(const GraphSet::PointVec &data, const float* color,
                     float max_y);
+  void UpdateMax();
 
   GraphSetSubscriber *m_subscriber;
   std::map<int, GraphSet *> m_sets;
@@ -66,6 +74,7 @@ class GraphViewRenderer : public QQuickFramebufferObject::Renderer,
     uniform_line_color, prog;
   int m_width;
   GraphSet::PointVec m_data;
+  float m_graph_max;
 };
 
 class GraphView : public QQuickFramebufferObject,
@@ -75,6 +84,8 @@ class GraphView : public QQuickFramebufferObject,
              READ subscriber WRITE setSubscriber)
   Q_PROPERTY(Grafips::MetricRouter* publisher
              READ publisher WRITE setPublisher)
+  Q_PROPERTY(float graphMax
+             READ graphMax WRITE setGraphMax NOTIFY onGraphMax)
  public:
   GraphView();
   ~GraphView();
@@ -84,10 +95,16 @@ class GraphView : public QQuickFramebufferObject,
   MetricRouter *publisher() {return m_pub;}
   void setPublisher(MetricRouter *p) {m_pub = p;}
   Renderer *createRenderer() const;
+  float graphMax() const { return m_graph_max;}
+  void setGraphMax(float m);
+
+ signals:
+  void onGraphMax();
 
  private:
   MetricRouter *m_pub;
   GraphSetSubscriber *m_subscriber;
+  float m_graph_max;
 };
 }  // namespace Grafips
 
