@@ -66,7 +66,10 @@ GlSource::~GlSource() {
 
 void
 GlSource::GetDescriptions(MetricDescriptionSet *descriptions) {
-  *descriptions = k_metrics;
+  for (MetricDescriptionSet::const_iterator i = k_metrics.begin();
+       i != k_metrics.end(); ++i) {
+    descriptions->push_back(*i);
+  }
 }
 
 void

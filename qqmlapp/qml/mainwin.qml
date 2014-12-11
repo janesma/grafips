@@ -40,12 +40,12 @@ ApplicationWindow {
                 verticalAlignment: Text.AlignVCenter
                 text: "localhost:53136"
                 onAccepted: {
-                    mainPublisher.address = text
-                    mainView.visible = true
-                    connectionDialog.visible = false
                     cpu.start();
                     glFt.start();
                     glFps.start();
+                    mainPublisher.address = text
+                    mainView.visible = true
+                    connectionDialog.visible = false
                 }
             }
         }
