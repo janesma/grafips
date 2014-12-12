@@ -97,7 +97,7 @@ GlSource::glSwapBuffers() {
   }
 
   assert(current_time_ns > m_last_time_ns);
-  const int64_t frame_time_ns = current_time_ns - m_last_time_ns;
+  const float frame_time_ns = current_time_ns - m_last_time_ns;
   const float frame_time_ms = frame_time_ns / NANO_SECONDS_PER_MS;
 
   DataSet d;
