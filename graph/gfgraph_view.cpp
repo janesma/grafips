@@ -211,7 +211,7 @@ GraphViewRenderer::UpdateMax() {
 
   if (max == 0)
     return;
-  
+
   const int power_of_ten_exponent = log10(max) - 1;
   const float power_of_ten = exp10f(power_of_ten_exponent);
   int mantissa = max / power_of_ten;
