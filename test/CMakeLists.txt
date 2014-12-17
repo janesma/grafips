@@ -10,5 +10,5 @@ add_executable(test_grafips
   test_pattern.cpp
   )
 
-target_link_libraries(test_grafips grafips_sources grafips_publishers grafips_subscriber gtest GL)
+target_link_libraries(test_grafips grafips_sources grafips_publishers grafips_subscriber gtest GL X11)
 

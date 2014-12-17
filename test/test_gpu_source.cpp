@@ -27,10 +27,44 @@
 
 #include <gtest/gtest.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <X11/Xlib.h>
+//#include <X11/Xutil.h>
+//#include <X11/Xos.h>
+//#include <X11/Xatom.h>
+//#include <X11/keysym.h>
+#include <GL/glx.h>
+
 #include "sources/gfgpu_perf_source.h"
 
 using Grafips::GpuPerfSource;
 
 TEST(gpu_source, instantiate) {
-  GpuPerfSource s(NULL);
+    Display *dis = XOpenDisplay(NULL);
+    Window win = XCreateSimpleWindow(dis, RootWindow(dis, 0), 1, 1, 500, 500,  \
+                              0, BlackPixel (dis, 0), BlackPixel(dis, 0));
+    XMapWindow(dis, win);
+    XFlush(dis);
+
+    int doubleBufferAttributes[] = {
+        GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+        GLX_RENDER_TYPE,   GLX_RGBA_BIT,
+        GLX_DOUBLEBUFFER,  True,  /* Request a double-buffered color buffer with */
+        GLX_RED_SIZE,      1,     /* the maximum number of bits per component    */
+        GLX_GREEN_SIZE,    1, 
+        GLX_BLUE_SIZE,     1,
+        None
+    };
+
+    int numReturned;
+    GLXFBConfig          *fbConfigs = glXChooseFBConfig( dis, DefaultScreen(dis),
+                                                         doubleBufferAttributes, &numReturned );
+    assert(fbConfigs != NULL);
+
+    GLXContext context = glXCreateNewContext(dis,  fbConfigs[0], GLX_RGBA_TYPE,
+                                             NULL, True );
+
+    glXMakeContextCurrent(dis, win, win, context);
+    GpuPerfSource s(NULL);
 }
