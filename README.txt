@@ -6,3 +6,4 @@ debian build dependencies:
  - qt5-default
  - protobuf-compiler
  - libprotobuf-dev
+ - libwaffle-dev
