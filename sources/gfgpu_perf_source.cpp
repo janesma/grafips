@@ -65,7 +65,6 @@ GpuPerfSource::GpuPerfSource(MetricSinkInterface *sink)
 
   unsigned int query_id = 0;
   (*p_glGetFirstPerfQueryIdINTEL)(&query_id);
-  std::cout << "query_id: " << query_id << std::endl;
 
   if (query_id == 0)
     return;

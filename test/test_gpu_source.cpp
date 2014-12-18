@@ -51,9 +51,14 @@ TEST(gpu_source, instantiate) {
   };
 
   struct waffle_config *config = waffle_config_choose(dpy, config_attrs);
-  struct waffle_context *ctx = waffle_context_create(config, NULL);
   struct waffle_window *window = waffle_window_create(config, 320, 320);
+  struct waffle_context *ctx = waffle_context_create(config, NULL);
   waffle_make_current(dpy, window, ctx);
 
   GpuPerfSource s(NULL);
+
+  waffle_context_destroy(ctx);
+  waffle_window_destroy(window);
+  waffle_config_destroy(config);
+  waffle_display_disconnect(dpy);
 }
