@@ -29,42 +29,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <X11/Xos.h>
-//#include <X11/Xatom.h>
-//#include <X11/keysym.h>
-#include <GL/glx.h>
+
+#include <waffle-1/waffle.h>
 
 #include "sources/gfgpu_perf_source.h"
 
 using Grafips::GpuPerfSource;
 
 TEST(gpu_source, instantiate) {
-    Display *dis = XOpenDisplay(NULL);
-    Window win = XCreateSimpleWindow(dis, RootWindow(dis, 0), 1, 1, 500, 500,  \
-                              0, BlackPixel (dis, 0), BlackPixel(dis, 0));
-    XMapWindow(dis, win);
-    XFlush(dis);
 
-    int doubleBufferAttributes[] = {
-        GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-        GLX_RENDER_TYPE,   GLX_RGBA_BIT,
-        GLX_DOUBLEBUFFER,  True,  /* Request a double-buffered color buffer with */
-        GLX_RED_SIZE,      1,     /* the maximum number of bits per component    */
-        GLX_GREEN_SIZE,    1, 
-        GLX_BLUE_SIZE,     1,
-        None
-    };
+  const int32_t init_attrs[] = {
+    WAFFLE_PLATFORM, WAFFLE_PLATFORM_GBM,
+    0,
+  };
+  waffle_init(init_attrs);
 
-    int numReturned;
-    GLXFBConfig          *fbConfigs = glXChooseFBConfig( dis, DefaultScreen(dis),
-                                                         doubleBufferAttributes, &numReturned );
-    assert(fbConfigs != NULL);
+  struct waffle_display *dpy = waffle_display_connect(NULL);   
+  const int32_t config_attrs[] = {
+    WAFFLE_CONTEXT_API, WAFFLE_CONTEXT_OPENGL,
+    0,
+  };
 
-    GLXContext context = glXCreateNewContext(dis,  fbConfigs[0], GLX_RGBA_TYPE,
-                                             NULL, True );
+  struct waffle_config *config = waffle_config_choose(dpy, config_attrs);
+  struct waffle_context *ctx = waffle_context_create(config, NULL);
+  struct waffle_window *window = waffle_window_create(config, 320, 320);
+  waffle_make_current(dpy, window, ctx);
 
-    glXMakeContextCurrent(dis, win, win, context);
-    GpuPerfSource s(NULL);
+  GpuPerfSource s(NULL);
 }
