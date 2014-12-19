@@ -31,7 +31,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-#include <iostream>
+#include <vector>
 
 using Grafips::GpuPerfSource;
 
@@ -60,7 +60,7 @@ GpuPerfSource::GpuPerfSource(MetricSinkInterface *sink)
   proc_addr = glXGetProcAddress(name);
   if (proc_addr == NULL)
     return;
-  PFNGLGETNEXTPERFQUERYID *p_glGetNextPerfQueryIdINTEL = 
+  PFNGLGETNEXTPERFQUERYID *p_glGetNextPerfQueryIdINTEL =
       reinterpret_cast<PFNGLGETNEXTPERFQUERYID*>(proc_addr);
 
   unsigned int query_id = 0;
@@ -72,7 +72,7 @@ GpuPerfSource::GpuPerfSource(MetricSinkInterface *sink)
   query_ids.push_back(query_id);
   while (true) {
     p_glGetNextPerfQueryIdINTEL(query_id, &query_id);
-    if (! query_id )
+    if (!query_id)
       break;
     query_ids.push_back(query_id);
   }

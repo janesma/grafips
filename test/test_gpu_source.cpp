@@ -37,14 +37,13 @@
 using Grafips::GpuPerfSource;
 
 TEST(gpu_source, instantiate) {
-
   const int32_t init_attrs[] = {
     WAFFLE_PLATFORM, WAFFLE_PLATFORM_GBM,
     0,
   };
   waffle_init(init_attrs);
 
-  struct waffle_display *dpy = waffle_display_connect(NULL);   
+  struct waffle_display *dpy = waffle_display_connect(NULL);
   const int32_t config_attrs[] = {
     WAFFLE_CONTEXT_API, WAFFLE_CONTEXT_OPENGL,
     0,
@@ -55,6 +54,7 @@ TEST(gpu_source, instantiate) {
   struct waffle_context *ctx = waffle_context_create(config, NULL);
   waffle_make_current(dpy, window, ctx);
 
+  // instantiate the metrics source that queries the perf api
   GpuPerfSource s(NULL);
 
   waffle_context_destroy(ctx);
