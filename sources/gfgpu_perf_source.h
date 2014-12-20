@@ -29,24 +29,29 @@
 #define SOURCES_GFGPU_PERF_SOURCE_H_
 
 #include <set>
+#include <vector>
 
 #include "sources/gfimetric_source.h"
 
 namespace Grafips {
 class MetricSinkInterface;
+class PerfMetricSet;
 
 // GlSource produces metrics based on the GL API
 class GpuPerfSource : public MetricSourceInterface {
  public:
-  explicit GpuPerfSource(MetricSinkInterface *sink);
+  GpuPerfSource();
   ~GpuPerfSource();
+  void SetMetricSink(MetricSinkInterface *sink);
   void GetDescriptions(MetricDescriptionSet *descriptions);
   void Enable(int id);
   void Disable(int id);
+  void MakeContextCurrent();
   void glSwapBuffers();
  private:
   MetricSinkInterface *m_sink;
   std::set<int> m_enabled_ids;
+  PerfMetricSet *m_metrics;
 };
 }  // end namespace Grafips
 #endif  // SOURCES_GFGPU_PERF_SOURCE_H_

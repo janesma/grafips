@@ -28,12 +28,15 @@
 #include <unistd.h>
 
 #include "sources/gfcpu_source.h"
+#include "sources/gfgpu_perf_source.h"
 #include "sources/gfgl_source.h"
 #include "remote/gfpublisher_skel.h"
 #include "remote/gfpublisher.h"
+#include "test/test_gpu_context.h"
 
 using Grafips::CpuSource;
 using Grafips::GlSource;
+using Grafips::GpuPerfSource;
 using Grafips::PublisherImpl;
 using Grafips::PublisherSkeleton;
 using Grafips::Thread;
@@ -63,22 +66,29 @@ class PollThread : public Thread {
 };
 
 int main(int argc, const char **argv) {
-    CpuSource prov;
-    PublisherImpl pub;
-    GlSource glprov(&pub);
-    PollThread thread(&prov, &glprov);
+  Grafips::MockContext c;
+  CpuSource prov;
+  PublisherImpl pub;
+  GlSource glprov(&pub);
+  GpuPerfSource gpuprov;
 
-    prov.SetMetricSink(&pub);
-    int port = 53136;
-    if (argc > 1) {
-        port = atoi(argv[1]);
-    }
-    PublisherSkeleton skel(port, &pub);
-    skel.Start();
-    thread.Start();
+  // TODO(majanes) make reactive
+  gpuprov.MakeContextCurrent();
+  gpuprov.SetMetricSink(&pub);
 
-    skel.Join();
-    thread.Stop();
+  PollThread thread(&prov, &glprov);
 
-    return 0;
+  prov.SetMetricSink(&pub);
+  int port = 53136;
+  if (argc > 1) {
+    port = atoi(argv[1]);
+  }
+  PublisherSkeleton skel(port, &pub);
+  skel.Start();
+  thread.Start();
+
+  skel.Join();
+  thread.Stop();
+
+  return 0;
 }

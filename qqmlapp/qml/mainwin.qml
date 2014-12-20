@@ -43,6 +43,7 @@ ApplicationWindow {
                     cpu.start();
                     glFt.start();
                     glFps.start();
+                    glGpu.start();
                     mainPublisher.address = text
                     mainView.visible = true
                     connectionDialog.visible = false
@@ -75,6 +76,12 @@ ApplicationWindow {
             color: "red"
             publisher: mainPublisher
             filters: ["gl/fps"]
+        }
+        MetricGroup {
+            id: glGpu
+            color: "red"
+            publisher: mainPublisher
+            filters: ["gpu/intel/*/*"]
         }
     }
 }

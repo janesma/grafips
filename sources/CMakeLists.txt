@@ -14,7 +14,7 @@ add_library(grafips_sources
 
 target_include_directories( grafips_sources PUBLIC .)
 
-target_link_libraries(grafips_sources grafips_publishers)
+target_link_libraries(grafips_sources grafips_publishers GL)
 
 
 

@@ -25,24 +25,45 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include <gtest/gtest.h>
+#ifndef TEST_TEST_GPU_CONTEXT_H_
+#define TEST_TEST_GPU_CONTEXT_H_
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <waffle-1/waffle.h>
 
+namespace Grafips {
+class MockContext {
+ public:
+  MockContext() {
+    const int32_t init_attrs[] = {
+      WAFFLE_PLATFORM, WAFFLE_PLATFORM_GBM,
+      0,
+    };
+    waffle_init(init_attrs);
 
-#include "sources/gfgpu_perf_source.h"
-#include "test/test_gpu_context.h"
+    m_dpy = waffle_display_connect(NULL);
+    const int32_t config_attrs[] = {
+      WAFFLE_CONTEXT_API, WAFFLE_CONTEXT_OPENGL,
+      0,
+    };
 
-using Grafips::GpuPerfSource;
-using Grafips::MetricDescriptionSet;
-using Grafips::MockContext;
+    m_config = waffle_config_choose(m_dpy, config_attrs);
+    m_window = waffle_window_create(m_config, 320, 320);
+    m_ctx = waffle_context_create(m_config, NULL);
+    waffle_make_current(m_dpy, m_window, m_ctx);
+  }
 
-TEST(gpu_source, instantiate) {
-  // instantiate the metrics source that queries the perf api
-  GpuPerfSource s;
-  MockContext m;
-  s.MakeContextCurrent();
-  MetricDescriptionSet desc;
-  s.GetDescriptions(&desc);
-}
+  ~MockContext() {
+    waffle_context_destroy(m_ctx);
+    waffle_window_destroy(m_window);
+    waffle_config_destroy(m_config);
+    waffle_display_disconnect(m_dpy);
+  }
+
+ private:
+  struct waffle_display *m_dpy;
+  struct waffle_config *m_config;
+  struct waffle_window *m_window;
+  struct waffle_context *m_ctx;
+};
+}  // namespace Grafips
+#endif  // TEST_TEST_GPU_CONTEXT_H_
