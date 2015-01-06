@@ -133,12 +133,14 @@ GpuPerfSource::GetDescriptions(MetricDescriptionSet *descriptions) {
 
 void
 GpuPerfSource::Enable(int id) {
-  m_metrics->Enable(id);
+  if (m_metrics)
+    m_metrics->Enable(id);
 }
 
 void
 GpuPerfSource::Disable(int id) {
-  m_metrics->Disable(id);
+  if (m_metrics)
+    m_metrics->Disable(id);
 }
 
 void
