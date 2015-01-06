@@ -38,17 +38,23 @@ namespace Grafips {
 
 class TestPublisher : public PublisherInterface, public MetricSinkInterface {
  public:
-  void RegisterSource(MetricSourceInterface *p) { m_p = p; }
+  TestPublisher() : m_p(NULL), m_sub(NULL) {}
+  void RegisterSource(MetricSourceInterface *p) { m_p = p; p->Subscribe(this); }
   void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
   void Enable(int id) { m_p->Enable(id); }
   void Disable(int id) { m_p->Disable(id); }
+  void OnDescriptions(const std::vector<MetricDescription> &descriptions) {
+    m_desc = descriptions;
+    if (m_sub)
+      m_sub->OnDescriptions(descriptions);
+  }
   void Subscribe(SubscriberInterface *s) {
-    MetricDescriptionSet descriptions;
-    m_p->GetDescriptions(&descriptions);
-    s->OnDescriptions(descriptions);
+    m_sub->OnDescriptions(m_desc);
   }
   DataSet m_d;
   MetricSourceInterface *m_p;
+  std::vector<MetricDescription> m_desc;
+  SubscriberInterface *m_sub;
 };
 
 }  // namespace Grafips

@@ -66,19 +66,20 @@ class PollThread : public Thread {
 };
 
 int main(int argc, const char **argv) {
-  Grafips::MockContext c;
   CpuSource prov;
   PublisherImpl pub;
-  GlSource glprov(&pub);
+  GlSource glprov;
   GpuPerfSource gpuprov;
+  pub.RegisterSource(&glprov);
+  pub.RegisterSource(&gpuprov);
+  pub.RegisterSource(&prov);
 
-  // TODO(majanes) make reactive
+  Grafips::MockContext c;
+
   gpuprov.MakeContextCurrent();
-  gpuprov.SetMetricSink(&pub);
 
   PollThread thread(&prov, &glprov);
 
-  prov.SetMetricSink(&pub);
   int port = 53136;
   if (argc > 1) {
     port = atoi(argv[1]);

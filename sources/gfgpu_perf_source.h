@@ -42,13 +42,14 @@ class GpuPerfSource : public MetricSourceInterface {
  public:
   GpuPerfSource();
   ~GpuPerfSource();
-  void SetMetricSink(MetricSinkInterface *sink);
-  void GetDescriptions(MetricDescriptionSet *descriptions);
+  void Subscribe(MetricSinkInterface *sink);
   void Enable(int id);
   void Disable(int id);
   void MakeContextCurrent();
   void glSwapBuffers();
  private:
+  void GetDescriptions(MetricDescriptionSet *descriptions);
+
   MetricSinkInterface *m_sink;
   std::set<int> m_enabled_ids;
   PerfMetricSet *m_metrics;

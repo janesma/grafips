@@ -33,16 +33,23 @@
 
 #include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
+#include "test/test_mock.h"
 
 using Grafips::GpuPerfSource;
 using Grafips::MetricDescriptionSet;
 using Grafips::MockContext;
+using Grafips::TestPublisher;
 
 TEST(gpu_source, instantiate) {
   // instantiate the metrics source that queries the perf api
   GpuPerfSource s;
+  TestPublisher p;
+  p.RegisterSource(&s);
+
   MockContext m;
+
+  EXPECT_EQ(p.m_desc.size(), 0);
+
   s.MakeContextCurrent();
-  MetricDescriptionSet desc;
-  s.GetDescriptions(&desc);
+  EXPECT_GT(p.m_desc.size(), 0);
 }

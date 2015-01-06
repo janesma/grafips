@@ -114,12 +114,15 @@ GpuPerfSource::GpuPerfSource()
     : m_sink(NULL), m_metrics(NULL) {
 }
 
-void
-GpuPerfSource::SetMetricSink(MetricSinkInterface *sink) {
-  m_sink = sink;
-  m_sink->RegisterSource(this);
-}
 GpuPerfSource::~GpuPerfSource() {
+}
+
+void
+GpuPerfSource::Subscribe(MetricSinkInterface *sink) {
+  m_sink = sink;
+  MetricDescriptionSet descriptions;
+  GetDescriptions(&descriptions);
+  m_sink->OnDescriptions(descriptions);
 }
 
 void
@@ -144,6 +147,10 @@ GpuPerfSource::MakeContextCurrent() {
     return;
 
   m_metrics = new PerfMetricSet();
+
+  MetricDescriptionSet descriptions;
+  GetDescriptions(&descriptions);
+  m_sink->OnDescriptions(descriptions);
 }
 
 void

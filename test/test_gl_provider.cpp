@@ -40,11 +40,10 @@ using Grafips::MetricDescriptionSet;
 
 TEST(GlSourceFixture, test_descriptions ) {
   TestPublisher pub;
-  GlSource source(&pub);
-  MetricDescriptionSet descriptions;
-  source.GetDescriptions(&descriptions);
-
-  source.Enable(descriptions[0].id());
+  GlSource source;
+  pub.RegisterSource(&source);
+  
+  source.Enable(pub.m_desc[0].id());
 
   source.glSwapBuffers();
   EXPECT_TRUE(pub.m_d.empty());
@@ -55,8 +54,10 @@ TEST(GlSourceFixture, test_descriptions ) {
   EXPECT_GT(pub.m_d[0].data, 9.6);
 
   pub.m_d.clear();
-  source.Enable(descriptions[1].id());
-  source.Disable(descriptions[0].id());
+
+  source.Disable(pub.m_desc[0].id());
+  source.Enable(pub.m_desc[1].id());
+
   usleep(100000);
   source.glSwapBuffers();
   EXPECT_LT(pub.m_d[0].data, 120.0);

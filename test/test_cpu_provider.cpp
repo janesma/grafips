@@ -48,17 +48,25 @@ class NullPublisher : public PublisherInterface, public MetricSinkInterface {
   void Disable(int id) {}
   void GetDescriptions(std::vector<MetricDescription> *descriptions) const {}
   void Subscribe(SubscriberInterface *s) {}
+  void OnDescriptions(const std::vector<MetricDescription> &descriptions) {}
 };
 
-class TestPublisher : public PublisherInterface, public MetricSinkInterface {
+class TestCpuPublisher : public PublisherInterface, public MetricSinkInterface {
  public:
-  void RegisterSource(MetricSourceInterface *p) { m_p = p; }
+  TestCpuPublisher() : m_p(NULL) {}
+  void RegisterSource(MetricSourceInterface *p) {
+    m_p = p;
+    m_p->Subscribe(this);
+  }
   void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
   void Enable(int id) { m_p->Enable(id); }
   virtual void Disable(int id) { m_p->Disable(id); }
-  void GetDescriptions(std::vector<MetricDescription> *descriptions) const
-  { m_p->GetDescriptions(descriptions); }
   void Subscribe(SubscriberInterface *s) {}
+  void OnDescriptions(const std::vector<MetricDescription> &descriptions) {
+    for (MetricDescriptionSet::const_iterator i = descriptions.begin();
+         i != descriptions.end(); ++i)
+      Enable(i->id());
+  }
   DataSet m_d;
   MetricSourceInterface *m_p;
 };
@@ -76,7 +84,7 @@ class CpuSourceFixture : public testing::Test {
   void test_parse() {
     NullPublisher pub;
     CpuSource p;
-    p.SetMetricSink(&pub);
+    p.Subscribe(&pub);
     EXPECT_GT(p.m_systemStats.user, 0);
     EXPECT_GT(p.m_systemStats.system, 0);
     EXPECT_GT(p.m_systemStats.idle, 0);
@@ -88,18 +96,12 @@ class CpuSourceFixture : public testing::Test {
   }
 
   void test_publish() {
-    TestPublisher pub;
+    TestCpuPublisher pub;
     CpuSource p;
-    p.SetMetricSink(&pub);
+    pub.RegisterSource(&p);
 
-    MetricDescriptionSet metrics;
-    pub.GetDescriptions(&metrics);
-    for (MetricDescriptionSet::iterator i = metrics.begin();
-         i != metrics.end(); ++i)
-      pub.Enable(i->id());
     usleep(100000);
     p.Poll();
-    EXPECT_EQ(pub.m_d.size(), metrics.size());
     for (unsigned int i = 0; i < pub.m_d.size(); ++i) {
       EXPECT_LT(pub.m_d[i].data, 100);
       EXPECT_GE(pub.m_d[i].data, 0);
