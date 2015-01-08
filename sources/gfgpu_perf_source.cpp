@@ -241,8 +241,6 @@ PerfMetricSet::Enable(int id) {
   if (m_enabled_group != -1) {
     if (m_metric_groups[m_enabled_group]->Enable(id))
       ++m_enable_count;
-    else
-      assert(false);
     return;
   }
 
@@ -263,8 +261,6 @@ PerfMetricSet::Disable(int id) {
     --m_enable_count;
     if (0 == m_enable_count)
       m_enabled_group = -1;
-  } else {
-    assert(false);
   }
 }
 
@@ -281,7 +277,7 @@ PerfMetricSet::GetDescriptions(MetricDescriptionSet *desc) {
 }
 
 PerfMetricGroup::PerfMetricGroup(int query_id, MetricSinkInterface *sink)
-    : m_query_id(query_id) {
+	: m_query_id(query_id), m_current_query_handle(GL_INVALID_VALUE) {
 
   static const GLubyte *name =
       reinterpret_cast<const GLubyte*>("glGetPerfQueryInfoINTEL");
@@ -321,9 +317,10 @@ PerfMetricGroup::Enable(int id) {
   int index = 0;
   for (auto i = m_metrics.begin(); i != m_metrics.end(); ++i, ++index) {
     {
-      if ((*i)->Enable(id))
+      if ((*i)->Enable(id)) {
         m_enabled_metric_indices.push_back(index);
-      return true;
+        return true;
+      }
     }
   }
   return false;
