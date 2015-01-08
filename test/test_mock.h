@@ -28,6 +28,8 @@
 #ifndef TEST_TEST_MOCK_H__
 #define TEST_TEST_MOCK_H__
 
+#include <vector>
+
 #include "remote/gfipublisher.h"
 #include "remote/gfimetric_sink.h"
 #include "remote/gfisubscriber.h"

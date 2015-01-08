@@ -42,7 +42,7 @@ TEST(GlSourceFixture, test_descriptions ) {
   TestPublisher pub;
   GlSource source;
   pub.RegisterSource(&source);
-  
+
   source.Enable(pub.m_desc[0].id());
 
   source.glSwapBuffers();
