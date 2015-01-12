@@ -29,41 +29,22 @@
 #define TEST_TEST_GPU_CONTEXT_H_
 
 #include <waffle-1/waffle.h>
+#include <GLES2/gl2.h>
 
 namespace Grafips {
 class MockContext {
  public:
-  MockContext() {
-    const int32_t init_attrs[] = {
-      WAFFLE_PLATFORM, WAFFLE_PLATFORM_GBM,
-      0,
-    };
-    waffle_init(init_attrs);
-
-    m_dpy = waffle_display_connect(NULL);
-    const int32_t config_attrs[] = {
-      WAFFLE_CONTEXT_API, WAFFLE_CONTEXT_OPENGL,
-      0,
-    };
-
-    m_config = waffle_config_choose(m_dpy, config_attrs);
-    m_window = waffle_window_create(m_config, 320, 320);
-    m_ctx = waffle_context_create(m_config, NULL);
-    waffle_make_current(m_dpy, m_window, m_ctx);
-  }
-
-  ~MockContext() {
-    waffle_context_destroy(m_ctx);
-    waffle_window_destroy(m_window);
-    waffle_config_destroy(m_config);
-    waffle_display_disconnect(m_dpy);
-  }
-
+  MockContext();
+  ~MockContext();
+  void Draw();
+  
  private:
   struct waffle_display *m_dpy;
   struct waffle_config *m_config;
   struct waffle_window *m_window;
   struct waffle_context *m_ctx;
+  GLuint vbo, prog;
+  GLint attribute_coord2d;
 };
 }  // namespace Grafips
 #endif  // TEST_TEST_GPU_CONTEXT_H_

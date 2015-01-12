@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project(grafips_test)
 
+add_library(grafips_test_context
+  test_gpu_context.cpp
+  )
+
 add_executable(test_grafips
   test_cpu_provider.cpp
   test_gl_provider.cpp
@@ -10,5 +14,7 @@ add_executable(test_grafips
   test_pattern.cpp
   )
 
-target_link_libraries(test_grafips grafips_sources grafips_publishers grafips_subscriber gtest waffle-1 GL)
+target_include_directories( grafips_test_context PUBLIC .. )
+
+target_link_libraries(test_grafips grafips_test_context grafips_sources grafips_publishers grafips_subscriber gtest waffle-1 GL)
 

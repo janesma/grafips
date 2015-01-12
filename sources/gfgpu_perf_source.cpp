@@ -75,6 +75,32 @@ typedef void (PFNGLGETQUERYDATA) (GLuint queryHandle, GLuint flags,
                                            GLsizei dataSize, GLvoid *data,
                                            GLuint *bytesWritten);
 
+static const GLubyte *create_name =
+    reinterpret_cast<const GLubyte*>("glCreatePerfQueryINTEL");
+static const PFNGLCREATEQUERY *p_glCreatePerfQueryINTEL =
+    reinterpret_cast<const PFNGLCREATEQUERY*>(glXGetProcAddress(create_name));
+
+static const GLubyte *delete_name =
+    reinterpret_cast<const GLubyte*>("glDeletePerfQueryINTEL");
+static const PFNGLDELETEQUERY *p_glDeletePerfQueryINTEL =
+    reinterpret_cast<const PFNGLDELETEQUERY*>(glXGetProcAddress(delete_name));
+
+static const GLubyte *begin_name =
+    reinterpret_cast<const GLubyte*>("glBeginPerfQueryINTEL");
+static const PFNGLBEGINQUERY *p_glBeginPerfQueryINTEL =
+    reinterpret_cast<const PFNGLBEGINQUERY*>(glXGetProcAddress(begin_name));
+
+static const GLubyte *end_name =
+    reinterpret_cast<const GLubyte*>("glEndPerfQueryINTEL");
+static const PFNGLENDQUERY *p_glEndPerfQueryINTEL =
+    reinterpret_cast<const PFNGLENDQUERY*>(glXGetProcAddress(end_name));
+
+static const GLubyte *get_name =
+    reinterpret_cast<const GLubyte*>("glGetPerfQueryDataINTEL");
+static const PFNGLGETQUERYDATA *p_glGetPerfQueryDataINTEL =
+    reinterpret_cast<const PFNGLGETQUERYDATA*>(glXGetProcAddress(get_name));
+
+
 class PerfMetric : public NoCopy, NoAssign {
  public:
   PerfMetric(int query_id, int counter_num, MetricSinkInterface *sink);
@@ -299,6 +325,7 @@ PerfMetricGroup::PerfMetricGroup(int query_id, MetricSinkInterface *sink)
                             query_name.size(), query_name.data(),
                             &m_data_size, &m_number_counters,
                             &number_instances, &m_capabilities_mask);
+  m_data_buf.resize(m_data_size);
   for (unsigned int counter_num = 1; counter_num <= m_number_counters;
        ++counter_num) {
     m_metrics.push_back(new PerfMetric(m_query_id, counter_num, sink));
@@ -340,8 +367,26 @@ PerfMetricGroup::Disable(int id) {
           break;
         }
       }
-      // TODO(majanes) if last metric is disabled, then flush queries
-      // and delete them.  Also set m_current_query_handle to -1
+      // If last metric is disabled, then flush queries and delete
+      // them.  Also set m_current_query_handle to -1
+      for (auto extant_query = m_extant_query_handles.rbegin();
+           extant_query != m_extant_query_handles.rend(); ++extant_query) {
+        GLuint bytes_written = 0;
+        p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_WAIT_INTEL,
+                                  m_data_size, m_data_buf.data(),
+                                  &bytes_written);
+        assert(bytes_written != 0);
+        p_glDeletePerfQueryINTEL(*extant_query);
+      }
+      m_extant_query_handles.clear();
+      m_current_query_handle = GL_INVALID_VALUE;
+
+
+      for (auto free_query =m_free_query_handles.begin(); free_query != m_free_query_handles.end();
+           ++free_query)
+        p_glDeletePerfQueryINTEL(*free_query);
+      m_free_query_handles.clear();
+          
       return true;
     }
   }
@@ -352,31 +397,6 @@ void
 PerfMetricGroup::SwapBuffers() {
   if (m_enabled_metric_indices.empty())
     return;
-
-  static const GLubyte *create_name =
-      reinterpret_cast<const GLubyte*>("glCreatePerfQueryINTEL");
-  static const PFNGLCREATEQUERY *p_glCreatePerfQueryINTEL =
-      reinterpret_cast<const PFNGLCREATEQUERY*>(glXGetProcAddress(create_name));
-
-  static const GLubyte *delete_name =
-      reinterpret_cast<const GLubyte*>("glDeletePerfQueryINTEL");
-  static const PFNGLDELETEQUERY *p_glDeletePerfQueryINTEL =
-      reinterpret_cast<const PFNGLDELETEQUERY*>(glXGetProcAddress(delete_name));
-
-  static const GLubyte *begin_name =
-      reinterpret_cast<const GLubyte*>("glBeginPerfQueryINTEL");
-  static const PFNGLBEGINQUERY *p_glBeginPerfQueryINTEL =
-      reinterpret_cast<const PFNGLBEGINQUERY*>(glXGetProcAddress(begin_name));
-
-  static const GLubyte *end_name =
-      reinterpret_cast<const GLubyte*>("glEndPerfQueryINTEL");
-  static const PFNGLENDQUERY *p_glEndPerfQueryINTEL =
-      reinterpret_cast<const PFNGLENDQUERY*>(glXGetProcAddress(end_name));
-
-  static const GLubyte *get_name =
-      reinterpret_cast<const GLubyte*>("glGetPerfQueryDataINTEL");
-  static const PFNGLGETQUERYDATA *p_glGetPerfQueryDataINTEL =
-      reinterpret_cast<const PFNGLGETQUERYDATA*>(glXGetProcAddress(get_name));
 
   assert(p_glCreatePerfQueryINTEL != NULL &&
          p_glDeletePerfQueryINTEL != NULL &&
@@ -395,11 +415,13 @@ PerfMetricGroup::SwapBuffers() {
   for (auto extant_query = m_extant_query_handles.rbegin();
        extant_query != m_extant_query_handles.rend(); ++extant_query) {
     uint bytes_written = 0;
+    //p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_WAIT_INTEL,
     p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_DONOT_FLUSH_INTEL,
                               m_data_size, m_data_buf.data(),
                               &bytes_written);
-    if (bytes_written == 0)
+    if (bytes_written == 0) {
       continue;
+    }
 
     // TODO(majanes) pass bytes down to the metric for publication
     for (auto i = m_enabled_metric_indices.begin();
@@ -491,33 +513,33 @@ PerfMetric::Publish(const std::vector<unsigned char> &data) {
   DataSet d;
   float fval;
   const unsigned char *p_value = data.data() + m_offset;
-  switch (m_type) {
+  switch (m_data_type) {
     case GL_PERFQUERY_COUNTER_DATA_UINT32_INTEL:
       {
-        assert(m_data_type == 4);
+        assert(m_data_size == 4);
         const uint32_t val = *reinterpret_cast<const uint32_t *>(p_value);
         fval = static_cast<float>(val);
         break;
       }
     case GL_PERFQUERY_COUNTER_DATA_UINT64_INTEL: {
-      assert(m_data_type == 8);
+      assert(m_data_size == 8);
       const uint64_t val = *reinterpret_cast<const uint64_t *>(p_value);
       fval = static_cast<float>(val);
       break;
     }
     case GL_PERFQUERY_COUNTER_DATA_FLOAT_INTEL: {
-      assert(m_data_type == 4);
+      assert(m_data_size == 4);
       fval = *reinterpret_cast<const float *>(p_value);
       break;
     }
     case GL_PERFQUERY_COUNTER_DATA_DOUBLE_INTEL: {
-      assert(m_data_type == 8);
+      assert(m_data_size == 8);
       const double val = *reinterpret_cast<const double *>(p_value);
       fval = static_cast<float>(val);
       break;
     }
     case GL_PERFQUERY_COUNTER_DATA_BOOL32_INTEL:
-      assert(m_data_type == 4);
+      assert(m_data_size == 4);
       assert(false);
       break;
     default:

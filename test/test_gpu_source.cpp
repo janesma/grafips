@@ -53,3 +53,52 @@ TEST(gpu_source, instantiate) {
   s.MakeContextCurrent();
   EXPECT_GT(p.m_desc.size(), 0);
 }
+
+TEST(gpu_source, metric_values) {
+
+  GpuPerfSource s;
+  TestPublisher p;
+  p.RegisterSource(&s);
+
+  MockContext m;
+  s.MakeContextCurrent();
+  
+  EXPECT_GT(p.m_desc.size(), 0);
+
+  int id = 0;
+  const std::string path1 = "gpu/intel/2/EU Active";
+  for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
+    if (i->path == path1 ) {
+      id = i->id();
+      break;
+    }
+  }
+  ASSERT_NE(id, 0);
+  p.Enable(id);
+  for (int i = 0; i < 10; ++i) {
+    m.Draw();
+    s.glSwapBuffers();
+  }
+  p.Disable(id);
+    
+  EXPECT_GT(p.m_d.size(), 0);
+  p.m_d.clear();
+
+  const std::string path = "gpu/intel/28/GPU Timestamp";
+  id = 0;
+  for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
+    if (i->path == path ) {
+      id = i->id();
+      break;
+    }
+  }
+  ASSERT_NE(id, 0);
+  p.Enable(id);
+  for (int i = 0; i < 10; ++i) {
+    m.Draw();
+    s.glSwapBuffers();
+  }
+  p.Disable(id);
+    
+  EXPECT_GT(p.m_d.size(), 0);
+}
