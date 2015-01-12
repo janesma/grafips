@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <string>
 
 #include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
@@ -55,20 +56,19 @@ TEST(gpu_source, instantiate) {
 }
 
 TEST(gpu_source, metric_values) {
-
   GpuPerfSource s;
   TestPublisher p;
   p.RegisterSource(&s);
 
   MockContext m;
   s.MakeContextCurrent();
-  
+
   EXPECT_GT(p.m_desc.size(), 0);
 
   int id = 0;
   const std::string path1 = "gpu/intel/2/EU Active";
   for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
-    if (i->path == path1 ) {
+    if ( i->path == path1 ) {
       id = i->id();
       break;
     }
@@ -80,14 +80,14 @@ TEST(gpu_source, metric_values) {
     s.glSwapBuffers();
   }
   p.Disable(id);
-    
+
   EXPECT_GT(p.m_d.size(), 0);
   p.m_d.clear();
 
   const std::string path = "gpu/intel/28/GPU Timestamp";
   id = 0;
   for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
-    if (i->path == path ) {
+    if ( i->path == path ) {
       id = i->id();
       break;
     }
@@ -99,6 +99,6 @@ TEST(gpu_source, metric_values) {
     s.glSwapBuffers();
   }
   p.Disable(id);
-    
+
   EXPECT_GT(p.m_d.size(), 0);
 }

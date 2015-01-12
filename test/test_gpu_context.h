@@ -37,7 +37,7 @@ class MockContext {
   MockContext();
   ~MockContext();
   void Draw();
-  
+
  private:
   struct waffle_display *m_dpy;
   struct waffle_config *m_config;

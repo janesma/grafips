@@ -303,7 +303,7 @@ PerfMetricSet::GetDescriptions(MetricDescriptionSet *desc) {
 }
 
 PerfMetricGroup::PerfMetricGroup(int query_id, MetricSinkInterface *sink)
-	: m_query_id(query_id), m_current_query_handle(GL_INVALID_VALUE) {
+    : m_query_id(query_id), m_current_query_handle(GL_INVALID_VALUE) {
 
   static const GLubyte *name =
       reinterpret_cast<const GLubyte*>("glGetPerfQueryInfoINTEL");
@@ -382,11 +382,11 @@ PerfMetricGroup::Disable(int id) {
       m_current_query_handle = GL_INVALID_VALUE;
 
 
-      for (auto free_query =m_free_query_handles.begin(); free_query != m_free_query_handles.end();
-           ++free_query)
+      for (auto free_query =m_free_query_handles.begin();
+           free_query != m_free_query_handles.end(); ++free_query)
         p_glDeletePerfQueryINTEL(*free_query);
       m_free_query_handles.clear();
-          
+
       return true;
     }
   }
@@ -415,7 +415,7 @@ PerfMetricGroup::SwapBuffers() {
   for (auto extant_query = m_extant_query_handles.rbegin();
        extant_query != m_extant_query_handles.rend(); ++extant_query) {
     uint bytes_written = 0;
-    //p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_WAIT_INTEL,
+    // p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_WAIT_INTEL,
     p_glGetPerfQueryDataINTEL(*extant_query, GL_PERFQUERY_DONOT_FLUSH_INTEL,
                               m_data_size, m_data_buf.data(),
                               &bytes_written);
