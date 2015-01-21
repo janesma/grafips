@@ -53,6 +53,7 @@ using Grafips::MetricSinkInterface;
 using Grafips::DataSet;
 using Grafips::DataPoint;
 using Grafips::get_ms_time;
+using Grafips::ScopedLock;
 
 // current metrics exported by this source:
 // gpu/intel/1/Render Engine Busy offset: 8 size: 4 type: 38132 data_type: 38138 max: 0
@@ -149,6 +150,7 @@ GpuPerfSource::~GpuPerfSource() {
 
 void
 GpuPerfSource::Subscribe(MetricSinkInterface *sink) {
+  ScopedLock l(&m_protect);
   m_sink = sink;
   MetricDescriptionSet descriptions;
   GetDescriptions(&descriptions);
@@ -163,18 +165,22 @@ GpuPerfSource::GetDescriptions(MetricDescriptionSet *descriptions) {
 
 void
 GpuPerfSource::Enable(int id) {
+  ScopedLock l(&m_protect);
   if (m_metrics)
     m_metrics->Enable(id);
 }
 
 void
 GpuPerfSource::Disable(int id) {
+  ScopedLock l(&m_protect);
   if (m_metrics)
     m_metrics->Disable(id);
 }
 
 void
 GpuPerfSource::MakeContextCurrent() {
+  ScopedLock l(&m_protect);
+  PerfFunctions::Init();
   if (m_metrics != NULL)
     return;
 
@@ -187,6 +193,7 @@ GpuPerfSource::MakeContextCurrent() {
 
 void
 GpuPerfSource::glSwapBuffers() {
+  ScopedLock l(&m_protect);
   if (m_metrics)
     m_metrics->SwapBuffers();
 }
