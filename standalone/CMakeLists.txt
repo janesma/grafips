@@ -9,3 +9,10 @@ add_executable(grafips_publish
 )
 
 target_link_libraries(grafips_publish grafips_test_context grafips_sources grafips_publishers grafips_subscriber waffle-1 pthread)
+
+
+add_executable(grafips_draw 
+  draw.cpp
+)
+
+target_link_libraries(grafips_draw grafips_test_context waffle-1 GL)
