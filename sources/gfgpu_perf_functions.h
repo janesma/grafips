@@ -35,6 +35,7 @@ namespace Grafips {
 
 class PerfFunctions {
  public:
+  static void Init();
   static void GetFirstQueryId(GLuint *queryId);
 
   static void GetNextQueryId(GLuint queryId,

@@ -60,52 +60,65 @@ typedef void (PFNGLGETQUERYDATA) (GLuint queryHandle, GLuint flags,
                                   GLsizei dataSize, GLvoid *data,
                                   GLuint *bytesWritten);
 
-static const GLubyte *create_name =
-    reinterpret_cast<const GLubyte*>("glCreatePerfQueryINTEL");
-static const PFNGLCREATEQUERY *p_glCreatePerfQueryINTEL =
-    reinterpret_cast<const PFNGLCREATEQUERY*>(glXGetProcAddress(create_name));
+static const PFNGLCREATEQUERY *p_glCreatePerfQueryINTEL = NULL;
+static const PFNGLDELETEQUERY *p_glDeletePerfQueryINTEL = NULL;
+static const PFNGLBEGINQUERY *p_glBeginPerfQueryINTEL = NULL;
+static const PFNGLENDQUERY *p_glEndPerfQueryINTEL = NULL;
+static const PFNGLGETQUERYDATA *p_glGetPerfQueryDataINTEL = NULL;
+static const PFNGLGETQUERYINFO *p_glGetPerfQueryInfoINTEL = NULL;
+static const PFNGLGETFIRSTQUERYID *p_glGetFirstPerfQueryId = NULL;
+static const PFNGLGETNEXTQUERYID *p_glGetNextPerfQueryId = NULL;
+static const PFNGLGETPERFCOUNTERINFO *p_glGetPerfCounterInfoINTEL = NULL;
 
-static const GLubyte *delete_name =
-    reinterpret_cast<const GLubyte*>("glDeletePerfQueryINTEL");
-static const PFNGLDELETEQUERY *p_glDeletePerfQueryINTEL =
-    reinterpret_cast<const PFNGLDELETEQUERY*>(glXGetProcAddress(delete_name));
+}
 
-static const GLubyte *begin_name =
-    reinterpret_cast<const GLubyte*>("glBeginPerfQueryINTEL");
-static const PFNGLBEGINQUERY *p_glBeginPerfQueryINTEL =
-    reinterpret_cast<const PFNGLBEGINQUERY*>(glXGetProcAddress(begin_name));
+void
+PerfFunctions::Init() {
+  const GLubyte *name = reinterpret_cast<const GLubyte*>("glCreatePerfQueryINTEL");
+  p_glCreatePerfQueryINTEL =
+      reinterpret_cast<const PFNGLCREATEQUERY*>(glXGetProcAddress(name));
 
-static const GLubyte *end_name =
-    reinterpret_cast<const GLubyte*>("glEndPerfQueryINTEL");
-static const PFNGLENDQUERY *p_glEndPerfQueryINTEL =
-    reinterpret_cast<const PFNGLENDQUERY*>(glXGetProcAddress(end_name));
+  name = reinterpret_cast<const GLubyte*>("glDeletePerfQueryINTEL");
+  p_glDeletePerfQueryINTEL =
+      reinterpret_cast<const PFNGLDELETEQUERY*>(glXGetProcAddress(name));
 
-static const GLubyte *get_name =
-    reinterpret_cast<const GLubyte*>("glGetPerfQueryDataINTEL");
-static const PFNGLGETQUERYDATA *p_glGetPerfQueryDataINTEL =
-    reinterpret_cast<const PFNGLGETQUERYDATA*>(glXGetProcAddress(get_name));
+  name = reinterpret_cast<const GLubyte*>("glBeginPerfQueryINTEL");
+  p_glBeginPerfQueryINTEL =
+      reinterpret_cast<const PFNGLBEGINQUERY*>(glXGetProcAddress(name));
 
-static const GLubyte *info_name =
-    reinterpret_cast<const GLubyte*>("glGetPerfQueryInfoINTEL");
+  name = reinterpret_cast<const GLubyte*>("glEndPerfQueryINTEL");
+  p_glEndPerfQueryINTEL =
+      reinterpret_cast<const PFNGLENDQUERY*>(glXGetProcAddress(name));
 
-static const PFNGLGETQUERYINFO *p_glGetPerfQueryInfoINTEL =
-    reinterpret_cast<const PFNGLGETQUERYINFO*>(glXGetProcAddress(info_name));
+  name = reinterpret_cast<const GLubyte*>("glGetPerfQueryDataINTEL");
+  p_glGetPerfQueryDataINTEL =
+      reinterpret_cast<const PFNGLGETQUERYDATA*>(glXGetProcAddress(name));
 
-static const GLubyte* get_first_name =
-    reinterpret_cast<const GLubyte*>("glGetFirstPerfQueryIdINTEL");
-static const PFNGLGETFIRSTQUERYID *p_glGetFirstPerfQueryId =
-    reinterpret_cast<PFNGLGETFIRSTQUERYID*>(glXGetProcAddress(get_first_name));
+  name = reinterpret_cast<const GLubyte*>("glGetPerfQueryInfoINTEL");
+  p_glGetPerfQueryInfoINTEL =
+      reinterpret_cast<const PFNGLGETQUERYINFO*>(glXGetProcAddress(name));
 
-static const GLubyte* get_next_name =
-    reinterpret_cast<const GLubyte*>("glGetNextPerfQueryIdINTEL");
-static const PFNGLGETNEXTQUERYID *p_glGetNextPerfQueryId =
-    reinterpret_cast<PFNGLGETNEXTQUERYID*>(glXGetProcAddress(get_next_name));
+  name = reinterpret_cast<const GLubyte*>("glGetFirstPerfQueryIdINTEL");
+  p_glGetFirstPerfQueryId =
+      reinterpret_cast<PFNGLGETFIRSTQUERYID*>(glXGetProcAddress(name));
 
-static const GLubyte *get_perf_counter_info =
-    reinterpret_cast<const GLubyte*>("glGetPerfCounterInfoINTEL");
-static const PFNGLGETPERFCOUNTERINFO *p_glGetPerfCounterInfoINTEL =
-    reinterpret_cast<PFNGLGETPERFCOUNTERINFO*>(glXGetProcAddress(get_perf_counter_info));
+  name = reinterpret_cast<const GLubyte*>("glGetNextPerfQueryIdINTEL");
+  p_glGetNextPerfQueryId =
+      reinterpret_cast<PFNGLGETNEXTQUERYID*>(glXGetProcAddress(name));
 
+  name = reinterpret_cast<const GLubyte*>("glGetPerfCounterInfoINTEL");
+  p_glGetPerfCounterInfoINTEL =
+      reinterpret_cast<PFNGLGETPERFCOUNTERINFO*>(glXGetProcAddress(name));
+
+  assert(p_glCreatePerfQueryINTEL);
+  assert(p_glDeletePerfQueryINTEL);
+  assert(p_glBeginPerfQueryINTEL);
+  assert(p_glEndPerfQueryINTEL);
+  assert(p_glGetPerfQueryDataINTEL);
+  assert(p_glGetPerfQueryInfoINTEL);
+  assert(p_glGetFirstPerfQueryId);
+  assert(p_glGetNextPerfQueryId);
+  assert(p_glGetPerfCounterInfoINTEL);
 }
 
 void
