@@ -55,50 +55,66 @@ TEST(gpu_source, instantiate) {
   EXPECT_GT(p.m_desc.size(), 0);
 }
 
-TEST(gpu_source, metric_values) {
-  GpuPerfSource s;
-  TestPublisher p;
-  p.RegisterSource(&s);
-
-  MockContext m;
-  s.MakeContextCurrent();
-
-  EXPECT_GT(p.m_desc.size(), 0);
-
-  int id = 0;
-  const std::string path1 = "gpu/intel/2/EU Active";
-  for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
-    if ( i->path == path1 ) {
-      id = i->id();
-      break;
+class GpuMetricTest : public testing::Test {
+ public:
+  GpuMetricTest() {}
+  void SetUp() {
+    publisher.RegisterSource(&source);
+    source.MakeContextCurrent();
+  }
+ protected:
+  void ProduceData(const std::string &metric_path) {
+    int id = 0;
+    for (auto i = publisher.m_desc.begin(); i != publisher.m_desc.end(); ++i) {
+      if ( i->path == metric_path ) {
+        id = i->id();
+        break;
+      }
     }
-  }
-  ASSERT_NE(id, 0);
-  p.Enable(id);
-  for (int i = 0; i < 10; ++i) {
-    m.Draw();
-    s.glSwapBuffers();
-  }
-  p.Disable(id);
+    ASSERT_NE(id, 0);
 
-  EXPECT_GT(p.m_d.size(), 0);
-  p.m_d.clear();
-
-  const std::string path = "gpu/intel/28/GPU Timestamp";
-  id = 0;
-  for (auto i = p.m_desc.begin(); i != p.m_desc.end(); ++i) {
-    if ( i->path == path ) {
-      id = i->id();
-      break;
+    publisher.Enable(id);
+    for (int i = 0; i < 10; ++i) {
+      // for (int j = 0; j < 10; ++j) {
+        context.Draw();
+      // }
+      source.glSwapBuffers();
     }
+    publisher.Disable(id);
   }
-  ASSERT_NE(id, 0);
-  p.Enable(id);
-  for (int i = 0; i < 10; ++i) {
-    m.Draw();
-    s.glSwapBuffers();
-  }
-  p.Disable(id);
+  
+  GpuPerfSource source;
+  TestPublisher publisher;
+  MockContext context;
+};
 
-  EXPECT_GT(p.m_d.size(), 0);
+TEST_F(GpuMetricTest, eu_active) {
+  ProduceData("gpu/intel/2/EU Active");
+  bool one_active = 0;
+  EXPECT_GT(publisher.m_d.size(), 0);
+  for (auto i = publisher.m_d.begin(); i != publisher.m_d.end(); ++i) {
+    std::cout << i->data <<std::endl;
+    if (i->data >0)
+      one_active = true;
+  }
+  EXPECT_TRUE(one_active);
 }
+
+TEST_F(GpuMetricTest, gpu_timestamp) {
+  ProduceData("gpu/intel/28/GPU Timestamp");
+  EXPECT_GT(publisher.m_d.size(), 0);
+  for (auto i = publisher.m_d.begin(); i != publisher.m_d.end(); ++i) {
+    std::cout << i->data <<std::endl;
+    EXPECT_GT(i->data, 0);
+  }
+}
+
+TEST_F(GpuMetricTest, gpu_render_busy) {
+  ProduceData("gpu/intel/1/Render Engine Busy");
+  EXPECT_GT(publisher.m_d.size(), 0);
+  for (auto i = publisher.m_d.begin(); i != publisher.m_d.end(); ++i) {
+    std::cout << i->data <<std::endl;
+    EXPECT_GT(i->data, 0);
+  }
+}
+

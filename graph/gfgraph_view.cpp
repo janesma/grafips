@@ -344,6 +344,10 @@ QQuickFramebufferObject::Renderer *
 GraphView::createRenderer() const {
   assert(m_pub);
   assert(m_subscriber);
+
+  connect(m_subscriber, SIGNAL(onEnabled()),
+          this, SLOT(update()));
+
   QQuickFramebufferObject::Renderer * renderer =
       new GraphViewRenderer(this, m_subscriber, *m_pub);
   return renderer;

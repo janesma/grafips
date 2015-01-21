@@ -12,6 +12,7 @@ add_executable(test_grafips
   test_gpu_source.cpp
   test_main.cpp
   test_pattern.cpp
+  test_perf_counter.cpp
   )
 
 target_include_directories( grafips_test_context PUBLIC .. )

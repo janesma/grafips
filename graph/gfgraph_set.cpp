@@ -84,16 +84,6 @@ GraphSet::GetData(PointVec *data, unsigned int request_time_ms) {
   // TODO(majanes) perhaps a point for every few pixels, with a LOD
   // calculation
 
-  float max = FLT_MIN, min = FLT_MAX;
-
-  for (std::map<unsigned int, float>::const_iterator i = m_data.begin();
-       i != m_data.end(); ++i) {
-    if (i->second < min)
-      min = i->second;
-    if (i->second > max)
-      max = i->second;
-  }
-
   std::vector<Point>::iterator dest = data->begin();
   for (std::map<unsigned int, float>::const_iterator i = m_data.begin();
        i != m_data.end(); ++i, ++dest) {
@@ -109,6 +99,7 @@ void
 GraphSet::Clear() {
   ScopedLock l(&m_protect);
   m_data.clear();
+  m_range.clear();
 }
 
 float

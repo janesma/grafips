@@ -10,7 +10,9 @@ add_library(grafips_sources
   gfgpu_perf_source.cpp
   gfgpu_perf_source.h
   gfimetric_source.h
-)
+  gfgpu_perf_functions.cpp
+  gfgpu_perf_functions.h
+  )
 
 target_include_directories( grafips_sources PUBLIC .)
 
