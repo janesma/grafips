@@ -385,7 +385,7 @@ void
 GraphView::GetColors(std::map<int, float*> *c) {
   for (auto i = m_colors.begin(); i != m_colors.end(); ++i) {
     if (i->second.compare("black") == 0) {
-      (*c)[i->first] = black_color;
+      (*c)[i->first] = black;
       continue;
     }
     if (i->second.compare("brown") == 0) {
