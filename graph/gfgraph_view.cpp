@@ -60,7 +60,12 @@ GraphViewRenderer::fshader = "uniform vec4 line_color;"
     "}";
 
 float tick_lines_color[4] = { 0, 0, 0, .2 };
-float black_color[4] = { 0, 0, 0, 1 };
+float black[4] = { 0, 0, 0, 1 };
+float brown[4] = {165.0 / 255.0, 42.0/255.0, 42.0/255.0, 1};
+float blue[4] = {0.0 / 255.0, 0.0/255.0, 255.0/255.0, 1};
+float slategrey[4] = {112.0 / 255.0, 128.0/255.0, 144.0/255.0, 1};
+float cornflowerblue[4] = {100.0 / 255.0, 149.0/255.0, 237.0/255.0, 1};
+float orchid[4] = {218.0 / 255.0, 112.0/255.0, 214.0/255.0, 1};
 
 GraphViewRenderer::GraphViewRenderer(const GraphView *v,
                                      GraphSetSubscriber *s,
@@ -282,7 +287,11 @@ GraphViewRenderer::render() {
   for (std::map<int, GraphSet *>::iterator set = m_sets.begin();
        set != m_sets.end(); ++set) {
     set->second->GetData(&m_data, t);
-    RenderPoints(m_data, black_color, m_graph_max);
+    float * color = black;
+    auto color_find = m_id_colors.find(set->first);
+    if (color_find != m_id_colors.end())
+      color = color_find->second;
+    RenderPoints(m_data, color, m_graph_max);
   }
   update();
 }
@@ -311,11 +320,13 @@ GraphViewRenderer::PrintCompileError(GLint shader) {
 void
 GraphViewRenderer::synchronize(QQuickFramebufferObject * item) {
   // inform the GraphView of the max, so it can draw the y-axis units
+  GraphView *gv = dynamic_cast<GraphView*>(item);
   if (0 != m_graph_max) {
-    GraphView *gv = dynamic_cast<GraphView*>(item);
     assert(gv != NULL);
     gv->setGraphMax(m_graph_max);
   }
+
+  gv->GetColors(&m_id_colors);
 
   // call the subscriber to make a one-time request for the metrics
   // to be graphed.
@@ -362,4 +373,40 @@ GraphView::setGraphMax(float m) {
     return;
   m_graph_max = m;
   emit onGraphMax();
+}
+
+void
+GraphView::setColor(int id, QString color) {
+  m_colors[id] = color;
+  update();
+}
+
+void
+GraphView::GetColors(std::map<int, float*> *c) {
+  for (auto i = m_colors.begin(); i != m_colors.end(); ++i) {
+    if (i->second.compare("black") == 0) {
+      (*c)[i->first] = black_color;
+      continue;
+    }
+    if (i->second.compare("brown") == 0) {
+      (*c)[i->first] = brown;
+      continue;
+    }
+    if (i->second.compare("blue") == 0) {
+      (*c)[i->first] = blue;
+      continue;
+    }
+    if (i->second.compare("slategrey") == 0) {
+      (*c)[i->first] = slategrey;
+      continue;
+    }
+    if (i->second.compare("cornflowerblue") == 0) {
+      (*c)[i->first] = cornflowerblue;
+      continue;
+    }
+    if (i->second.compare("orchid") == 0) {
+      (*c)[i->first] = orchid;
+      continue;
+    }
+  }
 }

@@ -118,6 +118,7 @@ Item {
         ActiveMetrics {
             id: activeMetricNames
             visible: true
+            renderer: graphView
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.left: currentList.right

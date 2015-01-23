@@ -27,8 +27,8 @@ Item {
                     model.enabled = !model.enabled;
                     currentRect.color = model.enabled ? "green" : "red";
                     if (model.enabled) {
+                        var graphColor = activeMetrics.add(name, met_id)
                         publisher.Enable(met_id);
-                        activeMetrics.add(name)
                     }
                     else {
                         publisher.Disable(met_id);

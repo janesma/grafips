@@ -75,6 +75,7 @@ class GraphViewRenderer : public QObject,
   int m_width;
   GraphSet::PointVec m_data;
   float m_graph_max;
+  std::map<int, float*> m_id_colors;
 };
 
 class GraphView : public QQuickFramebufferObject,
@@ -86,7 +87,9 @@ class GraphView : public QQuickFramebufferObject,
              READ publisher WRITE setPublisher)
   Q_PROPERTY(float graphMax
              READ graphMax WRITE setGraphMax NOTIFY onGraphMax)
+
  public:
+  Q_INVOKABLE void setColor(int id, QString color);
   GraphView();
   ~GraphView();
 
@@ -98,6 +101,7 @@ class GraphView : public QQuickFramebufferObject,
   float graphMax() const { return m_graph_max;}
   void setGraphMax(float m);
 
+  void GetColors(std::map<int, float*> *c);
  signals:
   void onGraphMax();
 
@@ -105,6 +109,7 @@ class GraphView : public QQuickFramebufferObject,
   MetricRouter *m_pub;
   GraphSetSubscriber *m_subscriber;
   float m_graph_max;
+  std::map<int, QString> m_colors;
 };
 }  // namespace Grafips
 

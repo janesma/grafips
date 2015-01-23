@@ -4,7 +4,9 @@ import Grafips 1.0
 Item {
     id: activeMetricNames
     property var model
+    property var renderer
     height: justForHeight.height
+    property var availableColors: ["black", "brown", "blue", "slategrey", "cornflowerblue", "orchid"]
 
     Text {
         id: justForHeight
@@ -12,8 +14,13 @@ Item {
         text: "some text"
     }
 
-    function add(name) {
-        activeMetricsModel.append( { "name" : name })
+    function add(name, id) {
+        var c = availableColors[activeMetricsModel.count];
+        console.log("color: " + c)
+        renderer.setColor(id, c);
+        activeMetricsModel.append( { "name" : name,
+                                     "displayColor" : c })
+        return c;
     }
 
     function remove(name) {
@@ -42,6 +49,7 @@ Item {
         delegate: Text {
             text: name
             id: textDel
+            color: displayColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignBottom
         }
