@@ -80,13 +80,14 @@ Item {
             width: 200
             model: mySubscriber.metrics
             publisher: currentGroup.publisher
+            activeMetrics: activeMetricNames
         }
 
 
         Rectangle {
             id: scale
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            anchors.bottom: activeMetricNames.top
             anchors.right: parent.right
             width: axisText.width
             Text {
@@ -106,12 +107,20 @@ Item {
             id: graphView
             visible: true
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            anchors.bottom: activeMetricNames.top
             anchors.right: scale.left
             anchors.left: currentList.right
             subscriber: mySubscriber
             publisher: currentGroup.publisher
             onOnGraphMax : { axisText.visible = true; }
+        }
+
+        ActiveMetrics {
+            id: activeMetricNames
+            visible: true
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.left: currentList.right
         }
     }
 }

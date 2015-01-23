@@ -5,6 +5,7 @@ Item {
     id: currentList
     property var model
     property MetricRouter publisher
+    property ActiveMetrics activeMetrics
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     width: 200
@@ -25,10 +26,14 @@ Item {
                 onClicked: { 
                     model.enabled = !model.enabled;
                     currentRect.color = model.enabled ? "green" : "red";
-                    if (model.enabled)
+                    if (model.enabled) {
                         publisher.Enable(met_id);
-                    else
+                        activeMetrics.add(name)
+                    }
+                    else {
                         publisher.Disable(met_id);
+                        activeMetrics.remove(name)
+                    }
                 }
                 onWheel: {
                     currentGroup.resize(wheel)
