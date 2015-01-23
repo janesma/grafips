@@ -49,6 +49,7 @@ class GlSource : public MetricSourceInterface {
 
   MetricSinkInterface *m_sink;
   uint64_t m_last_time_ns;
+  int m_frame_count;
   std::set<int> m_enabled_ids;
 };
 }  // end namespace Grafips

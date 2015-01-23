@@ -57,7 +57,7 @@ static const int kfps_id = k_metrics[0].id();
 static const int kframe_time_id = k_metrics[1].id();
 
 GlSource::GlSource()
-    : m_sink(NULL), m_last_time_ns(0) {
+    : m_sink(NULL), m_last_time_ns(0), m_frame_count(0) {
 }
 
 GlSource::~GlSource() {
@@ -95,10 +95,13 @@ GlSource::glSwapBuffers() {
   if (m_enabled_ids.empty())
     return;
 
+  ++m_frame_count;
+  
   struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
+  clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
   const uint64_t current_time_ns = ts.tv_sec * NANO_SECONDS_PER_SEC
                                    + ts.tv_nsec;
+  
   if (!m_last_time_ns) {
     m_last_time_ns = current_time_ns;
     return;
@@ -106,7 +109,11 @@ GlSource::glSwapBuffers() {
 
   assert(current_time_ns > m_last_time_ns);
   const float frame_time_ns = current_time_ns - m_last_time_ns;
-  const float frame_time_ms = frame_time_ns / NANO_SECONDS_PER_MS;
+  if (frame_time_ns < 1000000000)
+    return;
+
+  const float frame_time_ms = frame_time_ns / NANO_SECONDS_PER_MS / m_frame_count;
+  m_frame_count = 0;
 
   DataSet d;
   const unsigned int ms = get_ms_time();
