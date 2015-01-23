@@ -62,6 +62,7 @@ class GpuMetricTest : public testing::Test {
     publisher.RegisterSource(&source);
     source.MakeContextCurrent();
   }
+
  protected:
   void ProduceData(const std::string &metric_path) {
     int id = 0;
@@ -82,7 +83,7 @@ class GpuMetricTest : public testing::Test {
     }
     publisher.Disable(id);
   }
-  
+
   GpuPerfSource source;
   TestPublisher publisher;
   MockContext context;

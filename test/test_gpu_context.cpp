@@ -43,9 +43,10 @@ static const char * fshader = "void main(void) {\n"
 
 static void
 CheckError(const char * file, int line) {
-  if (glGetError() == GL_NO_ERROR)
+  const int error = glGetError();
+  if ( error == GL_NO_ERROR)
     return;
-  printf("ERROR: %s:%i\n", file, line);
+  printf("ERROR: %x %s:%i\n", error, file, line);
   exit(-1);
 }
 

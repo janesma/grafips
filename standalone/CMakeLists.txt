@@ -15,4 +15,4 @@ add_executable(grafips_draw
   draw.cpp
 )
 
-target_link_libraries(grafips_draw grafips_test_context waffle-1 GL)
+target_link_libraries(grafips_draw grafips_test_context )

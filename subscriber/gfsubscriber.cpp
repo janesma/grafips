@@ -30,8 +30,6 @@
 #include <assert.h>
 #include <vector>
 
-#include <iostream>
-
 #include "remote/gfpublisher.h"
 #include "graph/gfgraph_set.h"
 
@@ -56,11 +54,6 @@ GraphSetSubscriber::OnMetric(const DataSet &d) {
   for (DataSet::const_iterator i = d.begin(); i != d.end(); ++i)
     if (NULL != m_dataSets[i->id]) {
       const DataPoint &p = *i;
-      if (p.data == 0)
-        std::cout << ".";
-      else
-        std::cout << "!";
-      std::cout << std::flush;
       m_dataSets[p.id]->Add(p);
     }
 }

@@ -19,6 +19,6 @@ target_link_libraries(grafips_publishers
   grafips_remote
   grafips_sources
   grafips_subscriber
-  Qt5::Core Qt5::Quick
+  Qt5::Core
   protobuf)
 

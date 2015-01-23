@@ -1,0 +1,20 @@
+current metrics exported by gpu source:
+gpu/intel/1/Render Engine Busy offset: 8 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/2/EU Active offset: 20 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/3/EU Stalled offset: 32 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/4/VS EU Active offset: 44 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/5/VS EU Stalled offset: 56 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/6/Average Cycles per VS Thread offset: 68 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/7/Average Stalled Cycles per VS Thread offset: 84 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/24/PS EU Active offset: 324 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/25/PS EU Stalled offset: 336 size: 4 type: 38132 data_type: 38138 max: 0
+gpu/intel/26/Average Cycles per PS Thread offset: 348 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/27/Average Stalled Cycles per PS Thread offset: 364 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/28/GPU Timestamp offset: 380 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/29/GPU Clock offset: 396 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/1/IA_VERTICES_COUNT offset: 8 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/2/IA_PRIMITIVES_COUNT offset: 24 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/3/VS_INVOCATION_COUNT offset: 40 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/10/PS_INVOCATION_COUNT offset: 152 size: 8 type: 38132 data_type: 38137 max: 0
+gpu/intel/11/PS_DEPTH_COUNT offset: 168 size: 8 type: 38132 data_type: 38137 max: 0
+

@@ -122,6 +122,7 @@ PublisherStub::Subscribe(SubscriberInterface *subs) {
     m.set_method(GrafipsProto::PublisherInvocation::kSubscribe);
     GrafipsProto::PublisherInvocation_Subscribe *args =
         m.mutable_subscribeargs();
+    // TODO(majanes): detect local ip and use a real address
     args->set_address("localhost");
     args->set_port(port);
 
