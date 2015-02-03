@@ -19,10 +19,41 @@ Item {
             id: currentRect
             height: 25
             width: 200
+            property int theId: model.met_id
+            
             color: model.enabled ? "green" : "red"
             Text { text: name }
+            Item {
+                id: bogusDrag
+                property int theId: model.met_id
+                property string name: model.name
+                property bool dragActive: elementMouse.drag.active
+                onDragActiveChanged: {
+                    if (dragActive) {
+                        print ("drag started");
+                        Drag.start();
+                        return;
+                    }
+                    print ("drag finished");
+                    Drag.drop();
+                }
+                //Drag.active: elementMouse.drag.active 
+                //Drag.hotSpot.x: 32
+                //Drag.hotSpot.y: 32
+                //Drag.dragType: Drag.Automatic
+            }
             MouseArea {
-                anchors.fill: parent;
+                id: elementMouse
+                anchors.fill: parent
+                drag.target: bogusDrag
+                onReleased : {
+                    console.log("drag release")
+                    if (bogusDrag.Drag.target !== null) {
+                        console.log("drag target known")
+                        //var t = bogusDrag.Drag.target
+                        //t.parent.publisher.Enable(met_id)
+                    }
+                }
                 onClicked: { 
                     model.enabled = !model.enabled;
                     currentRect.color = model.enabled ? "green" : "red";
@@ -38,7 +69,7 @@ Item {
                 onWheel: {
                     currentGroup.resize(wheel)
                 }
-            }
+            }            
         }
     }
 }

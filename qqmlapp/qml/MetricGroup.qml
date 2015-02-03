@@ -10,7 +10,6 @@ Item {
     Layout.preferredHeight: 400
     property string color
     property MetricRouter publisher
-    property variant filters: [ "foo" ]
 
     function formatFloat(num) {
         if (num < 10) {
@@ -45,44 +44,39 @@ Item {
     }
 
     function start() {
-        publisher.AddGraph(mySubscriber, filters);
+
+        publisher.AddGraph(graphView.subscriber);
     }
 
-    GraphSetSubscriber {
-        id: mySubscriber
-    }
+    DropArea {
+        anchors.fill: currentGroup
+        property int id
+        property string name
+        onEntered: {
+            console.log("DropArea entered: " + drag.source + drag.source.theId);
+            id = drag.source.theId
+            name = drag.source.name
+        }
+        onDropped: {
+            console.log("DropArea drop:" + id);
+            print(currentGroup)
+            currentGroup.publisher.EnableToGraph(id, graphView.subscriber);
+            activeMetricNames.add(name, id)
+        }
+        onExited: {
+            console.log("DropArea exit");
+        }
 
-    RowLayout {
-        anchors.fill: parent
-        spacing: 0
-
-        Rectangle {
-            id: enabRect
-            color: "blue"
+        Renderer {
+            id: graphView
+            visible: true
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            anchors.bottom: activeMetricNames.top
+            anchors.right: scale.left
             anchors.left: parent.left
-            width: 20
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    currentGroup.toggleShown()
-                }
-                onWheel: {
-                    currentGroup.resize(wheel)
-                }
-            }
-        }
-
-        MetricList {
-            id: currentList
-            anchors.left: enabRect.right
-            width: 200
-            model: mySubscriber.metrics
             publisher: currentGroup.publisher
-            activeMetrics: activeMetricNames
+            onOnGraphMax : { axisText.visible = true; }
         }
-
 
         Rectangle {
             id: scale
@@ -102,26 +96,14 @@ Item {
                     + formatFloat(graphView.graphMax * 0.2)
             }
         }
-
-        Renderer {
-            id: graphView
-            visible: true
-            anchors.top: parent.top
-            anchors.bottom: activeMetricNames.top
-            anchors.right: scale.left
-            anchors.left: currentList.right
-            subscriber: mySubscriber
-            publisher: currentGroup.publisher
-            onOnGraphMax : { axisText.visible = true; }
-        }
-
         ActiveMetrics {
             id: activeMetricNames
             visible: true
             renderer: graphView
+            publisher: currentGroup.publisher
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            anchors.left: currentList.right
+            anchors.left: parent.left
         }
     }
 }

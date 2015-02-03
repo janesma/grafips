@@ -82,7 +82,7 @@ class GraphView : public QQuickFramebufferObject,
                   NoCopy, NoAssign, NoMove {
   Q_OBJECT
   Q_PROPERTY(Grafips::GraphSetSubscriber* subscriber
-             READ subscriber WRITE setSubscriber)
+             READ subscriber)
   Q_PROPERTY(Grafips::MetricRouter* publisher
              READ publisher WRITE setPublisher)
   Q_PROPERTY(float graphMax
@@ -93,8 +93,8 @@ class GraphView : public QQuickFramebufferObject,
   GraphView();
   ~GraphView();
 
-  GraphSetSubscriber *subscriber() {return m_subscriber;}
-  void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
+  GraphSetSubscriber *subscriber() {return &m_subscriber;}
+  //void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
   MetricRouter *publisher() {return m_pub;}
   void setPublisher(MetricRouter *p) {m_pub = p;}
   Renderer *createRenderer() const;
@@ -107,7 +107,7 @@ class GraphView : public QQuickFramebufferObject,
 
  private:
   MetricRouter *m_pub;
-  GraphSetSubscriber *m_subscriber;
+  GraphSetSubscriber m_subscriber;
   float m_graph_max;
   std::map<int, QString> m_colors;
 };

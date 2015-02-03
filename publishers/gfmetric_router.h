@@ -43,17 +43,55 @@
 namespace Grafips {
 class GraphSetSubscriber;
 
+class QMetric : public QObject,
+                NoCopy, NoAssign, NoMove {
+  Q_OBJECT
+  Q_PROPERTY(QString name READ name NOTIFY onName)
+  Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
+  Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY onEnabled)
+ public:
+  QMetric() : m_id(-1), m_name(), m_enabled(false) {}
+
+  explicit QMetric(const MetricDescription &m)
+      : m_id(m.id()),
+        m_name(QString::fromStdString(m.display_name)),
+        m_enabled(false) {}
+  QString name() { return m_name; }
+  int met_id() { return m_id; }
+  bool enabled() { return m_enabled; }
+  void setEnabled(bool e) {
+    m_enabled = e;
+    emit onEnabled();
+  }
+ signals:
+  void onEnabled();
+
+  // these exist just to avoid run-time warnings.  names & descriptions do
+  // not change
+  void onName();
+  void onMet_id();
+ private:
+  QMetric(const QMetric&);
+  QMetric& operator=(const QMetric&);
+  int m_id;
+  QString m_name;
+  bool m_enabled;
+};
+
 class MetricRouter : public QObject,
                      public PublisherInterface,
                      public SubscriberInterface,
                      NoCopy, NoAssign, NoMove {
   Q_OBJECT
   Q_PROPERTY(QString address READ address WRITE setAddress)
+  Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics
+             READ metrics NOTIFY onEnabled)
  public:
   MetricRouter();
   ~MetricRouter();
+  Q_INVOKABLE void EnableToGraph(int id, GraphSetSubscriber *dest);
   // PublisherInterface
-  Q_INVOKABLE void Enable(int id);
+  void Enable(int id);
   Q_INVOKABLE void Disable(int id);
   void Subscribe(SubscriberInterface *s);
 
@@ -62,19 +100,34 @@ class MetricRouter : public QObject,
   void OnMetric(const DataSet &d);
   void OnDescriptions(const std::vector<MetricDescription> &descriptions);
 
-  Q_INVOKABLE void AddGraph(GraphSetSubscriber* g, QList<QString> filters);
+  Q_INVOKABLE void AddGraph(GraphSetSubscriber* g);
   QString address() const { return m_pub.address(); }
   void setAddress(const QString &a);
 
- private:
-  void NotifyMetrics(GraphSetSubscriber* g,
-                     const QList<QString> &filters);
+  QQmlListProperty<QMetric> metrics();
 
+ signals:
+  // sent to self, from the skeleton thread, to pass control to the UI
+  // thread, where QMetric Qlist can be updated in QML.  Connected to
+  // self's HandleNotifyDescriptions
+  void NotifyDescriptions();
+
+  // bound to QML in MetricList via the metrics property
+  void onEnabled();
+
+ public slots:
+  // recives NotifyDescriptions() signal on the UI thread, then emits
+  // onEnabled for MetricList.qml to recieve
+  void HandleNotifyDescriptions();
+
+ private:
   std::map<int, GraphSetSubscriber*> m_routes;
-  typedef std::map<GraphSetSubscriber*, QList<QString> > FilterMap;
-  FilterMap m_filters;
+  QList<QMetric *> m_metrics;
+  typedef std::vector<GraphSetSubscriber*> SubscriberList;
+  SubscriberList m_subscribers;
   PublisherStub m_pub;
   MetricDescriptionSet m_descriptions;
+  mutable Mutex m_protect;
 };
 }  // namespace Grafips
 

@@ -34,7 +34,6 @@
 #include "graph/gfgraph_set.h"
 
 using Grafips::GraphSetSubscriber;
-using Grafips::QMetric;
 
 void
 GraphSetSubscriber::AddSet(int id, GraphSet *s) {
@@ -59,33 +58,6 @@ GraphSetSubscriber::OnMetric(const DataSet &d) {
 }
 
 
-void
-GraphSetSubscriber::OnDescriptions(const MetricDescriptionSet &descriptions) {
-  {
-    ScopedLock l(&m_protect);
-    m_metric_descriptions = descriptions;
-  }
-  emit NotifyDescriptions();
-}
-
-void
-GraphSetSubscriber::HandleNotifyDescriptions() {
-  {
-    ScopedLock l(&m_protect);
-    m_metrics.clear();
-    for (std::vector<MetricDescription>::const_iterator i
-             = m_metric_descriptions.begin();
-         i != m_metric_descriptions.end(); ++i)
-      m_metrics.append(new QMetric(*i));
-  }
-  emit onEnabled();
-}
-
-QQmlListProperty<QMetric>
-GraphSetSubscriber::metrics() {
-  ScopedLock l(&m_protect);
-  return QQmlListProperty<QMetric>(this, m_metrics);
-}
 
 void
 GraphSetSubscriber::Clear(int id) {
@@ -93,8 +65,6 @@ GraphSetSubscriber::Clear(int id) {
 }
 
 GraphSetSubscriber::GraphSetSubscriber() {
-  connect(this, SIGNAL(NotifyDescriptions()),
-          this, SLOT(HandleNotifyDescriptions()));
 }
 
 GraphSetSubscriber::~GraphSetSubscriber() {
@@ -104,8 +74,14 @@ void
 GraphSetSubscriber::GetIDs(std::vector<int> *ids) const {
   ScopedLock l(&m_protect);
   for (std::vector<MetricDescription>::const_iterator i
-           = m_metric_descriptions.begin();
-       i != m_metric_descriptions.end(); ++i) {
+           = m_descriptions.begin();
+       i != m_descriptions.end(); ++i) {
     ids->push_back(i->id());
   }
+}
+
+void
+GraphSetSubscriber::OnDescriptions(const MetricDescriptionSet &descriptions) {
+  ScopedLock l(&m_protect);
+  m_descriptions = descriptions;
 }

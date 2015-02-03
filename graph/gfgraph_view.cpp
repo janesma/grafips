@@ -346,7 +346,7 @@ GraphViewRenderer::synchronize(QQuickFramebufferObject * item) {
 }
 
 GraphView::GraphView() : m_pub(NULL),
-                         m_subscriber(NULL) {
+                         m_subscriber() {
   setTextureFollowsItemSize(true);
 }
 
@@ -354,13 +354,17 @@ GraphView::GraphView() : m_pub(NULL),
 QQuickFramebufferObject::Renderer *
 GraphView::createRenderer() const {
   assert(m_pub);
-  assert(m_subscriber);
 
-  connect(m_subscriber, SIGNAL(onEnabled()),
+  // causes synchronize() to be called in GraphViewRenderer, after
+  // metric descriptions are received.
+  connect(m_pub, SIGNAL(onEnabled()),
           this, SLOT(update()));
 
   QQuickFramebufferObject::Renderer * renderer =
-      new GraphViewRenderer(this, m_subscriber, *m_pub);
+      new GraphViewRenderer(this,
+                            // not sure why createRenderer has to be const
+                            const_cast<GraphSetSubscriber*>(&m_subscriber),
+                            *m_pub);
   return renderer;
 }
 

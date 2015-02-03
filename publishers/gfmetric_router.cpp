@@ -34,9 +34,26 @@
 #include "publishers/gfpattern.h"
 
 using Grafips::MetricRouter;
+using Grafips::QMetric;
 
-MetricRouter::MetricRouter() {}
+MetricRouter::MetricRouter() {
+  connect(this, SIGNAL(NotifyDescriptions()),
+          this, SLOT(HandleNotifyDescriptions()));
+}
+
 MetricRouter::~MetricRouter() {}
+
+void
+MetricRouter::EnableToGraph(int id, GraphSetSubscriber *dest) {
+  ScopedLock l(&m_protect);
+
+  // TODO(majanes): probably want to clear any GraphSetSubscriber that
+  // is already enabled for the id.  Maybe do that first at a higher
+  // level then assert here.
+  
+  m_routes[id] = dest;
+  Enable(id);
+}
 
 void
 MetricRouter::Enable(int id) {
@@ -45,6 +62,7 @@ MetricRouter::Enable(int id) {
 
 void
 MetricRouter::Disable(int id) {
+  ScopedLock l(&m_protect);
   m_pub.Disable(id);
 }
 
@@ -57,11 +75,13 @@ MetricRouter::Subscribe(SubscriberInterface *s) {
 
 void
 MetricRouter::Clear(int id) {
+  ScopedLock l(&m_protect);
   m_routes[id]->Clear(id);
 }
 
 void
 MetricRouter::OnMetric(const DataSet &d) {
+  ScopedLock l(&m_protect);
   std::map<int, DataSet> demux;
   for (DataSet::const_iterator i = d.begin(); i != d.end(); ++i) {
     demux[i->id].push_back(*i);
@@ -74,48 +94,59 @@ MetricRouter::OnMetric(const DataSet &d) {
 
 void
 MetricRouter::OnDescriptions(const MetricDescriptionSet &descriptions) {
-  // cache the descriptions.  It is assumed that this call occurs
-  // before GraphSetSubscriber objects are added for specific filters
+  // cache the descriptions.  This call may occur before
+  // GraphSetSubscriber objects are added for specific filters
+
+
+  // ensure thread access is protected
+  ScopedLock l(&m_protect);
+
   m_descriptions = descriptions;
 
-  for (FilterMap::const_iterator i = m_filters.begin();
-       i != m_filters.end(); ++i) {
-    NotifyMetrics(i->first, i->second);
+  for (SubscriberList::const_iterator i = m_subscribers.begin();
+       i != m_subscribers.end(); ++i) {
+    (*i)->OnDescriptions(m_descriptions);
   }
+
+  // Pass a signal to self so that m_metrics property can be updated
+  // in the UI thread.
+  emit NotifyDescriptions();
 }
 
 void
-MetricRouter::AddGraph(GraphSetSubscriber* g, QList<QString> filters) {
-  m_filters[g] = filters;
-
-  NotifyMetrics(g, filters);
-}
-
-void
-MetricRouter::NotifyMetrics(GraphSetSubscriber* g,
-                            const QList<QString> &filters) {
-  // iterate the cached descriptions, and allocate them based on the
-  // filters.  Then notify the GraphSetSubscriber as to which metrics
-  // matched the filters.
-  MetricDescriptionSet matching_metrics;
-  PatternSet pattern(filters);
-  for (MetricDescriptionSet::const_iterator i = m_descriptions.begin();
-       i != m_descriptions.end(); ++i) {
-    if (pattern.Matches(i->path)) {
-      // only one graph may display a given metric
-      assert(m_routes.find(i->id()) == m_routes.end() ||
-             m_routes[i->id()] == g);
-      m_routes[i->id()] = g;
-
-      matching_metrics.push_back(*i);
-    }
-  }
-  if (!matching_metrics.empty())
-    g->OnDescriptions(matching_metrics);
+MetricRouter::AddGraph(GraphSetSubscriber* g) {
+  ScopedLock l(&m_protect);
+  m_subscribers.push_back(g);
+  g->OnDescriptions(m_descriptions);
 }
 
 void
 MetricRouter::setAddress(const QString &a) {
+  ScopedLock l(&m_protect);
   m_pub.setAddress(a);
   m_pub.Subscribe(this);
+}
+
+
+
+QQmlListProperty<QMetric>
+MetricRouter::metrics() {
+  ScopedLock l(&m_protect);
+  return QQmlListProperty<QMetric>(this, m_metrics);
+}
+
+
+// occurs in the UI thread, converts metrics descriptions into
+// Qlist<QMetrics> property
+void
+MetricRouter::HandleNotifyDescriptions() {
+  {
+    ScopedLock l(&m_protect);
+    m_metrics.clear();
+    for (std::vector<MetricDescription>::const_iterator i
+             = m_descriptions.begin();
+         i != m_descriptions.end(); ++i)
+      m_metrics.append(new QMetric(*i));
+  }
+  emit onEnabled();
 }

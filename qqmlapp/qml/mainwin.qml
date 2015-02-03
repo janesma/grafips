@@ -52,36 +52,43 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout
-    {
-        id: mainView
+    RowLayout {
         anchors.fill: parent
-        visible: false
-        
-        MetricGroup {
-            id: cpu
-            color: "red"
+        id: row
+        spacing: 0
+
+        MetricList {
+            id: currentList
+            width: 200
+            model: mainPublisher.metrics
             publisher: mainPublisher
-            filters: ["cpu/system/utilization",
-                      "cpu/core/*/utilization"]
         }
-        MetricGroup {
-            id: glFt
-            color: "red"
-            publisher: mainPublisher
-            filters: ["gl/frame_time"]
-        }
-        MetricGroup {
-            id: glFps
-            color: "red"
-            publisher: mainPublisher
-            filters: ["gl/fps"]
-        }
-        MetricGroup {
-            id: glGpu
-            color: "red"
-            publisher: mainPublisher
-            filters: ["gpu/intel/*/*"]
+
+        ColumnLayout
+        {
+            id: mainView
+            visible: false
+            
+            MetricGroup {
+                id: cpu
+                color: "red"
+                publisher: mainPublisher
+            }
+            MetricGroup {
+                id: glFt
+                color: "red"
+                publisher: mainPublisher
+            }
+            MetricGroup {
+                id: glFps
+                color: "red"
+                publisher: mainPublisher
+            }
+            MetricGroup {
+                id: glGpu
+                color: "red"
+                publisher: mainPublisher
+            }
         }
     }
 }

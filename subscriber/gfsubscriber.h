@@ -44,53 +44,12 @@ namespace Grafips {
 
 class GraphSet;
 
-class QMetric : public QObject,
-                NoCopy, NoAssign, NoMove {
-  Q_OBJECT
-  Q_PROPERTY(QString name READ name NOTIFY onName)
-  Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
-  Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY onEnabled)
- public:
-  QMetric() : m_id(-1), m_name(), m_enabled(false) {}
-
-  explicit QMetric(const MetricDescription &m)
-      : m_id(m.id()),
-        m_name(QString::fromStdString(m.display_name)),
-        m_enabled(false) {}
-  QString name() { return m_name; }
-  int met_id() { return m_id; }
-  bool enabled() { return m_enabled; }
-  void setEnabled(bool e) {
-    m_enabled = e;
-    emit onEnabled();
-  }
- signals:
-  void onEnabled();
-
-  // these exist just to avoid run-time warnings.  names & descriptions do
-  // not change
-  void onName();
-  void onMet_id();
- private:
-  QMetric(const QMetric&);
-  QMetric& operator=(const QMetric&);
-  int m_id;
-  QString m_name;
-  bool m_enabled;
-};
-
+// one instance per GraphViewRenderer.  Instantiated in the GraphView,
+// handles metric data events and distributes them into GraphSets that
+// can be plotted by the renderer.
 class GraphSetSubscriber : public QObject, public SubscriberInterface,
                            NoCopy, NoAssign, NoMove {
   Q_OBJECT
-  Q_PROPERTY(QQmlListProperty<Grafips::QMetric> metrics
-             READ metrics NOTIFY onEnabled)
-
- public slots:
-  void HandleNotifyDescriptions();
-
- signals:
-  void NotifyDescriptions();
-
  public:
   GraphSetSubscriber();
   ~GraphSetSubscriber();
@@ -99,18 +58,12 @@ class GraphSetSubscriber : public QObject, public SubscriberInterface,
   void Clear(int id);
   void OnMetric(const DataSet &d);
   void OnDescriptions(const MetricDescriptionSet &descriptions);
-  QQmlListProperty<QMetric> metrics();
-
   void GetIDs(std::vector<int> *ids) const;
 
- signals:
-  void onEnabled();
-
  private:
-  QList<QMetric *> m_metrics;
-  std::vector<MetricDescription> m_metric_descriptions;
   std::map<int, GraphSet *> m_dataSets;
   mutable Mutex m_protect;
+  MetricDescriptionSet m_descriptions;
 };
 }  // namespace Grafips
 #endif  // SUBSCRIBER_GFSUBSCRIBER_H_
