@@ -20,30 +20,44 @@ Item {
             width: currentList.width
             property int theId: model.met_id
             
-            color: model.enabled ? "green" : "red"
+            color: "light blue"
             Text {
                 id: nameText
                 text: name
             }
             Item {
                 id: bogusDrag
-                //color: "blue"
-                height: 25
-                width: 25
-                
+                //anchors.fill: currentRect
+                height: currentRect.height
+                width: currentRect.width
+                // color: "red"
                 property int theId: model.met_id
                 property string name: model.name
                 property bool dragActive: elementMouse.drag.active
                 onDragActiveChanged: {
                     if (dragActive) {
-                        print ("drag started");
+                        print ("drag started: " + x + " " + y);
                         Drag.start();
                         return;
                     }
-                    print ("drag finished");
+                    print ("drag ended: " + x + " " + y);
                     Drag.drop();
-                    //anchors.centerIn = currentRect
+                    //print ("drag reset: " + x + " " + y);
                 }
+
+                states: [
+                    // use 2 states so we can always force a transition
+                    State {
+                        name: "RESET"
+                        PropertyChanges { target: bogusDrag; x: 0}
+                        PropertyChanges { target: bogusDrag; y: 0}
+                    },
+                    State {
+                        name: "RESET1"
+                        PropertyChanges { target: bogusDrag; x: 0}
+                        PropertyChanges { target: bogusDrag; y: 0}
+                    }]
+                // TODO: look at qml states
                 //Drag.active: elementMouse.drag.active 
                 //Drag.hotSpot.x: 32
                 //Drag.hotSpot.y: 32
@@ -60,6 +74,7 @@ Item {
                         //var t = bogusDrag.Drag.target
                         //t.parent.publisher.Enable(met_id)
                     }
+                    //bogusDrag.state = "RESET";
                 }
             }            
         }

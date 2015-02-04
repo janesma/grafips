@@ -52,16 +52,20 @@ Item {
         anchors.fill: currentGroup
         property int id
         property string name
+        property var source
         onEntered: {
             console.log("DropArea entered: " + drag.source + drag.source.theId);
             id = drag.source.theId
             name = drag.source.name
+            source = drag.source
         }
         onDropped: {
             console.log("DropArea drop:" + id);
             print(currentGroup)
             currentGroup.publisher.EnableToGraph(id, graphView.subscriber);
             activeMetricNames.add(name, id)
+            source.state = "RESET"
+            source.state = "RESET1"
         }
         onExited: {
             console.log("DropArea exit");
