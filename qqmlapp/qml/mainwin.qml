@@ -59,7 +59,7 @@ ApplicationWindow {
 
         MetricList {
             id: currentList
-            width: 200
+            width: 500
             model: mainPublisher.metrics
             publisher: mainPublisher
         }

@@ -46,6 +46,8 @@ class MetricDescription {
                     const std::string &_help_text,
                     const std::string &_display_name,
                     MetricType _type);
+  MetricDescription();
+  MetricDescription &operator=(const MetricDescription &o);
   int id() const;
   std::string path;
   std::string help_text;

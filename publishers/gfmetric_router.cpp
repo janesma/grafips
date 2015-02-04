@@ -101,11 +101,14 @@ MetricRouter::OnDescriptions(const MetricDescriptionSet &descriptions) {
   // ensure thread access is protected
   ScopedLock l(&m_protect);
 
-  m_descriptions = descriptions;
+  m_descriptions.clear();
+  for (auto i = descriptions.begin(); i != descriptions.end(); ++i) {
+    m_descriptions[i->path] = *i;
+  }
 
   for (SubscriberList::const_iterator i = m_subscribers.begin();
        i != m_subscribers.end(); ++i) {
-    (*i)->OnDescriptions(m_descriptions);
+    (*i)->OnDescriptions(descriptions);
   }
 
   // Pass a signal to self so that m_metrics property can be updated
@@ -117,7 +120,11 @@ void
 MetricRouter::AddGraph(GraphSetSubscriber* g) {
   ScopedLock l(&m_protect);
   m_subscribers.push_back(g);
-  g->OnDescriptions(m_descriptions);
+  MetricDescriptionSet desc(m_descriptions.size());
+  for (auto i = m_descriptions.begin(); i != m_descriptions.end(); ++i) {
+    desc.push_back(i->second);
+  }
+  g->OnDescriptions(desc);
 }
 
 void
@@ -143,10 +150,9 @@ MetricRouter::HandleNotifyDescriptions() {
   {
     ScopedLock l(&m_protect);
     m_metrics.clear();
-    for (std::vector<MetricDescription>::const_iterator i
-             = m_descriptions.begin();
+    for (auto i = m_descriptions.begin();
          i != m_descriptions.end(); ++i)
-      m_metrics.append(new QMetric(*i));
+      m_metrics.append(new QMetric(i->second));
   }
   emit onEnabled();
 }

@@ -126,7 +126,8 @@ class MetricRouter : public QObject,
   typedef std::vector<GraphSetSubscriber*> SubscriberList;
   SubscriberList m_subscribers;
   PublisherStub m_pub;
-  MetricDescriptionSet m_descriptions;
+  // key is description path, to keep the metrics sorted
+  std::map<std::string, MetricDescription> m_descriptions;
   mutable Mutex m_protect;
 };
 }  // namespace Grafips

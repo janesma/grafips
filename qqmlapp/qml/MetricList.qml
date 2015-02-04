@@ -8,7 +8,6 @@ Item {
     property ActiveMetrics activeMetrics
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    width: 200
 
     ListView {
         anchors.fill: parent
@@ -17,14 +16,21 @@ Item {
 
         delegate: Rectangle {
             id: currentRect
-            height: 25
-            width: 200
+            height: nameText.height * 1.5
+            width: currentList.width
             property int theId: model.met_id
             
             color: model.enabled ? "green" : "red"
-            Text { text: name }
+            Text {
+                id: nameText
+                text: name
+            }
             Item {
                 id: bogusDrag
+                //color: "blue"
+                height: 25
+                width: 25
+                
                 property int theId: model.met_id
                 property string name: model.name
                 property bool dragActive: elementMouse.drag.active
@@ -36,6 +42,7 @@ Item {
                     }
                     print ("drag finished");
                     Drag.drop();
+                    //anchors.centerIn = currentRect
                 }
                 //Drag.active: elementMouse.drag.active 
                 //Drag.hotSpot.x: 32
@@ -53,21 +60,6 @@ Item {
                         //var t = bogusDrag.Drag.target
                         //t.parent.publisher.Enable(met_id)
                     }
-                }
-                onClicked: { 
-                    model.enabled = !model.enabled;
-                    currentRect.color = model.enabled ? "green" : "red";
-                    if (model.enabled) {
-                        var graphColor = activeMetrics.add(name, met_id)
-                        publisher.Enable(met_id);
-                    }
-                    else {
-                        publisher.Disable(met_id);
-                        activeMetrics.remove(name)
-                    }
-                }
-                onWheel: {
-                    currentGroup.resize(wheel)
                 }
             }            
         }
