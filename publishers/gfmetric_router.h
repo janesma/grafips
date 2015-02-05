@@ -34,6 +34,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include "os/gftraits.h"
 #include "remote/gfipublisher.h"

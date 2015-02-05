@@ -50,7 +50,7 @@ MetricRouter::EnableToGraph(int id, GraphSetSubscriber *dest) {
   // TODO(majanes): probably want to clear any GraphSetSubscriber that
   // is already enabled for the id.  Maybe do that first at a higher
   // level then assert here.
-  
+
   m_routes[id] = dest;
   Enable(id);
 }

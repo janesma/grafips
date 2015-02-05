@@ -94,7 +94,6 @@ class GraphView : public QQuickFramebufferObject,
   ~GraphView();
 
   GraphSetSubscriber *subscriber() {return &m_subscriber;}
-  //void setSubscriber(GraphSetSubscriber *s) {m_subscriber = s;}
   MetricRouter *publisher() {return m_pub;}
   void setPublisher(MetricRouter *p) {m_pub = p;}
   Renderer *createRenderer() const;
