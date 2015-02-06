@@ -25,7 +25,6 @@ Item {
         }
 
         var c = availableColors[activeMetricsModel.count];
-        console.log("color: " + c + " name: " + name)
         renderer.setColor(id, c);
         activeMetricsModel.append( { "name" : name,
                                      "id" : id,

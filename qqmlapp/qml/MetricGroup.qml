@@ -54,21 +54,17 @@ Item {
         property string name
         property var source
         onEntered: {
-            console.log("DropArea entered: " + drag.source + drag.source.theId);
             id = drag.source.theId
             name = drag.source.name
             source = drag.source
         }
         onDropped: {
-            console.log("DropArea drop:" + id);
-            print(currentGroup)
             currentGroup.publisher.EnableToGraph(id, graphView.subscriber);
             activeMetricNames.add(name, id)
-            source.state = "RESET"
-            source.state = "RESET1"
-        }
-        onExited: {
-            console.log("DropArea exit");
+            // hide the drag visualizer
+            source.x = 0;
+            source.y = 0;
+            source.visible = false;
         }
 
         Renderer {

@@ -8,6 +8,7 @@ ApplicationWindow {
     width: 600
     height: 500
     visible: true
+    id: mainWindow
 
     MetricRouter {
         id: mainPublisher
@@ -62,6 +63,7 @@ ApplicationWindow {
             width: 500
             model: mainPublisher.metrics
             publisher: mainPublisher
+            dragParent: mainWindow.contentItem
         }
 
         ColumnLayout

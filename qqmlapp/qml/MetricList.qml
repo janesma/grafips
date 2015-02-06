@@ -6,9 +6,15 @@ Item {
     property var model
     property MetricRouter publisher
     property ActiveMetrics activeMetrics
+
+    // draggable item needs to be parented in the item containing drag
+    // targets, or else it will be clipped as it is drug out of the
+    // ListView
+    property var dragParent
+
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-
+    
     ListView {
         anchors.fill: parent
         model: currentList.model
@@ -25,56 +31,49 @@ Item {
                 id: nameText
                 text: name
             }
-            Item {
-                id: bogusDrag
-                //anchors.fill: currentRect
+            Rectangle {
+                // copies the delegate exactly, with some alpha.  This
+                // leaves the original item in place during drag, but
+                // propogates the drag event to the target.
+                id: dragVisualizer
                 height: currentRect.height
                 width: currentRect.width
-                // color: "red"
+                // must be reparented so it can be drug outside the ListView
+                parent: dragParent
+                color: currentRect.color
+                visible: false
+                opacity: 0.5
                 property int theId: model.met_id
                 property string name: model.name
+
+                Text {
+                    text: name
+                }
+
+                // manually drive the drag events, because qml seems
+                // to have a bug here.
+                // http://stackoverflow.com/questions/24532317/new-drag-and-drop-mechanism-does-not-work-as-expected-in-qt-quick-qt-5-3
                 property bool dragActive: elementMouse.drag.active
                 onDragActiveChanged: {
                     if (dragActive) {
-                        print ("drag started: " + x + " " + y);
+                        // show the drag visualizer
+                        visible = true
                         Drag.start();
                         return;
                     }
-                    print ("drag ended: " + x + " " + y);
                     Drag.drop();
-                    //print ("drag reset: " + x + " " + y);
                 }
 
-                states: [
-                    // use 2 states so we can always force a transition
-                    State {
-                        name: "RESET"
-                        PropertyChanges { target: bogusDrag; x: 0}
-                        PropertyChanges { target: bogusDrag; y: 0}
-                    },
-                    State {
-                        name: "RESET1"
-                        PropertyChanges { target: bogusDrag; x: 0}
-                        PropertyChanges { target: bogusDrag; y: 0}
-                    }]
-                // TODO: look at qml states
-                //Drag.active: elementMouse.drag.active 
-                //Drag.hotSpot.x: 32
-                //Drag.hotSpot.y: 32
-                //Drag.dragType: Drag.Automatic
             }
             MouseArea {
                 id: elementMouse
                 anchors.fill: parent
-                drag.target: bogusDrag
-                onReleased : {
-                    console.log("drag release")
-                    if (bogusDrag.Drag.target !== null) {
-                        console.log("drag target known")
-                        //var t = bogusDrag.Drag.target
-                        //t.parent.publisher.Enable(met_id)
-                    }
-                    //bogusDrag.state = "RESET";
+                drag.target: dragVisualizer
+                onPressed : {
+                    // reposition the drag visualizer so it overlays
+                    // the selected item
+                    dragVisualizer.x = currentRect.mapToItem(dragVisualizer.parent).x;
+                    dragVisualizer.y = currentRect.mapToItem(dragVisualizer.parent).y;
                 }
             }            
         }
