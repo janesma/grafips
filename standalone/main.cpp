@@ -27,13 +27,15 @@
 
 #include <unistd.h>
 
-#include "sources/gfcpu_source.h"
-#include "sources/gfgpu_perf_source.h"
-#include "sources/gfgl_source.h"
-#include "remote/gfpublisher_skel.h"
 #include "remote/gfpublisher.h"
+#include "remote/gfpublisher_skel.h"
+#include "sources/gfcpu_clock_source.h"
+#include "sources/gfcpu_source.h"
+#include "sources/gfgl_source.h"
+#include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
 
+using Grafips::CpuFreqSource;
 using Grafips::CpuSource;
 using Grafips::GlSource;
 using Grafips::GpuPerfSource;
@@ -43,15 +45,19 @@ using Grafips::Thread;
 
 class PollThread : public Thread {
  public:
-  PollThread(CpuSource *c, GlSource *g) : Thread("PollThread"),
-                                          m_running(false),
-                                          m_cpu(c),
-                                          m_gl(g) {}
+  PollThread(CpuSource *c,
+             GlSource *g,
+             CpuFreqSource *f) : Thread("PollThread"),
+                                 m_running(false),
+                                 m_cpu(c),
+                                 m_gl(g),
+                                 m_f(f){}
   void Run() {
     m_running = true;
     while (m_running) {
       m_cpu->Poll();
       m_gl->glSwapBuffers();
+      m_f->Poll();
       usleep(1000000);
     }
   }
@@ -63,6 +69,7 @@ class PollThread : public Thread {
   bool m_running;
   CpuSource *m_cpu;
   GlSource *m_gl;
+  CpuFreqSource *m_f;
 };
 
 int main(int argc, const char **argv) {
@@ -70,15 +77,18 @@ int main(int argc, const char **argv) {
   PublisherImpl pub;
   GlSource glprov;
   GpuPerfSource gpuprov;
+  CpuFreqSource freqprov;
+  
   pub.RegisterSource(&glprov);
   pub.RegisterSource(&gpuprov);
   pub.RegisterSource(&prov);
+  pub.RegisterSource(&freqprov);
 
   Grafips::MockContext c;
 
   gpuprov.MakeContextCurrent();
 
-  PollThread thread(&prov, &glprov);
+  PollThread thread(&prov, &glprov, &freqprov);
 
   int port = 53136;
   if (argc > 1) {
