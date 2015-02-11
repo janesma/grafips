@@ -33,6 +33,11 @@
 
 #include "controls/gficontrol.h"
 
+// TODO(majanes) this control uses sysfs, which is apparently
+// unreliable for accessing cpu frequency configuration, especially on
+// new platforms.  Kristin Accardi recommended using the MSRs to get
+// and modify this information.  See turbostat in the linux sources.
+
 namespace Grafips {
 
 // Handles I/O and parsing of data in sysfs, including stripping
