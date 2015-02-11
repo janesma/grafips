@@ -40,7 +40,7 @@ using Grafips::MetricDescriptionSet;
 
 TEST(GlSourceFixture, test_descriptions ) {
   TestPublisher pub;
-  GlSource source;
+  GlSource source(0);  // zero interval, to force immediate publication
   pub.RegisterSource(&source);
 
   source.Enable(pub.m_desc[0].id());

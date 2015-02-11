@@ -54,7 +54,8 @@ TEST(CpuFreqControl, test_instantiate ) {
     FreqSysParser s;
     const int max_freq = atoi(s.MaxFreq().c_str());
     const int min_freq = atoi(s.MinFreq().c_str());
-    EXPECT_GT(max_freq, min_freq);
+    if (max_freq != 0)
+      EXPECT_GT(max_freq, min_freq);
   }
 
   std::string orig_policy;
