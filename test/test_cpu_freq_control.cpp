@@ -35,78 +35,57 @@
 #include "controls/gfcpu_freq_control.h"
 
 using Grafips::CpuFreqControl;
+using Grafips::FreqSysParser;
+using Grafips::ControlSubscriberInterface;
 
-
-
-class FreqState {
+class PolicySubscriber : public ControlSubscriberInterface {
  public:
-  FreqState() {
-    static const int LINE_LEN = 100;
-    std::vector<char> buf(LINE_LEN + 1);
-    buf[LINE_LEN] = '\0';
-
-    static const char *gov_path = "/sys/devices/system/cpu/cpu0/cpufreq/"
-                                  "scaling_governor";
-    int governor_fh = open(gov_path, O_RDONLY);
-    ssize_t nbytes = read(governor_fh, buf.data(), LINE_LEN);
-    assert(nbytes > 0);
-    buf[nbytes] = '\0';
-    governor = buf[0];
-
-    static const char *max_path = "/sys/devices/system/cpu/cpu0/cpufreq/"
-                                  "scaling_max_freq";
-    int max_fh = open(max_path, O_RDONLY);
-    assert(max_fh);
-    nbytes = read(max_fh, buf.data(), LINE_LEN);
-    assert(nbytes > 0);
-    buf[nbytes] = '\0';
-    max_freq = atoi(buf.data());
-
-    static const char *min_path = "/sys/devices/system/cpu/cpu0/cpufreq/"
-                                  "scaling_min_freq";
-    int min_fh = open(min_path, O_RDONLY);
-    assert(min_fh);
-    nbytes = read(min_fh, buf.data(), LINE_LEN);
-    assert(nbytes > 0);
-    buf[nbytes] = '\0';
-
-    min_freq = atoi(buf.data());
+  void OnControlChanged(const std::string &key,
+                        const std::string &value) {
+    ASSERT_EQ(key, "CpuFrequencyPolicy");
+    policy = value;
   }
-  int max_freq;
-  int min_freq;
-  std::string governor;
+  std::string policy;
 };
 
 
 TEST(CpuFreqControl, test_instantiate ) {
   {
-    FreqState s;
-    EXPECT_GT(s.max_freq, s.min_freq);
+    FreqSysParser s;
+    const int max_freq = atoi(s.MaxFreq().c_str());
+    const int min_freq = atoi(s.MinFreq().c_str());
+    EXPECT_GT(max_freq, min_freq);
   }
 
-  std::string policy;
+  std::string orig_policy;
+  PolicySubscriber policy;
   {
     CpuFreqControl control;
+    control.Subscribe(&policy);
 
-    // non-root, can't get governor
-    if (!control.Get("CpuFrequencyPolicy", &policy)) {
+    // non-root, can't get governor, so no publication of current state
+    if (policy.policy =="") {
       EXPECT_FALSE(control.IsValid());
       return;
     }
 
-    if ((policy != "performance") && (policy != "powersave"))
+    if ((policy.policy != "performance") &&
+        (policy.policy != "powersave"))
       EXPECT_TRUE(false);
+    orig_policy = policy.policy;
 
     control.Set("CpuFrequencyPolicy", "max_freq");
-    FreqState s;
-    EXPECT_EQ(s.max_freq, s.min_freq);
-
+    FreqSysParser s;
+    EXPECT_EQ(s.MaxFreq(), s.MinFreq());
+    EXPECT_EQ(policy.policy, "max_freq");
     // destructor resets config to default
   }
-  FreqState s;
-  EXPECT_NE(s.max_freq, s.min_freq);
-  CpuFreqControl control;
-  std::string new_policy;
-  EXPECT_TRUE(control.Get("CpuFrequencyPolicy", &new_policy));
-  EXPECT_EQ(new_policy, policy);
+  FreqSysParser s;
+  EXPECT_NE(s.MaxFreq(), s.MinFreq());
+  {
+    CpuFreqControl control;
+    control.Subscribe(&policy);
+    // policy should be back to initial state
+    EXPECT_EQ(orig_policy, policy.policy);
+  }
 }

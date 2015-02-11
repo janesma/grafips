@@ -39,7 +39,7 @@
 using Grafips::CpuFreqControl;
 using Grafips::FreqSysParser;
 
-CpuFreqControl::CpuFreqControl() {
+CpuFreqControl::CpuFreqControl() : m_subscriber(NULL) {
   m_orig_scaling_governor = m_parser.Governor();
   m_current_setting = m_orig_scaling_governor;
   m_orig_max_freq = m_parser.MaxFreq();
@@ -54,50 +54,58 @@ CpuFreqControl::~CpuFreqControl() {
   m_parser.SetMaxFreq(m_orig_max_freq);
 }
 
-bool
+void
 CpuFreqControl::Set(const std::string &key, const std::string &value) {
   if (key != "CpuFrequencyPolicy")
-    return false;
+    return;
   if (!IsValid())
-    return false;
+    return;
 
   if ((value == "performance") || (value == "powersave")) {
     m_parser.SetGovernor(value);
     m_current_setting = value;
-    return true;
+    Publish();
+    return;
   }
 
   if (value == "max_freq") {
     // to clip frequency range to max, increase the minimum limit
     m_parser.SetMinFreq(m_orig_max_freq);
     m_current_setting = value;
-    return true;
+    Publish();
+    return;
   }
 
   if (value == "min_freq") {
     // to clip frequency range to min, decrease the maximum limit
     m_parser.SetMinFreq(m_orig_min_freq);
     m_current_setting = value;
-    return true;
+    Publish();
+    return;
   }
 
   // else value is not one of the supported options
-  return false;
-}
-
-bool
-CpuFreqControl::Get(const std::string &key, std::string *value) {
-  if (key != "CpuFrequencyPolicy")
-    return false;
-  if (!IsValid())
-    return false;
-  *value = m_current_setting;
-  return true;
+  return;
 }
 
 bool
 CpuFreqControl::IsValid() const {
   return m_parser.IsValid();
+}
+
+void
+CpuFreqControl::Subscribe(ControlSubscriberInterface *sub) {
+  if(!m_parser.IsValid())
+    return;
+  m_subscriber = sub;
+  sub->OnControlChanged("CpuFrequencyPolicy", m_current_setting);
+}
+
+void
+CpuFreqControl::Publish() {
+  if (!m_subscriber)
+    return;
+  m_subscriber->OnControlChanged("CpuFrequencyPolicy", m_current_setting);
 }
 
 static const int LINE_LEN = 100;

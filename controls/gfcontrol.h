@@ -33,20 +33,70 @@
 
 #include "controls/gficontrol.h"
 
+// UI
+//   widget   widget
+//     ControlRouterHost
+//       ControlStub             ControlSubscriberSkel
+//        socket                      serversocket
+
+//          <subscribe>                <OnControlChanged>
+//          <set>
+
+//        serversocket                socket
+//       ControlSkel             ControlSubscriberStub
+//     ControlRouterTarget
+//         <subscribe>
+//    ControlInterface ControlInterfac
+//    control                control
+
 namespace Grafips {
 
-// multiplexes a single control socket over several controllers.
-// Controllers register themselves for the keys that they support with
-// AddControl.  Subsequent Set/Get invocations will be delivered to
-// the appropriate controller for the key.
-class Control : public ControlInterface {
+class ControlSubscriberStub;
+class ControlSubscriberSkel;
+class ControlSkel;
+class ControlStub;
+
+// multiplexes a single control socket over several controllers, on
+// the target side of the connection.  Controllers register themselves
+// for the keys that they support with AddControl.  Subsequent Set
+// invocations will be delivered to the appropriate controller for the
+// key.  ControlRouterTarget will forward any observed control changes
+// to its subscriber, which is intended to be a
+// ControlSubscriberInterface stub passing the data over the socket to
+// the UI.
+class ControlRouterTarget : public ControlSubscriberInterface {
  public:
-  Control();
-  bool Set(const std::string &key, const std::string &value);
-  bool Get(const std::string &key, std::string *value);
+  ControlRouterTarget();
   void AddControl(const std::string &key, ControlInterface* target);
+  void Subscribe(ControlSubscriberInterface *sub);
+  bool Set(const std::string &key, const std::string &value);
+
+  void OnControlChanged(const std::string &key,
+                        const std::string &value);
+
  private:
   std::map<std::string, ControlInterface *> m_targets;
+  ControlSubscriberStub *m_subscriber;
+  ControlSkel *m_skel;
+};
+
+// multiplexes notifications on the UI side of the socket.  UI
+// controls subscribe for the specific control state that they
+// display.  
+class ControlRouterHost : public ControlSubscriberInterface {
+ public:
+  ControlRouterHost();
+  void Subscribe(const std::string &key,
+                 ControlSubscriberInterface *value);
+
+  void OnControlChanged(const std::string &key,
+                        const std::string &value);
+
+ private:
+  std::map<std::string, ControlSubscriberInterface *> m_subscribers;
+
+  ControlSubscriberSkel *m_skel;
+  ControlStub *m_stub;
 };
 
 }  // namespace Grafips

@@ -31,12 +31,12 @@
 
 #include <string>
 
-using Grafips::Control;
+using Grafips::ControlRouterTarget;
 
-Control::Control() {}
+ControlRouterTarget::ControlRouterTarget() {}
 
 bool
-Control::Set(const std::string &key, const std::string &value) {
+ControlRouterTarget::Set(const std::string &key, const std::string &value) {
   auto i = m_targets.find(key);
   if (i == m_targets.end())
     return false;
@@ -44,19 +44,9 @@ Control::Set(const std::string &key, const std::string &value) {
   return true;
 }
 
-bool
-Control::Get(const std::string &key, std::string *value) {
-  auto i = m_targets.find(key);
-  if (i == m_targets.end())
-    return false;
-  return i->second->Get(key, value);
-}
-
 void
-Control::AddControl(const std::string &key, ControlInterface* target) {
+ControlRouterTarget::AddControl(const std::string &key, ControlInterface* target) {
   auto i = m_targets.find(key);
   assert(i == m_targets.end());
   m_targets[key] = target;
 }
-
-

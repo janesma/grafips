@@ -47,7 +47,7 @@ ControlStub::ControlStub(const std::string &address, int port)
 ControlStub::~ControlStub() {
 }
 
-bool
+void
 ControlStub::Set(const std::string &key, const std::string &value) {
   GrafipsControlProto::ControlInvocation request;
 
@@ -57,32 +57,7 @@ ControlStub::Set(const std::string &key, const std::string &value) {
   args->set_value(value);
   WriteMessage(request);
 
-  GrafipsControlProto::ControlInvocation response;
-  ReadResponse(&response);
-  assert(response.method() == ControlInvocation::kSetResponse);
-  const ControlInvocation::SetResponse &rargs = response.setresponseargs();
-  return rargs.status();
-}
-bool
-ControlStub::Get(const std::string &key, std::string *value) {
-  GrafipsControlProto::ControlInvocation request;
-
-  request.set_method(ControlInvocation::kGet);
-  ControlInvocation::Get *args = request.mutable_getargs();
-  args->set_key(key);
-  WriteMessage(request);
-
-  GrafipsControlProto::ControlInvocation response;
-  ReadResponse(&response);
-  assert(response.method() == ControlInvocation::kGetResponse);
-  const ControlInvocation::GetResponse &rargs = response.getresponseargs();
-  *value = rargs.value();
-  return rargs.status();
-}
-
-void
-ControlStub::AddControl(const std::string &key, ControlInterface* target) {
-  // TODO(majanes)
+  // asynchronous, no response
 }
 
 void
@@ -99,24 +74,3 @@ ControlStub::WriteMessage(const ControlInvocation &m) const {
     m_protect.Unlock();
 }
 
-void
-ControlStub::ReadResponse(GrafipsControlProto::ControlInvocation *m) const {
-    m_protect.Lock();
-    uint32_t response_size;
-    bool status = m_socket.Read(&response_size);
-    assert(status);
-    assert(response_size);
-    m_buf.resize(response_size);
-
-    status = m_socket.ReadVec(&m_buf);
-    assert(status);
-
-    const size_t buf_size = m_buf.size();
-    ArrayInputStream array_in(m_buf.data(), buf_size);
-    CodedInputStream coded_in(&array_in);
-    CodedInputStream::Limit msg_limit = coded_in.PushLimit(buf_size);
-    m->ParseFromCodedStream(&coded_in);
-    coded_in.PopLimit(msg_limit);
-
-    m_protect.Unlock();
-}

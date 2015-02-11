@@ -61,12 +61,15 @@ class CpuFreqControl : public ControlInterface {
  public:
   CpuFreqControl();
   ~CpuFreqControl();
-  bool Set(const std::string &key, const std::string &value);
-  bool Get(const std::string &key, std::string *value);
+  void Set(const std::string &key, const std::string &value);
+  void Subscribe(ControlSubscriberInterface *sub);
   bool IsValid() const;
  private:
+  void Publish();
+  
   std::string m_current_setting;
   FreqSysParser m_parser;
+  ControlSubscriberInterface *m_subscriber;
 
   // to restore sane state after termination
   std::string m_orig_scaling_governor;

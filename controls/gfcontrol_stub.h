@@ -44,9 +44,7 @@ class ControlStub : public ControlInterface {
   ControlStub(const std::string &address, int port);
   ~ControlStub();
 
-  bool Set(const std::string &key, const std::string &value);
-  bool Get(const std::string &key, std::string *value);
-  void AddControl(const std::string &key, ControlInterface* target);
+  void Set(const std::string &key, const std::string &value);
  private:
   void WriteMessage(const GrafipsControlProto::ControlInvocation &m) const;
   void ReadResponse(GrafipsControlProto::ControlInvocation *m) const;

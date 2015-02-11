@@ -32,6 +32,12 @@
 
 namespace Grafips {
 
+class ControlSubscriberInterface {
+ public:
+  virtual ~ControlSubscriberInterface() {}
+  virtual void OnControlChanged(const std::string &key,
+                                const std::string &value) = 0;
+};
 
 // this interface supports invoking expirements on the target
 // workload.  This mechanism is intended to support:
@@ -47,13 +53,11 @@ namespace Grafips {
 // - Simple fragment shader
 // - Disable alpha test
 // - Pause / Continue
-
 class ControlInterface {
  public:
   virtual ~ControlInterface() {}
-  virtual bool Set(const std::string &key, const std::string &value) = 0;
-  virtual bool Get(const std::string &key, std::string *value) = 0;
-  // TODO(majanes): add subscriber interface
+  virtual void Set(const std::string &key, const std::string &value) = 0;
+  virtual void Subscribe(ControlSubscriberInterface *value) = 0;
 };
 
 }  // namespace Grafips
