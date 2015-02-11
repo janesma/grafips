@@ -25,43 +25,38 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include <gtest/gtest.h>
-#include <QString>
+#include "controls/gfcontrol.h"
 
-#include <vector>
+#include <assert.h>
 
-#include "sources/gfgl_source.h"
-#include "grafips/test/test_mock.h"
+#include <string>
 
+using Grafips::Control;
 
-using Grafips::TestPublisher;
-using Grafips::GlSource;
-using Grafips::MetricDescriptionSet;
+Control::Control() {}
 
-TEST(GlSourceFixture, test_descriptions ) {
-  TestPublisher pub;
-  GlSource source;
-  pub.RegisterSource(&source);
-
-  source.Enable(pub.m_desc[0].id());
-
-  source.glSwapBuffers();
-  EXPECT_TRUE(pub.m_d.empty());
-
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 12.0);
-  EXPECT_GT(pub.m_d[0].data, 9.6);
-
-  pub.m_d.clear();
-
-  source.Disable(pub.m_desc[0].id());
-  source.Enable(pub.m_desc[1].id());
-
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 120.0);
-  EXPECT_GT(pub.m_d[0].data, 90.6);
+bool
+Control::Set(const std::string &key, const std::string &value) {
+  auto i = m_targets.find(key);
+  if (i == m_targets.end())
+    return false;
+  i->second->Set(key, value);
+  return true;
 }
+
+bool
+Control::Get(const std::string &key, std::string *value) {
+  auto i = m_targets.find(key);
+  if (i == m_targets.end())
+    return false;
+  return i->second->Get(key, value);
+}
+
+void
+Control::AddControl(const std::string &key, ControlInterface* target) {
+  auto i = m_targets.find(key);
+  assert(i == m_targets.end());
+  m_targets[key] = target;
+}
+
+

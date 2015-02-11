@@ -25,43 +25,30 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include <gtest/gtest.h>
-#include <QString>
+#ifndef CONTROLS_GFCONTROL_H_
+#define CONTROLS_GFCONTROL_H_
 
-#include <vector>
+#include <map>
+#include <string>
 
-#include "sources/gfgl_source.h"
-#include "grafips/test/test_mock.h"
+#include "controls/gficontrol.h"
 
+namespace Grafips {
 
-using Grafips::TestPublisher;
-using Grafips::GlSource;
-using Grafips::MetricDescriptionSet;
+// multiplexes a single control socket over several controllers.
+// Controllers register themselves for the keys that they support with
+// AddControl.  Subsequent Set/Get invocations will be delivered to
+// the appropriate controller for the key.
+class Control : public ControlInterface {
+ public:
+  Control();
+  bool Set(const std::string &key, const std::string &value);
+  bool Get(const std::string &key, std::string *value);
+  void AddControl(const std::string &key, ControlInterface* target);
+ private:
+  std::map<std::string, ControlInterface *> m_targets;
+};
 
-TEST(GlSourceFixture, test_descriptions ) {
-  TestPublisher pub;
-  GlSource source;
-  pub.RegisterSource(&source);
+}  // namespace Grafips
 
-  source.Enable(pub.m_desc[0].id());
-
-  source.glSwapBuffers();
-  EXPECT_TRUE(pub.m_d.empty());
-
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 12.0);
-  EXPECT_GT(pub.m_d[0].data, 9.6);
-
-  pub.m_d.clear();
-
-  source.Disable(pub.m_desc[0].id());
-  source.Enable(pub.m_desc[1].id());
-
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 120.0);
-  EXPECT_GT(pub.m_d[0].data, 90.6);
-}
+#endif  // CONTROLS_GFCONTROL_H_

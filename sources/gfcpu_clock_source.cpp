@@ -35,6 +35,7 @@
 #include <unistd.h>
 
 #include <sstream>
+#include <string>
 
 #include "remote/gfimetric_sink.h"
 
@@ -43,7 +44,7 @@ using Grafips::CpuFreqSource;
 // Convenience class to clean up DIR resources on exit;
 class ScopedDirClose {
  public:
-  ScopedDirClose(DIR *d) : m_d(d) {}
+  explicit ScopedDirClose(DIR *d) : m_d(d) {}
   ~ScopedDirClose() { closedir(m_d); }
  private:
   DIR *m_d;
@@ -54,14 +55,13 @@ CpuFreqSource::CpuFreqSource()
   // open handles
   static const char *base_dir = "/sys/devices/system/cpu";
   DIR * base_dir_h = opendir(base_dir);
-  if (! base_dir_h)
+  if (!base_dir_h)
     return;
   ScopedDirClose d(base_dir_h);
-  
+
   struct dirent *current_cpu_dir = readdir(base_dir_h);
   while (NULL != current_cpu_dir) {
     if (strncmp("cpu", current_cpu_dir->d_name, 3) == 0) {
-
       const std::string core_file_name = std::string(base_dir) + "/"
                                         + current_cpu_dir->d_name
                                         + "/cpufreq/cpuinfo_cur_freq";
@@ -78,9 +78,11 @@ CpuFreqSource::CpuFreqSource()
     std::stringstream path, name;
     path << "cpu/core/" << i << "/frequency";
     name << "CPU" << i << " frequency";
+    static const char *desc = "Displays current frequency of core";
+
     m_descriptions.push_back(MetricDescription(path.str(),
-                                               "Displays current frequency of core",
                                                name.str(),
+                                               desc,
                                                GR_METRIC_RATE));
     m_index_to_id[i] = m_descriptions.back().id();
   }
@@ -116,7 +118,7 @@ CpuFreqSource::Poll() {
   const unsigned int ms = get_ms_time();
   if (ms - m_last_publish_ms < 500)
     return;
-  if (! m_sink)
+  if (!m_sink)
     return;
 
   DataSet dset;
@@ -137,6 +139,3 @@ CpuFreqSource::Poll() {
   if (!dset.empty() && m_sink)
     m_sink->OnMetric(dset);
 }
-
-
-  

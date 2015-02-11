@@ -51,7 +51,7 @@ class PollThread : public Thread {
                                  m_running(false),
                                  m_cpu(c),
                                  m_gl(g),
-                                 m_f(f){}
+                                 m_f(f) {}
   void Run() {
     m_running = true;
     while (m_running) {
@@ -65,6 +65,7 @@ class PollThread : public Thread {
     m_running = false;
     Join();
   }
+
  private:
   bool m_running;
   CpuSource *m_cpu;
@@ -78,7 +79,7 @@ int main(int argc, const char **argv) {
   GlSource glprov;
   GpuPerfSource gpuprov;
   CpuFreqSource freqprov;
-  
+
   pub.RegisterSource(&glprov);
   pub.RegisterSource(&gpuprov);
   pub.RegisterSource(&prov);

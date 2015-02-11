@@ -25,43 +25,55 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include <gtest/gtest.h>
-#include <QString>
+#ifndef CONTROLS_GFCPU_FREQ_CONTROL_H_
+#define CONTROLS_GFCPU_FREQ_CONTROL_H_
 
+#include <string>
 #include <vector>
 
-#include "sources/gfgl_source.h"
-#include "grafips/test/test_mock.h"
+#include "controls/gficontrol.h"
 
+namespace Grafips {
 
-using Grafips::TestPublisher;
-using Grafips::GlSource;
-using Grafips::MetricDescriptionSet;
+// Handles I/O and parsing of data in sysfs, including stripping
+// newlines, etc.
+class FreqSysParser {
+ public:
+  FreqSysParser();
+  ~FreqSysParser();
+  const std::string Governor() const;
+  const std::string MaxFreq() const;
+  const std::string MinFreq() const;
+  const bool IsValid() const;
+  void SetMaxFreq(const std::string &max);
+  void SetMinFreq(const std::string &min);
+  void SetGovernor(const std::string &policy);
+ private:
+  void ReadToBuffer(int fh) const;
+  void Write(int fh, const std::string&value);
+  int m_governor_fh;
+  int m_max_fh;
+  int m_min_fh;
+  mutable std::vector<char> m_buf;
+};
 
-TEST(GlSourceFixture, test_descriptions ) {
-  TestPublisher pub;
-  GlSource source;
-  pub.RegisterSource(&source);
+class CpuFreqControl : public ControlInterface {
+ public:
+  CpuFreqControl();
+  ~CpuFreqControl();
+  bool Set(const std::string &key, const std::string &value);
+  bool Get(const std::string &key, std::string *value);
+  bool IsValid() const;
+ private:
+  std::string m_current_setting;
+  FreqSysParser m_parser;
 
-  source.Enable(pub.m_desc[0].id());
+  // to restore sane state after termination
+  std::string m_orig_scaling_governor;
+  std::string m_orig_min_freq;
+  std::string m_orig_max_freq;
+};
 
-  source.glSwapBuffers();
-  EXPECT_TRUE(pub.m_d.empty());
+}  // namespace Grafips
 
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 12.0);
-  EXPECT_GT(pub.m_d[0].data, 9.6);
-
-  pub.m_d.clear();
-
-  source.Disable(pub.m_desc[0].id());
-  source.Enable(pub.m_desc[1].id());
-
-  usleep(100000);
-  source.glSwapBuffers();
-  ASSERT_GT(pub.m_d.size(), 0);
-  EXPECT_LT(pub.m_d[0].data, 120.0);
-  EXPECT_GT(pub.m_d[0].data, 90.6);
-}
+#endif  // CONTROLS_GFCPU_FREQ_CONTROL_H_
