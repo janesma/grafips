@@ -31,7 +31,11 @@
 
 #include <string>
 
+#include "controls/gfcontrol_stub.h"
+
 using Grafips::ControlRouterTarget;
+using Grafips::ControlRouterHost;
+using Grafips::ControlStub;
 
 ControlRouterTarget::ControlRouterTarget() {}
 
@@ -45,8 +49,49 @@ ControlRouterTarget::Set(const std::string &key, const std::string &value) {
 }
 
 void
-ControlRouterTarget::AddControl(const std::string &key, ControlInterface* target) {
+ControlRouterTarget::AddControl(const std::string &key,
+                                ControlInterface* target) {
   auto i = m_targets.find(key);
   assert(i == m_targets.end());
   m_targets[key] = target;
+  target->Subscribe(this);
+}
+
+void
+ControlRouterTarget::Subscribe(ControlSubscriberInterface *sub) {
+  // might need to cache all publications, to send initial state on a
+  // tardy subscribe
+  m_subscriber = sub;
+}
+
+void
+ControlRouterTarget::OnControlChanged(const std::string &key,
+                                      const std::string &value) {
+  if (m_subscriber)
+    m_subscriber->OnControlChanged(key, value);
+}
+
+
+ControlRouterHost::ControlRouterHost(const std::string &address, int port)
+    : m_stub(new ControlStub(address, port)) {
+  m_stub->Subscribe(this);
+}
+
+ControlRouterHost::~ControlRouterHost() {
+  delete m_stub;
+}
+
+void
+ControlRouterHost::Subscribe(const std::string &key,
+                             ControlSubscriberInterface *value) {
+  m_subscribers[key] = value;
+}
+
+void
+ControlRouterHost::OnControlChanged(const std::string &key,
+                                    const std::string &value) {
+  auto target = m_subscribers.find(key);
+  if (target == m_subscribers.end())
+    return;
+  target->second->OnControlChanged(key, value);
 }

@@ -34,23 +34,72 @@
 #include "controls/gficontrol.h"
 #include "os/gfsocket.h"
 #include "os/gfmutex.h"
+#include "os/gfthread.h"
+#include "./gfcontrol.pb.h"
 
 namespace GrafipsControlProto {
 class ControlInvocation;
 }
 
 namespace Grafips {
-class ControlStub : public ControlInterface {
+class ControlRouterHost;
+class ControlRouterTarget;
+class ControlSubscriberSkel;
+
+class ControlStub {
+ public:
   ControlStub(const std::string &address, int port);
   ~ControlStub();
 
   void Set(const std::string &key, const std::string &value);
+  void Subscribe(ControlSubscriberInterface *value);
+
  private:
   void WriteMessage(const GrafipsControlProto::ControlInvocation &m) const;
-  void ReadResponse(GrafipsControlProto::ControlInvocation *m) const;
+  ControlSubscriberSkel *m_subscriber;
   mutable Socket m_socket;
   mutable std::vector<unsigned char> m_buf;
   mutable Mutex m_protect;
+};
+
+class ControlSubscriberStub;
+class ControlSkel : public Thread {
+ public:
+  ControlSkel(int port, ControlRouterTarget *target);
+  ~ControlSkel();
+  void Run();
+ private:
+  void WriteMessage(const GrafipsControlProto::ControlInvocation &m);
+  ServerSocket *m_server;
+  Socket *m_socket;
+  ControlRouterTarget *m_target;
+
+  // on Subscribe(), this member is created to send publications remotely
+  ControlSubscriberStub *m_subscriber;
+};
+
+class ControlSubscriberStub : public ControlSubscriberInterface {
+ public:
+  ControlSubscriberStub(const std::string &address, int port);
+  void OnControlChanged(const std::string &key,
+                        const std::string &value);
+ private:
+  void WriteMessage(const GrafipsControlProto::ControlInvocation &m) const;
+  mutable Socket m_socket;
+  mutable std::vector<unsigned char> m_buf;
+  mutable Mutex m_protect;
+};
+
+class ControlSubscriberSkel : public Thread {
+ public:
+  ControlSubscriberSkel(int port,
+                        ControlSubscriberInterface *target);
+  int GetPort() const;
+  void Run();
+ private:
+  ServerSocket *m_server;
+  Socket *m_socket;
+  ControlSubscriberInterface *m_target;
 };
 
 }  // namespace Grafips

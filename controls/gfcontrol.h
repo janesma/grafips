@@ -42,10 +42,10 @@
 //          <subscribe>                <OnControlChanged>
 //          <set>
 
-//        serversocket                socket
-//       ControlSkel             ControlSubscriberStub
-//     ControlRouterTarget
-//         <subscribe>
+//        serversocket                    socket
+//       ControlRouterTarget             ControlSubscriberStub
+//                      ControlSkel
+//               <subscribe>
 //    ControlInterface ControlInterfac
 //    control                control
 
@@ -76,16 +76,19 @@ class ControlRouterTarget : public ControlSubscriberInterface {
 
  private:
   std::map<std::string, ControlInterface *> m_targets;
-  ControlSubscriberStub *m_subscriber;
-  ControlSkel *m_skel;
+
+  // this is a stub, to be instantiated by the skeleton that owns the
+  // ControlRouterTarget
+  ControlSubscriberInterface *m_subscriber;
 };
 
 // multiplexes notifications on the UI side of the socket.  UI
 // controls subscribe for the specific control state that they
-// display.  
+// display.
 class ControlRouterHost : public ControlSubscriberInterface {
  public:
-  ControlRouterHost();
+  ControlRouterHost(const std::string &address, int port);
+  ~ControlRouterHost();
   void Subscribe(const std::string &key,
                  ControlSubscriberInterface *value);
 
@@ -95,7 +98,6 @@ class ControlRouterHost : public ControlSubscriberInterface {
  private:
   std::map<std::string, ControlSubscriberInterface *> m_subscribers;
 
-  ControlSubscriberSkel *m_skel;
   ControlStub *m_stub;
 };
 

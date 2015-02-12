@@ -3,11 +3,9 @@ package GrafipsControlProto;
 message ControlInvocation {
     enum Method {
         kSet = 0;
-        kSetResponse = 1;
-        kGet = 2;
-        kGetResponse = 3;
+        kSubscribe = 2;
+        kOnControlChanged = 3;
     }
-
 
   message Set
   {
@@ -15,26 +13,20 @@ message ControlInvocation {
     required string value = 2;
   };
 
-
-  message SetResponse
+  message Subscribe
   {
-    required bool status = 1;
+    required string address = 1;
+    required int32 port = 2;
   };
 
-  message Get
+  message OnControlChanged
   {
     required string key = 1;
-  };
-
-  message GetResponse
-  {
-    required bool status = 1;
     required string value = 2;
   };
 
   required Method method = 1;
   optional Set setArgs = 2;
-  optional SetResponse setResponseArgs = 3;
-  optional Get getArgs = 4;
-  optional GetResponse getResponseArgs = 5;
+  optional Subscribe subscribeArgs = 3;
+  optional OnControlChanged OnControlChangedArgs = 4;
 }

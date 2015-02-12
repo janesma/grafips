@@ -95,7 +95,7 @@ CpuFreqControl::IsValid() const {
 
 void
 CpuFreqControl::Subscribe(ControlSubscriberInterface *sub) {
-  if(!m_parser.IsValid())
+  if (!m_parser.IsValid())
     return;
   m_subscriber = sub;
   sub->OnControlChanged("CpuFrequencyPolicy", m_current_setting);

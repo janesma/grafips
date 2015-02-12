@@ -71,7 +71,7 @@ class CpuFreqControl : public ControlInterface {
   bool IsValid() const;
  private:
   void Publish();
-  
+
   std::string m_current_setting;
   FreqSysParser m_parser;
   ControlSubscriberInterface *m_subscriber;
