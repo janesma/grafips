@@ -37,7 +37,8 @@ using Grafips::ControlRouterTarget;
 using Grafips::ControlRouterHost;
 using Grafips::ControlStub;
 
-ControlRouterTarget::ControlRouterTarget() {}
+ControlRouterTarget::ControlRouterTarget()
+    : m_subscriber(NULL) {}
 
 bool
 ControlRouterTarget::Set(const std::string &key, const std::string &value) {
@@ -81,10 +82,21 @@ ControlRouterHost::~ControlRouterHost() {
   delete m_stub;
 }
 
+bool
+ControlRouterHost::Set(const std::string &key, const std::string &value) {
+  m_stub->Set(key, value);
+  return true;
+}
+
 void
 ControlRouterHost::Subscribe(const std::string &key,
                              ControlSubscriberInterface *value) {
   m_subscribers[key] = value;
+}
+
+void
+ControlRouterHost::Flush() {
+  m_stub->Flush();
 }
 
 void

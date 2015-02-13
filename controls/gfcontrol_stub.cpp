@@ -52,10 +52,11 @@ using google::protobuf::io::CodedInputStream;
 // interfaces are introduced.
 
 ControlStub::ControlStub(const std::string &address, int port)
-    : m_socket(address, port) {
+    : m_socket(new Socket(address, port)) {
   // socket connects in constructor
 }
 ControlStub::~ControlStub() {
+  delete m_socket;
   if (m_subscriber) {
     m_subscriber->Join();
     delete m_subscriber;
@@ -96,16 +97,27 @@ ControlStub::Subscribe(ControlSubscriberInterface *value) {
 }
 
 void
+ControlStub::Flush() {
+  GrafipsControlProto::ControlInvocation request;
+
+  request.set_method(ControlInvocation::kFlush);
+  WriteMessage(request);
+  int response;
+  m_socket->Read(&response);
+  assert(response == 0);
+}
+
+void
 ControlStub::WriteMessage(const ControlInvocation &m) const {
   const uint32_t write_size = m.ByteSize();
   m_protect.Lock();
-  m_socket.Write(write_size);
+  m_socket->Write(write_size);
 
   m_buf.resize(write_size);
   ArrayOutputStream array_out(m_buf.data(), write_size);
   CodedOutputStream coded_out(&array_out);
   m.SerializeToCodedStream(&coded_out);
-  m_socket.Write(m_buf.data(), write_size);
+  m_socket->Write(m_buf.data(), write_size);
   m_protect.Unlock();
 }
 
@@ -113,7 +125,8 @@ ControlSkel::ControlSkel(int port, ControlRouterTarget *target)
     : Thread("ControlSkel"),
       m_server(new ServerSocket(port)),
       m_socket(NULL),
-      m_target(target) {
+      m_target(target),
+      m_subscriber(NULL) {
       }
 
 ControlSkel::~ControlSkel() {
@@ -169,6 +182,10 @@ ControlSkel::Run() {
         m_target->Subscribe(m_subscriber);
         break;
       }
+      case ControlInvocation::kFlush: {
+        m_socket->Write(0);
+        break;
+      }
       default: {
         assert(false);
         running = false;
@@ -186,7 +203,11 @@ ControlSkel::Run() {
 
 ControlSubscriberStub::ControlSubscriberStub(const std::string &address,
                                              int port)
-    : m_socket(address, port) {
+    : m_socket(new Socket(address, port)) {
+}
+
+ControlSubscriberStub::~ControlSubscriberStub() {
+  delete(m_socket);
 }
 
 void
@@ -208,13 +229,13 @@ void
 ControlSubscriberStub::WriteMessage(const ControlInvocation &m) const {
   const uint32_t write_size = m.ByteSize();
   m_protect.Lock();
-  m_socket.Write(write_size);
+  m_socket->Write(write_size);
 
   m_buf.resize(write_size);
   ArrayOutputStream array_out(m_buf.data(), write_size);
   CodedOutputStream coded_out(&array_out);
   m.SerializeToCodedStream(&coded_out);
-  m_socket.Write(m_buf.data(), write_size);
+  m_socket->Write(m_buf.data(), write_size);
   m_protect.Unlock();
 }
 
@@ -254,8 +275,12 @@ ControlSubscriberSkel::Run() {
     using GrafipsControlProto::ControlInvocation;
     switch (m.method()) {
       case ControlInvocation::kOnControlChanged: {
-        const ControlInvocation::Set& args = m.setargs();
+        const ControlInvocation::OnControlChanged& args = m.oncontrolchangedargs();
         m_target->OnControlChanged(args.key(), args.value());
+        break;
+      }
+      case ControlInvocation::kFlush: {
+        m_socket->Write(0);
         break;
       }
       default: {
@@ -269,3 +294,23 @@ ControlSubscriberSkel::Run() {
 
 int
 ControlSubscriberSkel::GetPort() const { return m_server->GetPort(); }
+
+void
+ControlSubscriberStub::Flush() {
+  GrafipsControlProto::ControlInvocation request;
+
+  request.set_method(ControlInvocation::kFlush);
+  WriteMessage(request);
+  int response;
+  m_socket->Read(&response);
+  assert(response == 0);
+}
+
+void
+ControlSkel::Flush() {
+  if (m_subscriber) {
+    m_subscriber->Flush();
+  }
+}
+    
+

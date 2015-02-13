@@ -32,11 +32,17 @@
 #include <string>
 #include <vector>
 
+#include "controls/gfcontrol.h"
+#include "controls/gfcontrol_stub.h"
 #include "controls/gfcpu_freq_control.h"
 
 using Grafips::CpuFreqControl;
 using Grafips::FreqSysParser;
 using Grafips::ControlSubscriberInterface;
+using Grafips::ControlRouterTarget;
+using Grafips::ControlRouterHost;
+using Grafips::ControlSkel;
+using Grafips::ControlStub;
 
 class PolicySubscriber : public ControlSubscriberInterface {
  public:
@@ -89,4 +95,32 @@ TEST(CpuFreqControl, test_instantiate ) {
     // policy should be back to initial state
     EXPECT_EQ(orig_policy, policy.policy);
   }
+}
+
+TEST(CpuFreqControl, test_remote ) {
+  PolicySubscriber policy;
+  CpuFreqControl control;
+  if (!control.IsValid())
+    return;
+  ControlRouterTarget target;
+  ControlSkel skel(0, &target);
+  skel.Start();
+  {
+    ControlRouterHost host("localhost", skel.GetPort());
+    host.Subscribe("CpuFrequencyPolicy", &policy);
+    host.Flush();
+
+    target.AddControl("CpuFrequencyPolicy", &control);
+    skel.Flush();
+    EXPECT_TRUE(policy.policy == "performance" ||
+                policy.policy == "powersave");
+
+    host.Set("CpuFrequencyPolicy", "max_freq");
+    host.Flush();
+    skel.Flush();
+    EXPECT_TRUE(policy.policy == "max_freq");
+    
+    // destructor tears down the sockets
+  }
+  skel.Join();
 }

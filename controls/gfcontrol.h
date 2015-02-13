@@ -89,12 +89,13 @@ class ControlRouterHost : public ControlSubscriberInterface {
  public:
   ControlRouterHost(const std::string &address, int port);
   ~ControlRouterHost();
+  bool Set(const std::string &key, const std::string &value);
   void Subscribe(const std::string &key,
                  ControlSubscriberInterface *value);
 
   void OnControlChanged(const std::string &key,
                         const std::string &value);
-
+  void Flush();
  private:
   std::map<std::string, ControlSubscriberInterface *> m_subscribers;
 

@@ -53,11 +53,12 @@ class ControlStub {
 
   void Set(const std::string &key, const std::string &value);
   void Subscribe(ControlSubscriberInterface *value);
+  void Flush();
 
  private:
   void WriteMessage(const GrafipsControlProto::ControlInvocation &m) const;
   ControlSubscriberSkel *m_subscriber;
-  mutable Socket m_socket;
+  mutable Socket *m_socket;
   mutable std::vector<unsigned char> m_buf;
   mutable Mutex m_protect;
 };
@@ -68,6 +69,9 @@ class ControlSkel : public Thread {
   ControlSkel(int port, ControlRouterTarget *target);
   ~ControlSkel();
   void Run();
+  int GetPort() { return m_server->GetPort(); }
+  void Flush();
+
  private:
   void WriteMessage(const GrafipsControlProto::ControlInvocation &m);
   ServerSocket *m_server;
@@ -81,11 +85,13 @@ class ControlSkel : public Thread {
 class ControlSubscriberStub : public ControlSubscriberInterface {
  public:
   ControlSubscriberStub(const std::string &address, int port);
+  ~ControlSubscriberStub();
   void OnControlChanged(const std::string &key,
                         const std::string &value);
+  void Flush();
  private:
   void WriteMessage(const GrafipsControlProto::ControlInvocation &m) const;
-  mutable Socket m_socket;
+  mutable Socket *m_socket;
   mutable std::vector<unsigned char> m_buf;
   mutable Mutex m_protect;
 };

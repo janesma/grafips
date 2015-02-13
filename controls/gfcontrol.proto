@@ -5,6 +5,7 @@ message ControlInvocation {
         kSet = 0;
         kSubscribe = 2;
         kOnControlChanged = 3;
+        kFlush = 4;
     }
 
   message Set
