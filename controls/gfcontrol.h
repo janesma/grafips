@@ -76,6 +76,7 @@ class ControlRouterTarget : public ControlSubscriberInterface {
 
  private:
   std::map<std::string, ControlInterface *> m_targets;
+  std::map<std::string, std::string> m_current_state;
 
   // this is a stub, to be instantiated by the skeleton that owns the
   // ControlRouterTarget
@@ -98,6 +99,7 @@ class ControlRouterHost : public ControlSubscriberInterface {
   void Flush();
  private:
   std::map<std::string, ControlSubscriberInterface *> m_subscribers;
+  std::map<std::string, std::string> m_current_state;
 
   ControlStub *m_stub;
 };

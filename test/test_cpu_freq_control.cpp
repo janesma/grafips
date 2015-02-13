@@ -103,6 +103,7 @@ TEST(CpuFreqControl, test_remote ) {
   if (!control.IsValid())
     return;
   ControlRouterTarget target;
+  target.AddControl("CpuFrequencyPolicy", &control);
   ControlSkel skel(0, &target);
   skel.Start();
   {
@@ -110,7 +111,6 @@ TEST(CpuFreqControl, test_remote ) {
     host.Subscribe("CpuFrequencyPolicy", &policy);
     host.Flush();
 
-    target.AddControl("CpuFrequencyPolicy", &control);
     skel.Flush();
     EXPECT_TRUE(policy.policy == "performance" ||
                 policy.policy == "powersave");

@@ -63,11 +63,14 @@ ControlRouterTarget::Subscribe(ControlSubscriberInterface *sub) {
   // might need to cache all publications, to send initial state on a
   // tardy subscribe
   m_subscriber = sub;
+  for (auto i = m_current_state.begin(); i != m_current_state.end(); ++i)
+    sub->OnControlChanged(i->first, i->second);
 }
 
 void
 ControlRouterTarget::OnControlChanged(const std::string &key,
                                       const std::string &value) {
+  m_current_state[key] = value;
   if (m_subscriber)
     m_subscriber->OnControlChanged(key, value);
 }
@@ -92,6 +95,10 @@ void
 ControlRouterHost::Subscribe(const std::string &key,
                              ControlSubscriberInterface *value) {
   m_subscribers[key] = value;
+  auto state = m_current_state.find(key);
+  if (state == m_current_state.end())
+    return;
+  value->OnControlChanged(key, state->second);
 }
 
 void
@@ -102,6 +109,7 @@ ControlRouterHost::Flush() {
 void
 ControlRouterHost::OnControlChanged(const std::string &key,
                                     const std::string &value) {
+  m_current_state[key] = value;
   auto target = m_subscribers.find(key);
   if (target == m_subscribers.end())
     return;
