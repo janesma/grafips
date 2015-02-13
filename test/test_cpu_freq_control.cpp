@@ -118,8 +118,8 @@ TEST(CpuFreqControl, test_remote ) {
     host.Set("CpuFrequencyPolicy", "max_freq");
     host.Flush();
     skel.Flush();
-    EXPECT_TRUE(policy.policy == "max_freq");
-    
+    EXPECT_EQ(policy.policy, "max_freq");
+
     // destructor tears down the sockets
   }
   skel.Join();

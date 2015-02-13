@@ -27,8 +27,9 @@
 
 #include "controls/gfcontrol_stub.h"
 
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <unistd.h>
 
 #include <string>
 #include <vector>
@@ -89,7 +90,14 @@ ControlStub::Subscribe(ControlSubscriberInterface *value) {
   request.set_method(ControlInvocation::kSubscribe);
   ControlInvocation::Subscribe *args = request.mutable_subscribeargs();
   // TODO(majanes): detect local ip and use a real address
-  args->set_address("localhost");
+  std::vector<char> hostname(HOST_NAME_MAX + 1);
+  gethostname(hostname.data(), HOST_NAME_MAX);
+  hostname[HOST_NAME_MAX] = '\0';
+
+  std::string mdns_address = hostname.data();
+  mdns_address += ".local";
+
+  args->set_address(mdns_address);
   args->set_port(port);
   WriteMessage(request);
 
@@ -275,7 +283,8 @@ ControlSubscriberSkel::Run() {
     using GrafipsControlProto::ControlInvocation;
     switch (m.method()) {
       case ControlInvocation::kOnControlChanged: {
-        const ControlInvocation::OnControlChanged& args = m.oncontrolchangedargs();
+        const ControlInvocation::OnControlChanged& args
+            = m.oncontrolchangedargs();
         m_target->OnControlChanged(args.key(), args.value());
         break;
       }
@@ -312,5 +321,5 @@ ControlSkel::Flush() {
     m_subscriber->Flush();
   }
 }
-    
+
 
