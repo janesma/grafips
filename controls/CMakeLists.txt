@@ -24,5 +24,5 @@ target_include_directories( grafips_controls PUBLIC .. ${CMAKE_BINARY_DIR}/contr
 
 #target_link_libraries(grafips_controls)
 
-
+add_subdirectory(host)
 

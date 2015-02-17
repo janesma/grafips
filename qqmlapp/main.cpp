@@ -30,16 +30,22 @@
 #include <QtQml>
 #include <google/protobuf/stubs/common.h>
 
-#include "sources/gfcpu_source.h"
-#include "publishers/gfmetric_router.h"
-#include "subscriber/gfsubscriber.h"
+#include "controls/host/gfcpu_freq_qcontrol.h"
+#include "controls/host/gfcontrol_host.h"
 #include "graph/gfgraph_view.h"
-
+#include "publishers/gfmetric_router.h"
+#include "sources/gfcpu_source.h"
+#include "subscriber/gfsubscriber.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Grafips::MetricRouter>("Grafips", 1, 0, "MetricRouter");
+    qmlRegisterType<Grafips::ControlRouterHost>("Grafips", 1, 0,
+                                                "ControlRouterHost");
+
+    qmlRegisterType<Grafips::CpuFreqControlModel>("Grafips", 1, 0,
+                                                  "CpuFreqControlModel");
 
     qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");
     qmlRegisterType<Grafips::GraphSetSubscriber>("Grafips", 1, 0,

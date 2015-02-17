@@ -28,11 +28,13 @@
 #include <fcntl.h>
 #include <gtest/gtest.h>
 #include <sys/stat.h>
+#include <QString>
 
 #include <string>
 #include <vector>
 
 #include "controls/gfcontrol.h"
+#include "controls/host/gfcontrol_host.h"
 #include "controls/gfcontrol_stub.h"
 #include "controls/gfcpu_freq_control.h"
 
@@ -107,7 +109,12 @@ TEST(CpuFreqControl, test_remote ) {
   ControlSkel skel(0, &target);
   skel.Start();
   {
-    ControlRouterHost host("localhost", skel.GetPort());
+    ControlRouterHost host;
+    // host is configured to choose the port after what is specified
+    // in the connect address.  Here, we are using an anonymous port.
+    // Subtract 1 to correct for the adjustment.
+    QString address = QString("localhost:%1").arg(skel.GetPort() - 1);
+    host.setAddress(address);
     host.Subscribe("CpuFrequencyPolicy", &policy);
     host.Flush();
 

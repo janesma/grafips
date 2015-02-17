@@ -25,59 +25,57 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef CONTROLS_GFCONTROL_H_
-#define CONTROLS_GFCONTROL_H_
+#ifndef CONTROLS_HOST_GFCPU_FREQ_QCONTROL_H_
+#define CONTROLS_HOST_GFCPU_FREQ_QCONTROL_H_
 
-#include <map>
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <QVariant>
 #include <string>
 
 #include "controls/gficontrol.h"
-
-// UI
-//   widget   widget
-//     ControlRouterHost
-//       ControlStub             ControlSubscriberSkel
-//        socket                      serversocket
-
-//          <subscribe>                <OnControlChanged>
-//          <set>
-
-//        serversocket                    socket
-//       ControlRouterTarget             ControlSubscriberStub
-//                      ControlSkel
-//               <subscribe>
-//    ControlInterface ControlInterfac
-//    control                control
+#include "controls/host/gfcontrol_host.h"
+#include "os/gfmutex.h"
+#include "os/gftraits.h"
 
 namespace Grafips {
-
-// multiplexes a single control socket over several controllers, on
-// the target side of the connection.  Controllers register themselves
-// for the keys that they support with AddControl.  Subsequent Set
-// invocations will be delivered to the appropriate controller for the
-// key.  ControlRouterTarget will forward any observed control changes
-// to its subscriber, which is intended to be a
-// ControlSubscriberInterface stub passing the data over the socket to
-// the UI.
-class ControlRouterTarget : public ControlSubscriberInterface {
+class CpuFreqControlModel : public QObject,
+                            public ControlSubscriberInterface,
+                            NoCopy, NoAssign, NoMove {
+  Q_OBJECT
+  Q_PROPERTY(QStringList policies
+             READ policies NOTIFY onPolicies)
+  Q_PROPERTY(int currentPolicy
+             READ currentPolicy NOTIFY onPolicyChanged)
  public:
-  ControlRouterTarget();
-  void AddControl(const std::string &key, ControlInterface* target);
-  void Subscribe(ControlSubscriberInterface *sub);
-  bool Set(const std::string &key, const std::string &value);
-
+  CpuFreqControlModel();
+  ~CpuFreqControlModel() {}
+  Q_INVOKABLE void SetControlRounter(ControlRouterHost *router);
+  Q_INVOKABLE void SetPolicy(QString policy);
   void OnControlChanged(const std::string &key,
                         const std::string &value);
 
+  // property accessors
+  QStringList policies();
+  int currentPolicy();
+
+ signals:
+  void NotifyPolicies();
+  void onPolicies();
+  void onPolicyChanged();
+
+ public slots:
+  // recives NotifyPolicies() signal on the UI thread, then emits
+  // onEnabled for MetricList.qml to recieve
+  void HandleNotifyPolicies();
+
  private:
-  std::map<std::string, ControlInterface *> m_targets;
-  std::map<std::string, std::string> m_current_state;
-
-  // this is a stub, to be instantiated by the skeleton that owns the
-  // ControlRouterTarget
-  ControlSubscriberInterface *m_subscriber;
+  ControlRouterHost *m_router;
+  QList<QString> m_policies;
+  int m_currentSelection;
+  mutable Mutex m_protect;
 };
-
 }  // namespace Grafips
 
-#endif  // CONTROLS_GFCONTROL_H_
+#endif  // CONTROLS_HOST_GFCPU_FREQ_QCONTROL_H_

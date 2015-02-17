@@ -25,52 +25,74 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "controls/gfcontrol.h"
+#include "controls/host/gfcontrol_host.h"
 
 #include <assert.h>
 
+#include <QStringList>
 #include <string>
 
 #include "controls/gfcontrol_stub.h"
 
 using Grafips::ControlRouterTarget;
+using Grafips::ControlRouterHost;
+using Grafips::ControlStub;
 
-ControlRouterTarget::ControlRouterTarget()
-    : m_subscriber(NULL) {}
+ControlRouterHost::ControlRouterHost()
+    : m_stub(NULL) {
+}
+
+ControlRouterHost::~ControlRouterHost() {
+  delete m_stub;
+}
+
+void
+ControlRouterHost::setAddress(const QString& address) {
+  m_address = address;
+  const int colon_pos = m_address.indexOf(":");
+  int port;
+  std::string host;
+  if (colon_pos != -1) {
+    QStringList l = address.split(":");
+    host = l[0].toStdString();
+    port = l[1].toInt() + 1;
+  }
+  m_stub = new ControlStub(host, port);
+  m_stub->Subscribe(this);
+}
+
+const QString &
+ControlRouterHost::address() {
+  return m_address;
+}
 
 bool
-ControlRouterTarget::Set(const std::string &key, const std::string &value) {
-  auto i = m_targets.find(key);
-  if (i == m_targets.end())
-    return false;
-  i->second->Set(key, value);
+ControlRouterHost::Set(const std::string &key, const std::string &value) {
+  m_stub->Set(key, value);
   return true;
 }
 
 void
-ControlRouterTarget::AddControl(const std::string &key,
-                                ControlInterface* target) {
-  auto i = m_targets.find(key);
-  assert(i == m_targets.end());
-  m_targets[key] = target;
-  target->Subscribe(this);
+ControlRouterHost::Subscribe(const std::string &key,
+                             ControlSubscriberInterface *value) {
+  m_subscribers[key] = value;
+  auto state = m_current_state.find(key);
+  if (state == m_current_state.end())
+    return;
+  value->OnControlChanged(key, state->second);
 }
 
 void
-ControlRouterTarget::Subscribe(ControlSubscriberInterface *sub) {
-  // might need to cache all publications, to send initial state on a
-  // tardy subscribe
-  m_subscriber = sub;
-  for (auto i = m_current_state.begin(); i != m_current_state.end(); ++i)
-    sub->OnControlChanged(i->first, i->second);
+ControlRouterHost::Flush() {
+  m_stub->Flush();
 }
 
 void
-ControlRouterTarget::OnControlChanged(const std::string &key,
-                                      const std::string &value) {
+ControlRouterHost::OnControlChanged(const std::string &key,
+                                    const std::string &value) {
   m_current_state[key] = value;
-  if (m_subscriber)
-    m_subscriber->OnControlChanged(key, value);
+  auto target = m_subscribers.find(key);
+  if (target == m_subscribers.end())
+    return;
+  target->second->OnControlChanged(key, value);
 }
-
-

@@ -62,6 +62,8 @@ CpuFreqControl::Set(const std::string &key, const std::string &value) {
     return;
 
   if ((value == "performance") || (value == "powersave")) {
+    m_parser.SetMinFreq(m_orig_min_freq);
+    m_parser.SetMaxFreq(m_orig_max_freq);
     m_parser.SetGovernor(value);
     m_current_setting = value;
     Publish();
@@ -70,6 +72,7 @@ CpuFreqControl::Set(const std::string &key, const std::string &value) {
 
   if (value == "max_freq") {
     // to clip frequency range to max, increase the minimum limit
+    m_parser.SetMaxFreq(m_orig_max_freq);
     m_parser.SetMinFreq(m_orig_max_freq);
     m_current_setting = value;
     Publish();
@@ -79,6 +82,7 @@ CpuFreqControl::Set(const std::string &key, const std::string &value) {
   if (value == "min_freq") {
     // to clip frequency range to min, decrease the maximum limit
     m_parser.SetMinFreq(m_orig_min_freq);
+    m_parser.SetMaxFreq(m_orig_min_freq);
     m_current_setting = value;
     Publish();
     return;

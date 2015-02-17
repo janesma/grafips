@@ -25,59 +25,51 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#ifndef CONTROLS_GFCONTROL_H_
-#define CONTROLS_GFCONTROL_H_
+#ifndef CONTROLS_HOST_GFCONTROL_HOST_H_
+#define CONTROLS_HOST_GFCONTROL_HOST_H_
+
+#include <QObject>
+#include <QString>
 
 #include <map>
 #include <string>
 
 #include "controls/gficontrol.h"
-
-// UI
-//   widget   widget
-//     ControlRouterHost
-//       ControlStub             ControlSubscriberSkel
-//        socket                      serversocket
-
-//          <subscribe>                <OnControlChanged>
-//          <set>
-
-//        serversocket                    socket
-//       ControlRouterTarget             ControlSubscriberStub
-//                      ControlSkel
-//               <subscribe>
-//    ControlInterface ControlInterfac
-//    control                control
+#include "os/gftraits.h"
 
 namespace Grafips {
 
-// multiplexes a single control socket over several controllers, on
-// the target side of the connection.  Controllers register themselves
-// for the keys that they support with AddControl.  Subsequent Set
-// invocations will be delivered to the appropriate controller for the
-// key.  ControlRouterTarget will forward any observed control changes
-// to its subscriber, which is intended to be a
-// ControlSubscriberInterface stub passing the data over the socket to
-// the UI.
-class ControlRouterTarget : public ControlSubscriberInterface {
+class ControlStub;
+
+// multiplexes notifications on the UI side of the socket.  UI
+// controls subscribe for the specific control state that they
+// display.
+class ControlRouterHost : public QObject,
+                          public ControlSubscriberInterface,
+                          NoCopy, NoAssign, NoMove {
+  Q_OBJECT
+  Q_PROPERTY(QString address READ address WRITE setAddress)
+
  public:
-  ControlRouterTarget();
-  void AddControl(const std::string &key, ControlInterface* target);
-  void Subscribe(ControlSubscriberInterface *sub);
+  ControlRouterHost();
+  ~ControlRouterHost();
   bool Set(const std::string &key, const std::string &value);
+  void Subscribe(const std::string &key,
+                 ControlSubscriberInterface *value);
 
   void OnControlChanged(const std::string &key,
                         const std::string &value);
-
+  void Flush();
+  void setAddress(const QString& address);
+  const QString &address();
  private:
-  std::map<std::string, ControlInterface *> m_targets;
+  QString m_address;
+  std::map<std::string, ControlSubscriberInterface *> m_subscribers;
   std::map<std::string, std::string> m_current_state;
 
-  // this is a stub, to be instantiated by the skeleton that owns the
-  // ControlRouterTarget
-  ControlSubscriberInterface *m_subscriber;
+  ControlStub *m_stub;
 };
 
 }  // namespace Grafips
 
-#endif  // CONTROLS_GFCONTROL_H_
+#endif  // CONTROLS_HOST_GFCONTROL_HOST_H_

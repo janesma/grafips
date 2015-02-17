@@ -8,7 +8,13 @@ add_executable(grafips_publish
   main.cpp
 )
 
-target_link_libraries(grafips_publish grafips_test_context grafips_sources grafips_publishers grafips_subscriber waffle-1 pthread)
+target_link_libraries(grafips_publish
+  grafips_test_context
+  grafips_controls
+  grafips_sources
+  grafips_publishers
+  grafips_subscriber
+  waffle-1 pthread)
 
 
 add_executable(grafips_draw 

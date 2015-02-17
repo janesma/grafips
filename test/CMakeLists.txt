@@ -18,5 +18,12 @@ add_executable(test_grafips
   test_pattern.cpp
   )
 
-target_link_libraries(test_grafips grafips_test_context grafips_controls grafips_sources grafips_publishers grafips_subscriber gtest waffle-1 GL)
+target_link_libraries(test_grafips
+  grafips_test_context
+  grafips_controls
+  grafips_controls_host
+  grafips_sources
+  grafips_publishers
+  grafips_subscriber
+  gtest waffle-1 GL)
 

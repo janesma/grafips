@@ -27,6 +27,9 @@
 
 #include <unistd.h>
 
+#include "controls/gfcontrol.h"
+#include "controls/gfcontrol_stub.h"
+#include "controls/gfcpu_freq_control.h"
 #include "remote/gfpublisher.h"
 #include "remote/gfpublisher_skel.h"
 #include "sources/gfcpu_clock_source.h"
@@ -35,6 +38,10 @@
 #include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
 
+using Grafips::ControlSkel;
+using Grafips::CpuFreqControl;
+using Grafips::CpuFreqControl;
+using Grafips::ControlRouterTarget;
 using Grafips::CpuFreqSource;
 using Grafips::CpuSource;
 using Grafips::GlSource;
@@ -95,11 +102,20 @@ int main(int argc, const char **argv) {
   if (argc > 1) {
     port = atoi(argv[1]);
   }
+
   PublisherSkeleton skel(port, &pub);
+
+  CpuFreqControl freq_control;
+  ControlRouterTarget target;
+  target.AddControl("CpuFrequencyPolicy", &freq_control);
+  ControlSkel control_skel(port + 1, &target);
+  control_skel.Start();
+
   skel.Start();
   thread.Start();
 
   skel.Join();
+  control_skel.Join();
   thread.Stop();
 
   return 0;

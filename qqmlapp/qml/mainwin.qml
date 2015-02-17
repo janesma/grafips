@@ -13,7 +13,9 @@ ApplicationWindow {
     MetricRouter {
         id: mainPublisher
     }
-
+    ControlRouterHost {
+        id: controlRouter
+    }
 
     Rectangle {
         id: connectionDialog
@@ -46,6 +48,7 @@ ApplicationWindow {
                     glFps.start();
                     glGpu.start();
                     mainPublisher.address = text
+                    controlRouter.address = text
                     mainView.visible = true
                     connectionDialog.visible = false
                 }
@@ -58,6 +61,14 @@ ApplicationWindow {
         id: row
         spacing: 0
 
+        CpuFreqPolicy {
+            id: frequencyControl
+            width: 120
+            Component.onCompleted: {
+                frequencyControl.model.SetControlRounter(controlRouter)
+            }
+        }
+        
         MetricList {
             id: currentList
             width: 500

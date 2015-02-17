@@ -1,8 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/mainwin.qml</file>
+        <file>qml/ActiveMetrics.qml</file>
+        <file>qml/CpuFreqPolicy.qml</file>
         <file>qml/MetricGroup.qml</file>
         <file>qml/MetricList.qml</file>
-        <file>qml/ActiveMetrics.qml</file>
+        <file>qml/mainwin.qml</file>
     </qresource>
 </RCC>

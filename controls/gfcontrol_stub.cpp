@@ -144,7 +144,6 @@ ControlSkel::~ControlSkel() {
     delete m_socket;
 }
 
-
 void
 ControlSkel::Run() {
   m_socket = m_server->Accept();
