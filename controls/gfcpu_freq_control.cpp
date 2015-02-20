@@ -192,7 +192,7 @@ FreqSysParser::SetGovernor(const std::string &policy) {
   Write(m_governor_fh, policy);
 }
 
-const bool
+bool
 FreqSysParser::IsValid() const {
   return (m_governor_fh != -1);
 }

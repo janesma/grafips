@@ -15,3 +15,4 @@ fi
 cp remote/*.h remote/*.cpp remote/*.proto $1/remote
 cp os/*.h os/*.cpp $1/os
 cp sources/*.h sources/*.cpp $1/sources
+cp controls/*.h controls/*.cpp controls/*.proto $1/controls

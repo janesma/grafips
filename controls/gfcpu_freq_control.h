@@ -49,7 +49,7 @@ class FreqSysParser {
   const std::string Governor() const;
   const std::string MaxFreq() const;
   const std::string MinFreq() const;
-  const bool IsValid() const;
+  bool IsValid() const;
   void SetMaxFreq(const std::string &max);
   void SetMinFreq(const std::string &min);
   void SetGovernor(const std::string &policy);
