@@ -6,7 +6,6 @@ Item {
     property var model: cpuModel
     id: control
     visible: false
-    
     CpuFreqControlModel {
         id: cpuModel
         onPoliciesChanged: {

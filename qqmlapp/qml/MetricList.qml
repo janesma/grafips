@@ -6,15 +6,13 @@ Item {
     property var model
     property MetricRouter publisher
     property ActiveMetrics activeMetrics
+    property int contentHeight: metricList.contentHeight
 
     // draggable item needs to be parented in the item containing drag
     // targets, or else it will be clipped as it is drug out of the
     // ListView
     property var dragParent
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    
     ListView {
         anchors.fill: parent
         model: currentList.model

@@ -61,24 +61,30 @@ ApplicationWindow {
         id: row
         spacing: 0
 
-        CpuFreqPolicy {
-            id: frequencyControl
-            width: 120
-            Component.onCompleted: {
-                frequencyControl.model.SetControlRounter(controlRouter)
+
+        ColumnLayout {
+            Layout.preferredWidth: 500
+            Layout.alignment: Qt.AlignTop
+            MetricList {
+                id: currentList
+                Layout.preferredWidth: 500
+                Layout.preferredHeight: currentList.contentHeight
+                model: mainPublisher.metrics
+                publisher: mainPublisher
+                dragParent: mainWindow.contentItem
+            }
+            CpuFreqPolicy {
+                id: frequencyControl
+                Layout.preferredHeight: 40    
+                Layout.preferredWidth: 500
+                Component.onCompleted: {
+                    frequencyControl.model.SetControlRounter(controlRouter)
+                }
             }
         }
-        
-        MetricList {
-            id: currentList
-            width: 500
-            model: mainPublisher.metrics
-            publisher: mainPublisher
-            dragParent: mainWindow.contentItem
-        }
-
         ColumnLayout
         {
+            Layout.preferredWidth: 1500
             id: mainView
             visible: false
             
