@@ -20,6 +20,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(/usr/src/gtest gtest)
 add_subdirectory(controls)
+add_subdirectory(error)
 add_subdirectory(graph)
 add_subdirectory(os)
 add_subdirectory(publishers)

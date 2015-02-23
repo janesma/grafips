@@ -12,6 +12,7 @@ target_link_libraries(grafips_test_context GL waffle-1)
 add_executable(test_grafips
   test_cpu_freq_control.cpp
   test_cpu_provider.cpp
+  test_error.cpp
   test_gl_provider.cpp
   test_gpu_source.cpp
   test_main.cpp
@@ -25,5 +26,6 @@ target_link_libraries(test_grafips
   grafips_sources
   grafips_publishers
   grafips_subscriber
+  grafips_error
   gtest waffle-1 GL)
 
