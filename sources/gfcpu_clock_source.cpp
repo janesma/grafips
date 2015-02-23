@@ -121,7 +121,7 @@ CpuFreqSource::Poll() {
   if (!m_sink)
     return;
   m_last_publish_ms = ms;
-  
+
   DataSet dset;
   for (unsigned int i = 0; i < m_core_freq_handles.size(); ++i) {
     const int id = m_index_to_id[i];
