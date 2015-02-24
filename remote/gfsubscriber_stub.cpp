@@ -34,8 +34,13 @@
 #include <vector>
 
 #include "./gfsubscriber.pb.h"
+#include "error/gferror.h"
 
+using Grafips::Error;
+using Grafips::Raise;
 using Grafips::SubscriberStub;
+using Grafips::WARN;
+using Grafips::kSocketWriteFail;
 
 SubscriberStub::SubscriberStub(const std::string &address,
                                int port)
@@ -72,13 +77,21 @@ void
 SubscriberStub::WriteMessage(const GSubInv &m) const {
     const uint32_t write_size = m.ByteSize();
     m_protect.Lock();
-    m_socket.Write(write_size);
+    if (!m_socket.Write(write_size)) {
+      Raise(Error(kSocketWriteFail, ERROR,
+                  "SubscriberStub wrote to closed socket"));
+      return;
+    }
 
     m_buf.resize(write_size);
     google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
     google::protobuf::io::CodedOutputStream coded_out(&array_out);
     m.SerializeToCodedStream(&coded_out);
-    m_socket.Write(m_buf.data(), write_size);
+    if (!m_socket.Write(m_buf.data(), write_size)) {
+      Raise(Error(kSocketWriteFail, ERROR,
+                  "SubscriberStub wrote to closed socket"));
+      return;
+    }
     m_protect.Unlock();
 }
 

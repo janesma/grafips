@@ -37,6 +37,7 @@
 #include "sources/gfgl_source.h"
 #include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
+#include "error/gferror.h"
 
 using Grafips::ControlSkel;
 using Grafips::CpuFreqControl;
@@ -46,6 +47,7 @@ using Grafips::CpuFreqSource;
 using Grafips::CpuSource;
 using Grafips::GlSource;
 using Grafips::GpuPerfSource;
+using Grafips::NoError;
 using Grafips::PublisherImpl;
 using Grafips::PublisherSkeleton;
 using Grafips::Thread;
@@ -63,8 +65,14 @@ class PollThread : public Thread {
     m_running = true;
     while (m_running) {
       m_cpu->Poll();
+      if (!NoError())
+        break;
       m_gl->glSwapBuffers();
+      if (!NoError())
+        break;
       m_f->Poll();
+      if (!NoError())
+        break;
       usleep(1000000);
     }
   }

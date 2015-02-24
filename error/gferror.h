@@ -42,6 +42,7 @@ enum Severity {
 enum ErrorTypes {
   kSocketWriteFail,
   kSocketReadFail,
+  kLogMsg,
 };
 
 class ErrorInterface {

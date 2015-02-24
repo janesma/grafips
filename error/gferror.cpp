@@ -27,12 +27,20 @@
 
 #include "error/gferror.h"
 
+#include <assert.h>
+#include <stdio.h>
+
 #include <vector>
 
 using Grafips::Severity;
 using Grafips::Error;
 using Grafips::ErrorInterface;
 using Grafips::ErrorHandler;
+using Grafips::INFO;
+using Grafips::LOG;
+using Grafips::WARN;
+using Grafips::ERROR;
+using Grafips::FATAL;
 
 namespace {
 
@@ -66,7 +74,7 @@ static Initializer static_object_to_create_key;
 }  // namespace
 
 // helper function to ensure a valid handler is always in place.
-HandlerStorage *
+inline HandlerStorage *
 get_thread_storage() {
   void * tmp = pthread_getspecific(storage_key);
   HandlerStorage *storage = reinterpret_cast<HandlerStorage*>(tmp);
@@ -83,6 +91,7 @@ Error::Error(ErrorTypes type, Severity level, const char *msg)
 
 void
 Grafips::Raise(const ErrorInterface &e) {
+  printf("Raise called\n");
   get_thread_storage()->Raise(e);
 }
 
@@ -110,6 +119,16 @@ ErrorHandler::~ErrorHandler() {
 
 void
 HandlerStorage::Raise(const ErrorInterface &e) {
+  if (e.Level() == FATAL) {
+    // unhandled error: terminate
+    printf("FATAL: %s\n", e.ToString());
+    assert(false);  // provide backtrace
+    exit(-1);
+  }
+
+  if (e.Level() == INFO)
+    printf("INFO: %s\n", e.ToString());
+
   // increment the error count, so code at scope between the handler
   // and the error can detect that the error occured.
   ++m_stack_error_count;
@@ -123,6 +142,16 @@ HandlerStorage::Raise(const ErrorInterface &e) {
       (*i)->IncrementHandled();
       return;
     }
+  }
+  if (e.Level() == WARN) {
+    printf("WARN: %s\n", e.ToString());
+    return;
+  }
+  if (e.Level() == ERROR) {
+    // unhandled error: terminate
+    printf("ERROR: unhandled error, %s\n", e.ToString());
+    assert(false);  // provide backtrace
+    exit(-1);
   }
 }
 

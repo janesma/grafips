@@ -35,13 +35,17 @@
 #include <string>
 #include <vector>
 
-#include "remote/gfipublisher.h"
 #include "./gfpublisher.pb.h"
+#include "error/gferror.h"
+#include "remote/gfipublisher.h"
 #include "remote/gfmetric.h"
 #include "subscriber/gfsubscriber_remote.h"
 
-
+using Grafips::Error;
 using Grafips::PublisherStub;
+using Grafips::Raise;
+using Grafips::WARN;
+using Grafips::kSocketWriteFail;
 
 PublisherStub::PublisherStub()
     : m_socket(NULL), m_subscriber(NULL) {
@@ -82,7 +86,9 @@ PublisherStub::WriteMessage(const GrafipsProto::PublisherInvocation &m) const {
 
   m_protect.Lock();
   // std::cout << "write len: " << write_size << std::endl;
-  m_socket->Write(write_size);
+  if (!m_socket->Write(write_size))
+    Raise(Error(kSocketWriteFail, ERROR,
+                "PublisherStub wrote to closed socket"));
 
   m_buf.resize(write_size);
   google::protobuf::io::ArrayOutputStream array_out(m_buf.data(), write_size);
@@ -92,7 +98,9 @@ PublisherStub::WriteMessage(const GrafipsProto::PublisherInvocation &m) const {
   // for (int i = 0; i < write_size; ++i)
   // std::cout << " " << (int) m_buf[i] << " ";
   // std::cout << std::endl;
-  m_socket->Write(m_buf.data(), write_size);
+  if (!m_socket->Write(m_buf.data(), write_size))
+    Raise(Error(kSocketWriteFail, ERROR,
+                "PublisherStub wrote to closed socket"));
   m_protect.Unlock();
 }
 

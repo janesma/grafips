@@ -22,7 +22,7 @@ add_library(grafips_controls
 
 target_include_directories( grafips_controls PUBLIC .. ${CMAKE_BINARY_DIR}/controls)
 
-#target_link_libraries(grafips_controls)
+target_link_libraries(grafips_controls grafips_error)
 
 add_subdirectory(host)
 

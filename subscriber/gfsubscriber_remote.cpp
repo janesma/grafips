@@ -32,9 +32,10 @@
 
 #include <vector>
 
+#include "./gfsubscriber.pb.h"
+#include "error/gferror.h"
 #include "os/gfsocket.h"
 #include "remote/gfisubscriber.h"
-#include "./gfsubscriber.pb.h"
 
 using Grafips::SubscriberSkeleton;
 using GrafipsProto::SubscriberInvocation;
@@ -78,7 +79,9 @@ SubscriberSkeleton::Run() {
     typedef SubscriberInvocation::OnDescriptions OnDescriptions;
     switch (m.method()) {
       case GrafipsProto::SubscriberInvocation::kFlush: {
-        m_socket->Write((uint32_t)0);
+        if (!m_socket->Write((uint32_t)0))
+          // wrote to closed socket
+          m_running = false;
         break;
       }
       case GrafipsProto::SubscriberInvocation::kClear: {

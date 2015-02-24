@@ -5,6 +5,7 @@ project(grafips_error)
 add_library(grafips_error
   gferror.h
   gferror.cpp
+  gflog.h
   )
 
 target_include_directories( grafips_error PUBLIC ..)
