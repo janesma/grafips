@@ -34,9 +34,9 @@ using Grafips::Error;
 using Grafips::ErrorHandler;
 using Grafips::ErrorInterface;
 using Grafips::ErrorTypes;
-using Grafips::INFO;
 using Grafips::NoError;
 using Grafips::Raise;
+using Grafips::WARN;
 using Grafips::kSocketWriteFail;
 
 class TestHandler : public ErrorHandler {
@@ -54,7 +54,7 @@ class TestHandler : public ErrorHandler {
 
 TEST(Error, basic_handling) {
   TestHandler h;
-  Raise(Error(kSocketWriteFail, INFO, "this is a test string"));
+  Raise(Error(kSocketWriteFail, WARN, "this is a test string"));
   EXPECT_EQ(h.m_msg, "this is a test string");
 }
 
@@ -68,14 +68,14 @@ TEST(Error, scoped_handling) {
       EXPECT_TRUE(NoError());
       TestHandler h2;
       EXPECT_TRUE(NoError());
-      Raise(Error(kSocketWriteFail, INFO, "this is a test string"));
+      Raise(Error(kSocketWriteFail, WARN, "this is a test string"));
       EXPECT_EQ(h2.m_msg, "this is a test string");
       EXPECT_EQ(h1.m_msg, "");
       EXPECT_FALSE(NoError());
     }
     EXPECT_TRUE(NoError());
-    Raise(Error(kSocketWriteFail, INFO, ""));
-    Raise(Error(kSocketWriteFail, INFO, "test"));
+    Raise(Error(kSocketWriteFail, WARN, ""));
+    Raise(Error(kSocketWriteFail, WARN, "test"));
     EXPECT_EQ(h1.m_msg, "test");
     EXPECT_FALSE(NoError());
   }

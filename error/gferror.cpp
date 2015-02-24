@@ -28,19 +28,18 @@
 #include "error/gferror.h"
 
 #include <assert.h>
-#include <stdio.h>
 
 #include <vector>
 
-using Grafips::Severity;
-using Grafips::Error;
-using Grafips::ErrorInterface;
-using Grafips::ErrorHandler;
-using Grafips::INFO;
-using Grafips::LOG;
-using Grafips::WARN;
+using Grafips::DEBUG;
 using Grafips::ERROR;
+using Grafips::Error;
+using Grafips::ErrorHandler;
+using Grafips::ErrorInterface;
 using Grafips::FATAL;
+using Grafips::INFO;
+using Grafips::Severity;
+using Grafips::WARN;
 
 namespace {
 
@@ -91,7 +90,6 @@ Error::Error(ErrorTypes type, Severity level, const char *msg)
 
 void
 Grafips::Raise(const ErrorInterface &e) {
-  printf("Raise called\n");
   get_thread_storage()->Raise(e);
 }
 
@@ -126,8 +124,16 @@ HandlerStorage::Raise(const ErrorInterface &e) {
     exit(-1);
   }
 
-  if (e.Level() == INFO)
+  // TODO(majanes) add control here
+  if (e.Level() == INFO) {
     printf("INFO: %s\n", e.ToString());
+    return;
+  }
+
+  if (e.Level() == DEBUG) {
+    printf("DEBUG: %s\n", e.ToString());
+    return;
+  }
 
   // increment the error count, so code at scope between the handler
   // and the error can detect that the error occured.

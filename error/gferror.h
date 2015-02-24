@@ -32,8 +32,8 @@
 
 namespace Grafips {
 enum Severity {
-  INFO,    // if verbose, will be printed
-  LOG,     // will be printed, unless quiet mode
+  DEBUG,   // if verbose, will be printed
+  INFO,    // will be printed, unless quiet mode
   WARN,    // will be printed unless handled
   ERROR,   // will result in error if unhandled
   FATAL    // will terminate program, even if it is handled
