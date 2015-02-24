@@ -56,6 +56,8 @@ PublisherSkeleton::~PublisherSkeleton() {
     delete m_socket;
   if (m_server)
     delete m_server;
+  if (m_subscriber)
+    delete m_subscriber;
 }
 
 void
@@ -133,8 +135,7 @@ PublisherSkeleton::Run() {
 
   // clean up subscriber stub
   if (m_subscriber) {
-    delete m_subscriber;
-    m_subscriber = NULL;
+    m_subscriber->Close();
   }
 }
 
