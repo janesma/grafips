@@ -50,16 +50,16 @@ const char *ToString() const { return m_buf; }
 
 }  // namespace Grafips
 
-inline void log_message( const char *file, int line, const char *format, ... ) {
+inline void log_message(const char *file, int line, const char *format, ... ) {
   static const int BUF_SIZE = 255;
   char buf[BUF_SIZE];
   va_list ap;
-  va_start( ap, format );
-  vsnprintf( buf, BUF_SIZE, format, ap );
+  va_start(ap, format);
+  vsnprintf(buf, BUF_SIZE, format, ap);
   va_end(ap);
-  
   Grafips::Raise(Grafips::LogError(file, line, buf));
 }
 
-#define GFLOG(format, ...) log_message( __FILE__, __LINE__, format, __VA_ARGS__);
+#define GFLOG(format, ...) log_message(__FILE__, __LINE__, \
+                                       format, __VA_ARGS__);
 #endif  // ERROR_GFLOG_H_
