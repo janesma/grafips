@@ -25,55 +25,35 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "controls/gfcontrol.h"
-
-#include <assert.h>
+#ifndef CONTROLS_GFAPI_CONTROL_H_
+#define CONTROLS_GFAPI_CONTROL_H_
 
 #include <string>
+#include <vector>
 
-#include "controls/gfcontrol_stub.h"
-#include "error/gflog.h"
+#include "controls/gficontrol.h"
+#include "os/gfmutex.h"
 
-using Grafips::ControlRouterTarget;
+namespace Grafips {
 
-ControlRouterTarget::ControlRouterTarget()
-    : m_subscriber(NULL) {}
+class ApiControl : public ControlInterface {
+ public:
+  ApiControl();
+  ~ApiControl();
+  void Set(const std::string &key, const std::string &value);
+  void Subscribe(ControlSubscriberInterface *sub);
+  void PerformDrawExperminents() const;
+  void PerformBindTextureExperiment(int target, void *bind_texture_fn);
+ private:
+  void Publish();
 
-bool
-ControlRouterTarget::Set(const std::string &key, const std::string &value) {
-  auto i = m_targets.find(key);
-  if (i == m_targets.end()) {
-    GFLOGF("ControlRouterTarget failed to set: %s", key.c_str());
-    return false;
-  }
-  i->second->Set(key, value);
-  return true;
-}
+  bool m_scissorEnabled;
+  bool m_2x2TextureEnabled;
+  int m_2x2Texture;
+  ControlSubscriberInterface *m_subscriber;
+  mutable Mutex m_protect;
+};
 
-void
-ControlRouterTarget::AddControl(const std::string &key,
-                                ControlInterface* target) {
-  auto i = m_targets.find(key);
-  assert(i == m_targets.end());
-  m_targets[key] = target;
-  target->Subscribe(this);
-}
+}  // namespace Grafips
 
-void
-ControlRouterTarget::Subscribe(ControlSubscriberInterface *sub) {
-  // might need to cache all publications, to send initial state on a
-  // tardy subscribe
-  m_subscriber = sub;
-  for (auto i = m_current_state.begin(); i != m_current_state.end(); ++i)
-    sub->OnControlChanged(i->first, i->second);
-}
-
-void
-ControlRouterTarget::OnControlChanged(const std::string &key,
-                                      const std::string &value) {
-  m_current_state[key] = value;
-  if (m_subscriber)
-    m_subscriber->OnControlChanged(key, value);
-}
-
-
+#endif  // CONTROLS_GFAPI_CONTROL_H_

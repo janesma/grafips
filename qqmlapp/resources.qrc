@@ -5,5 +5,6 @@
         <file>qml/MetricGroup.qml</file>
         <file>qml/MetricList.qml</file>
         <file>qml/mainwin.qml</file>
+        <file>qml/ApiControl.qml</file>
     </qresource>
 </RCC>

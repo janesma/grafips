@@ -3,10 +3,12 @@ cmake_minimum_required(VERSION 2.8)
 project(grafips_controls_host)
 
 add_library(grafips_controls_host
-  gfcontrol_host.h
+  gfapi_qcontrol.cpp
+  gfapi_qcontrol.h
   gfcontrol_host.cpp
-  gfcpu_freq_qcontrol.h
+  gfcontrol_host.h
   gfcpu_freq_qcontrol.cpp
+  gfcpu_freq_qcontrol.h
   )
 
 target_include_directories( grafips_controls_host PUBLIC ../..)

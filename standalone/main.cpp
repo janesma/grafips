@@ -27,9 +27,11 @@
 
 #include <unistd.h>
 
+#include "controls/gfapi_control.h"
 #include "controls/gfcontrol.h"
 #include "controls/gfcontrol_stub.h"
 #include "controls/gfcpu_freq_control.h"
+#include "error/gferror.h"
 #include "remote/gfpublisher.h"
 #include "remote/gfpublisher_skel.h"
 #include "sources/gfcpu_clock_source.h"
@@ -37,12 +39,12 @@
 #include "sources/gfgl_source.h"
 #include "sources/gfgpu_perf_source.h"
 #include "test/test_gpu_context.h"
-#include "error/gferror.h"
 
+using Grafips::ApiControl;
+using Grafips::ControlRouterTarget;
 using Grafips::ControlSkel;
 using Grafips::CpuFreqControl;
 using Grafips::CpuFreqControl;
-using Grafips::ControlRouterTarget;
 using Grafips::CpuFreqSource;
 using Grafips::CpuSource;
 using Grafips::GlSource;
@@ -114,8 +116,10 @@ int main(int argc, const char **argv) {
   PublisherSkeleton skel(port, &pub);
 
   CpuFreqControl freq_control;
+  ApiControl api_control;
   ControlRouterTarget target;
   target.AddControl("CpuFrequencyPolicy", &freq_control);
+  target.AddControl("ScissorExperiment", &api_control);
   ControlSkel control_skel(port + 1, &target);
   control_skel.Start();
 

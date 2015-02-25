@@ -25,41 +25,35 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QtQml>
-#include <google/protobuf/stubs/common.h>
-
 #include "controls/host/gfapi_qcontrol.h"
-#include "controls/host/gfcontrol_host.h"
-#include "controls/host/gfcpu_freq_qcontrol.h"
-#include "graph/gfgraph_view.h"
-#include "publishers/gfmetric_router.h"
-#include "sources/gfcpu_source.h"
-#include "subscriber/gfsubscriber.h"
 
-int main(int argc, char *argv[]) {
-    QGuiApplication app(argc, argv);
+#include <QString>
 
-    qmlRegisterType<Grafips::MetricRouter>("Grafips", 1, 0, "MetricRouter");
-    qmlRegisterType<Grafips::ControlRouterHost>("Grafips", 1, 0,
-                                                "ControlRouterHost");
+#include "error/gflog.h"
 
-    qmlRegisterType<Grafips::CpuFreqControlModel>("Grafips", 1, 0,
-                                                  "CpuFreqControlModel");
-    qmlRegisterType<Grafips::ApiControlModel>("Grafips", 1, 0,
-                                              "ApiControlModel");
+using Grafips::ApiControlModel;
 
-    qmlRegisterInterface<Grafips::SubscriberInterface>("SubscriberInterface");
-    qmlRegisterType<Grafips::GraphSetSubscriber>("Grafips", 1, 0,
-                                                 "GraphSetSubscriber");
-
-    qmlRegisterType<Grafips::QMetric>("Grafips", 1, 0, "QMetric");
-
-    qmlRegisterType<Grafips::GraphView>("Grafips", 1, 0, "Renderer");
-
-    QQmlApplicationEngine engine(QUrl("qrc:///qml/mainwin.qml"));
-    int ret = app.exec();
-    ::google::protobuf::ShutdownProtobufLibrary();
-    return ret;
+void
+ApiControlModel::SetControlRounter(ControlRouterHost *router) {
+  m_router = router;
 }
+
+void
+ApiControlModel::SetControl(QString control, bool value ) {
+  if (!m_router) {
+    GFLOG("No router");
+    return;
+  }
+
+  const std::string &key = control.toStdString();
+  GFLOGF("Changing control: %s, %s", key.c_str(), value ? "true" : "false");
+  m_router->Set(key, value ? "true" : "false");
+}
+
+void
+ApiControlModel::OnControlChanged(const std::string &key,
+                                  const std::string &value) {
+  GFLOGF("Control changed on target: %s, %s", key.c_str(), value.c_str());
+}
+
+

@@ -25,55 +25,33 @@
 //  *   Mark Janes <mark.a.janes@intel.com>
 //  **********************************************************************/
 
-#include "controls/gfcontrol.h"
+#ifndef CONTROLS_HOST_GFAPI_QCONTROL_H_
+#define CONTROLS_HOST_GFAPI_QCONTROL_H_
 
-#include <assert.h>
-
+#include <QObject>
+#include <QString>
 #include <string>
 
-#include "controls/gfcontrol_stub.h"
-#include "error/gflog.h"
+#include "controls/gficontrol.h"
+#include "controls/host/gfcontrol_host.h"
+#include "os/gftraits.h"
 
-using Grafips::ControlRouterTarget;
+namespace Grafips {
+class ApiControlModel : public QObject,
+                        public ControlSubscriberInterface,
+                        NoCopy, NoAssign, NoMove {
+  Q_OBJECT
+ public:
+  ApiControlModel() : m_router(NULL) {}
+  ~ApiControlModel() {}
+  Q_INVOKABLE void SetControlRounter(ControlRouterHost *router);
+  Q_INVOKABLE void SetControl(QString control, bool value );
+  void OnControlChanged(const std::string &key,
+                        const std::string &value);
 
-ControlRouterTarget::ControlRouterTarget()
-    : m_subscriber(NULL) {}
+ private:
+  ControlRouterHost *m_router;
+};
+}  // namespace Grafips
 
-bool
-ControlRouterTarget::Set(const std::string &key, const std::string &value) {
-  auto i = m_targets.find(key);
-  if (i == m_targets.end()) {
-    GFLOGF("ControlRouterTarget failed to set: %s", key.c_str());
-    return false;
-  }
-  i->second->Set(key, value);
-  return true;
-}
-
-void
-ControlRouterTarget::AddControl(const std::string &key,
-                                ControlInterface* target) {
-  auto i = m_targets.find(key);
-  assert(i == m_targets.end());
-  m_targets[key] = target;
-  target->Subscribe(this);
-}
-
-void
-ControlRouterTarget::Subscribe(ControlSubscriberInterface *sub) {
-  // might need to cache all publications, to send initial state on a
-  // tardy subscribe
-  m_subscriber = sub;
-  for (auto i = m_current_state.begin(); i != m_current_state.end(); ++i)
-    sub->OnControlChanged(i->first, i->second);
-}
-
-void
-ControlRouterTarget::OnControlChanged(const std::string &key,
-                                      const std::string &value) {
-  m_current_state[key] = value;
-  if (m_subscriber)
-    m_subscriber->OnControlChanged(key, value);
-}
-
-
+#endif  // CONTROLS_HOST_GFAPI_QCONTROL_H_

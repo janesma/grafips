@@ -60,6 +60,8 @@ inline void log_message(const char *file, int line, const char *format, ... ) {
   Grafips::Raise(Grafips::LogError(file, line, buf));
 }
 
-#define GFLOG(format, ...) log_message(__FILE__, __LINE__, \
+#define GFLOGF(format, ...) log_message(__FILE__, __LINE__, \
                                        format, __VA_ARGS__);
+#define GFLOG(format) log_message(__FILE__, __LINE__, \
+                                       format);
 #endif  // ERROR_GFLOG_H_

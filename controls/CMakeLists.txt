@@ -11,13 +11,15 @@ PROTOBUF_GENERATE_CPP(ProtoSources ProtoHeaders
 add_library(grafips_controls
   ${ProtoHeaders}
   ${ProtoSources}
-  gficontrol.h
-  gfcontrol.h
+  gfapi_control.cpp
+  gfapi_control.h
   gfcontrol.cpp
+  gfcontrol.h
+  gfcontrol_stub.cpp
+  gfcontrol_stub.h
   gfcpu_freq_control.cpp
   gfcpu_freq_control.h
-  gfcontrol_stub.h
-  gfcontrol_stub.cpp
+  gficontrol.h
   )
 
 target_include_directories( grafips_controls PUBLIC .. ${CMAKE_BINARY_DIR}/controls)

@@ -49,7 +49,7 @@ ApplicationWindow {
                     glGpu.start();
                     mainPublisher.address = text
                     controlRouter.address = text
-                    mainView.visible = true
+                    row.visible = true
                     connectionDialog.visible = false
                 }
             }
@@ -59,6 +59,7 @@ ApplicationWindow {
     RowLayout {
         anchors.fill: parent
         id: row
+        visible: false
         spacing: 0
 
 
@@ -81,12 +82,19 @@ ApplicationWindow {
                     frequencyControl.model.SetControlRounter(controlRouter)
                 }
             }
+            ApiControl {
+                id: apiControl
+                Layout.preferredHeight: 100    
+                Layout.preferredWidth: 500
+                Component.onCompleted: {
+                    apiControl.model.SetControlRounter(controlRouter)
+                }
+            }
         }
         ColumnLayout
         {
             Layout.preferredWidth: 1500
             id: mainView
-            visible: false
             
             MetricGroup {
                 id: cpu
