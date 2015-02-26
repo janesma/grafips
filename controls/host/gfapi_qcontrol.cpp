@@ -29,6 +29,8 @@
 
 #include <QString>
 
+#include <string>
+
 #include "error/gflog.h"
 
 using Grafips::ApiControlModel;

@@ -43,8 +43,8 @@ class MockContext {
   struct waffle_config *m_config;
   struct waffle_window *m_window;
   struct waffle_context *m_ctx;
-  GLuint vbo, prog;
-  GLint attribute_coord2d;
+  GLuint vbo, prog, texture;
+  GLint attribute_coord2d, tex_uniform;
 };
 }  // namespace Grafips
 #endif  // TEST_TEST_GPU_CONTEXT_H_

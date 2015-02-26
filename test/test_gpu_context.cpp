@@ -26,19 +26,28 @@
 //  **********************************************************************/
 
 #include "test/test_gpu_context.h"
+
+#include <GL/gl.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <vector>
 
 using Grafips::MockContext;
 
-static const char * vshader = "attribute vec2 coord2d;\n"
+static const char * vshader =
+    "attribute vec2 coord2d;\n"
+    "varying vec2 v_TexCoordinate;\n"
     "void main(void) {\n"
     "  gl_Position = vec4(coord2d.x, coord2d.y, 0, 1);\n"
+    "  v_TexCoordinate = vec2(coord2d.x, coord2d.y);\n"
     "}";
 
-static const char * fshader = "void main(void) {\n"
-    "   gl_FragColor = vec4(0,0,0,1);\n"
+static const char * fshader =
+    "uniform sampler2D texUnit;\n"
+    "varying vec2 v_TexCoordinate;\n"
+    "void main(void) {\n"
+    "  gl_FragColor = texture2D(texUnit, v_TexCoordinate);\n"
     "}";
 
 static void
@@ -116,13 +125,43 @@ MockContext::MockContext() {
   attribute_coord2d = glGetAttribLocation(prog,  "coord2d");
   GL_CHECK();
 
-
+  tex_uniform = glGetUniformLocation(prog, "texUnit");
+  GL_CHECK();
+    
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   GL_CHECK();
   std::vector<GLfloat> data = { 0, 0, 0, 1, 1, 1};
   glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat),
                data.data(), GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  GL_CHECK();
+
+  glEnable(GL_TEXTURE_2D);
+  GL_CHECK();
+
+  glGenTextures(1, &texture);  
+  GL_CHECK();
+  glBindTexture(GL_TEXTURE_2D, texture);
+  GL_CHECK();
+  glActiveTexture(GL_TEXTURE0);
+  GL_CHECK();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  GL_CHECK();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  GL_CHECK();
+
+    unsigned char tex_data[] {
+      255, 0, 0, 0,
+          0, 255, 0, 0,
+          0, 0, 255, 0,
+          0, 0, 0, 255,
+          };
+  
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+               2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
+  GL_CHECK();
+
+  glBindTexture(GL_TEXTURE_2D, 0);
   GL_CHECK();
 
   waffle_window_show(m_window);
@@ -137,6 +176,9 @@ MockContext::~MockContext() {
 
 void
 MockContext::Draw() {
+  glEnable(GL_TEXTURE_2D);
+  GL_CHECK();
+
   glClearColor(1, 1, 1, 1);
   GL_CHECK();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -160,6 +202,14 @@ MockContext::Draw() {
                         0);                  // use the vertex buffer object
   GL_CHECK();
 
+  glActiveTexture(GL_TEXTURE0);
+  GL_CHECK();
+  glBindTexture(GL_TEXTURE_2D, texture);
+  GL_CHECK();
+
+  glUniform1i(tex_uniform, 0);
+  GL_CHECK();
+  
   // 3 vertices in vbo
   glDrawArrays(GL_TRIANGLES, 0, 3);
   GL_CHECK();

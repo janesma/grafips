@@ -45,7 +45,7 @@ class ApiControlModel : public QObject,
   ApiControlModel() : m_router(NULL) {}
   ~ApiControlModel() {}
   Q_INVOKABLE void SetControlRounter(ControlRouterHost *router);
-  Q_INVOKABLE void SetControl(QString control, bool value );
+  Q_INVOKABLE void SetControl(QString control, bool value);
   void OnControlChanged(const std::string &key,
                         const std::string &value);
 

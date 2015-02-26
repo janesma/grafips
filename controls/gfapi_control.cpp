@@ -62,10 +62,10 @@ ApiControl::Set(const std::string &key, const std::string &value) {
     // disable for now, it doesn't work
     if (value == "true") {
       GFLOG("ApiControl 2x2TextureExperiment: true");
-      // m_2x2TextureEnabled = true;
+      m_2x2TextureEnabled = true;
     } else {
       GFLOG("ApiControl 2x2TextureExperiment: false");
-      // m_2x2TextureEnabled = false;
+      m_2x2TextureEnabled = false;
     }
   } else {
     // key is not meant for this control
@@ -114,20 +114,23 @@ ApiControl::PerformBindTextureExperiment(int target, void *bind_texture_fn) {
     GFLOG("ApiControl null bind texture function");
     return;
   }
-  
+
   if (!m_2x2Texture) {
-    unsigned char data[] { 255,0,0,0,   0,255,0,0,   0,0,255,0, 0,0,0,0 };
-    GLuint t;
-    glGenTextures(1, &t);
-    m_2x2Texture = t;
+    glEnable(GL_TEXTURE_2D);
+    unsigned char data[] {255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255};
+    glGenTextures(1, reinterpret_cast<GLuint*>(&m_2x2Texture));
 
     (*(glBindTexture_fn)bind_texture_fn)(GL_TEXTURE_2D, m_2x2Texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, data);
+    glActiveTexture(GL_TEXTURE0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2, 2, 0, GL_RGBA,
+                 GL_UNSIGNED_INT_8_8_8_8, data);
     if (glGetError() != GL_NO_ERROR)
       GFLOG("teximag2d fail");
+    (*(glBindTexture_fn)bind_texture_fn)(GL_TEXTURE_2D, 0);
+
   }
 
   (*(glBindTexture_fn)bind_texture_fn)(target, m_2x2Texture);
-    if (glGetError() != GL_NO_ERROR)
-      GFLOG("bind fail");
 }
