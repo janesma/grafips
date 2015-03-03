@@ -91,7 +91,9 @@ MockContext::MockContext() {
   m_config = waffle_config_choose(m_dpy, config_attrs);
   m_window = waffle_window_create(m_config, 320, 320);
   m_ctx = waffle_context_create(m_config, NULL);
+  GL_CHECK();
   waffle_make_current(m_dpy, m_window, m_ctx);
+  GL_CHECK();
 
   glGenBuffers(1, &vbo);
   GL_CHECK();
