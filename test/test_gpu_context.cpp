@@ -127,7 +127,7 @@ MockContext::MockContext() {
 
   tex_uniform = glGetUniformLocation(prog, "texUnit");
   GL_CHECK();
-    
+
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   GL_CHECK();
   std::vector<GLfloat> data = { 0, 0, 0, 1, 1, 1};
@@ -139,7 +139,7 @@ MockContext::MockContext() {
   glEnable(GL_TEXTURE_2D);
   GL_CHECK();
 
-  glGenTextures(1, &texture);  
+  glGenTextures(1, &texture);
   GL_CHECK();
   glBindTexture(GL_TEXTURE_2D, texture);
   GL_CHECK();
@@ -156,7 +156,7 @@ MockContext::MockContext() {
           0, 0, 255, 0,
           0, 0, 0, 255,
           };
-  
+
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
   GL_CHECK();
@@ -209,7 +209,7 @@ MockContext::Draw() {
 
   glUniform1i(tex_uniform, 0);
   GL_CHECK();
-  
+
   // 3 vertices in vbo
   glDrawArrays(GL_TRIANGLES, 0, 3);
   GL_CHECK();
