@@ -26,6 +26,13 @@ Item {
                 controlModel.SetControl("SimpleShaderExperiment", checked);
             }
         }
+        CheckBox {
+            text: qsTr("Disable Draw")
+            checked: false
+            onClicked: {
+                controlModel.SetControl("DisableDrawExperiment", checked);
+            }
+        }
     }
     ApiControlModel {
         id: controlModel

@@ -42,6 +42,7 @@ using Grafips::ScopedLock;
 ApiControl::ApiControl() : m_scissorEnabled(false),
                            m_2x2TextureEnabled(false),
                            m_simpleShaderEnabled(false),
+                           m_disableDraw(false),
                            m_current_context(0),
                            m_subscriber(NULL),
                            m_simpleShader(0) {
@@ -78,6 +79,14 @@ ApiControl::Set(const std::string &key, const std::string &value) {
       GFLOG("ApiControl SimpleShaderExperiment: false");
       m_simpleShaderEnabled = false;
     }
+  } else if (key == "DisableDrawExperiment") {
+    if (value == "true") {
+      GFLOG("ApiControl DisableDrawExperiment: true");
+      m_disableDraw = true;
+    } else {
+      GFLOG("ApiControl DisableDrawExperiment: false");
+      m_disableDraw = false;
+    }
   } else {
     // key is not meant for this control
     return;
@@ -106,13 +115,16 @@ ApiControl::Publish() {
                                  m_simpleShaderEnabled ? "true" : "false");
 }
 
-void
+bool
 ApiControl::PerformDrawExperminents() const {
   ScopedLock s(&m_protect);
+  if (m_disableDraw)
+    return false;
   if (m_scissorEnabled) {
     glEnable(GL_SCISSOR_TEST);
     glScissor(0, 0, 1, 1);
   }
+  return true;
 }
 
 typedef void (*glBindTexture_fn)( GLenum target, GLuint texture );
