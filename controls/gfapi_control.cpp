@@ -70,6 +70,14 @@ ApiControl::Set(const std::string &key, const std::string &value) {
       GFLOG("ApiControl 2x2TextureExperiment: false");
       m_2x2TextureEnabled = false;
     }
+  } else if (key == "SimpleShaderExperiment") {
+    if (value == "true") {
+      GFLOG("ApiControl SimpleShaderExperiment: true");
+      m_simpleShaderEnabled = true;
+    } else {
+      GFLOG("ApiControl SimpleShaderExperiment: false");
+      m_simpleShaderEnabled = false;
+    }
   } else {
     // key is not meant for this control
     return;
@@ -94,6 +102,8 @@ ApiControl::Publish() {
                                  m_scissorEnabled ? "true" : "false");
   m_subscriber->OnControlChanged("2x2TextureExperiment",
                                  m_2x2TextureEnabled ? "true" : "false");
+  m_subscriber->OnControlChanged("SimpleShaderExperiment",
+                                 m_simpleShaderEnabled ? "true" : "false");
 }
 
 void
@@ -230,14 +240,14 @@ ApiControl::OnUseProgram(int prog, void *use_program_fun) {
     return;
 
   ScopedLock s(&m_protect);
-  //GFLOGF("OnUseProgram: %d", prog);
+  // GFLOGF("OnUseProgram: %d", prog);
   if (!m_simpleShaderEnabled)
     return;
 
   glGetError();
   auto simple_prog = m_program_to_simple_shader.find(ProgramKey(m_current_context, prog));
   assert(simple_prog != m_program_to_simple_shader.end());
-  GFLOGF("Using %d instead of %d", simple_prog->second, prog);
+  // GFLOGF("Using %d instead of %d", simple_prog->second, prog);
   (*(glUseProgram_fn)use_program_fun)(simple_prog->second);
   GL_CHECK();
 }

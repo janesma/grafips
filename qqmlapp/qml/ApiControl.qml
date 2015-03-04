@@ -6,21 +6,24 @@ Item {
     property var model: controlModel
     Column {
         CheckBox {
-            id: scissorBox
             text: qsTr("1x1 scissor")
             checked: false
             onClicked: {
-                print ("checked1 " + checked);
                 controlModel.SetControl("ScissorExperiment", checked);
             }
         }
         CheckBox {
-            id: textureBox
             text: qsTr("2x2 textures")
             checked: false
             onClicked: {
-                print ("checked2 " + checked);
                 controlModel.SetControl("2x2TextureExperiment", checked);
+            }
+        }
+        CheckBox {
+            text: qsTr("Simple Shader")
+            checked: false
+            onClicked: {
+                controlModel.SetControl("SimpleShaderExperiment", checked);
             }
         }
     }

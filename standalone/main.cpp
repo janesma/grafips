@@ -120,6 +120,7 @@ int main(int argc, const char **argv) {
   ControlRouterTarget target;
   target.AddControl("CpuFrequencyPolicy", &freq_control);
   target.AddControl("ScissorExperiment", &api_control);
+  target.AddControl("SimpleShaderExperiment", &api_control);
   ControlSkel control_skel(port + 1, &target);
   control_skel.Start();
 
