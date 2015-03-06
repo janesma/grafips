@@ -60,6 +60,7 @@ Item {
                         return;
                     }
                     Drag.drop();
+                    visible = false
                 }
 
             }
