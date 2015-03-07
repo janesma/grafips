@@ -56,7 +56,7 @@ CheckError(const char * file, int line) {
   if ( error == GL_NO_ERROR)
     return;
   printf("ERROR: %x %s:%i\n", error, file, line);
-  exit(-1);
+  //exit(-1);
 }
 
 #define GL_CHECK() CheckError(__FILE__, __LINE__)

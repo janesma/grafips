@@ -125,6 +125,32 @@ PublisherSkeleton::Run() {
         m_target->Subscribe(m_subscriber);
         break;
       }
+      case PublisherInvocation::kGetClientAddress: {
+        // send the connected client address, so it can use it in the
+        // subscription
+        GrafipsProto::PublisherInvocation m;
+        m.set_method(GrafipsProto::PublisherInvocation::kGetClientAddress);
+        GrafipsProto::PublisherInvocation::ClientAddress *args = m.mutable_clientaddressargs();
+        args->set_address(m_socket->Address());
+        const uint32_t write_size = m.ByteSize();
+        if (!m_socket->Write(write_size)) {
+          Raise(Error(kSocketWriteFail, ERROR,
+                      "PublisherSkel wrote response to closed socket"));
+          running= false;
+          return;
+        }
+        std::vector<unsigned char> buf(write_size);
+        google::protobuf::io::ArrayOutputStream array_out(buf.data(), write_size);
+        google::protobuf::io::CodedOutputStream coded_out(&array_out);
+        m.SerializeToCodedStream(&coded_out);
+        if (!m_socket->Write(buf.data(), write_size)) {
+          Raise(Error(kSocketWriteFail, ERROR,
+                      "PublisherSkel wrote to closed socket"));
+          running= false;
+          return;
+        }
+        break;
+      }
       default: {
         assert(false);
         running = false;

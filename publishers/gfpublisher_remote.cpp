@@ -46,6 +46,7 @@ using Grafips::PublisherStub;
 using Grafips::Raise;
 using Grafips::WARN;
 using Grafips::kSocketWriteFail;
+using GrafipsProto::PublisherInvocation;
 
 PublisherStub::PublisherStub()
     : m_socket(NULL), m_subscriber(NULL) {
@@ -81,7 +82,7 @@ PublisherStub::~PublisherStub() {
 }
 
 void
-PublisherStub::WriteMessage(const GrafipsProto::PublisherInvocation &m) const {
+PublisherStub::WriteMessage(const PublisherInvocation &m) const {
   const uint32_t write_size = m.ByteSize();
 
   m_protect.Lock();
@@ -106,18 +107,18 @@ PublisherStub::WriteMessage(const GrafipsProto::PublisherInvocation &m) const {
 
 void
 PublisherStub::Enable(int id) {
-  GrafipsProto::PublisherInvocation m;
-  m.set_method(GrafipsProto::PublisherInvocation::kEnable);
-  GrafipsProto::PublisherInvocation::Enable *args = m.mutable_enableargs();
+  PublisherInvocation m;
+  m.set_method(PublisherInvocation::kEnable);
+  PublisherInvocation::Enable *args = m.mutable_enableargs();
   args->set_id(id);
   WriteMessage(m);
 }
 
 void
 PublisherStub::Disable(int id) {
-  GrafipsProto::PublisherInvocation m;
-  m.set_method(GrafipsProto::PublisherInvocation::kDisable);
-  GrafipsProto::PublisherInvocation::Disable *args = m.mutable_disableargs();
+  PublisherInvocation m;
+  m.set_method(PublisherInvocation::kDisable);
+  PublisherInvocation::Disable *args = m.mutable_disableargs();
   args->set_id(id);
   WriteMessage(m);
 }
@@ -128,19 +129,41 @@ PublisherStub::Subscribe(SubscriberInterface *subs) {
   const int port = m_subscriber->GetPort();
   m_subscriber->Start();
 
-  GrafipsProto::PublisherInvocation m;
-  m.set_method(GrafipsProto::PublisherInvocation::kSubscribe);
-  GrafipsProto::PublisherInvocation_Subscribe *args =
-      m.mutable_subscribeargs();
-  // TODO(majanes): detect local ip and use a real address
-  std::vector<char> hostname(HOST_NAME_MAX + 1);
-  gethostname(hostname.data(), HOST_NAME_MAX);
-  hostname[HOST_NAME_MAX] = '\0';
+  // send a quick synchronous request to find out what out IP address
+  // is.  We may be connected on any network interface.
+  PublisherInvocation m;
+  m.set_method(PublisherInvocation::kGetClientAddress);
+  WriteMessage(m);
+  uint32_t response_size;
+  m_socket->Read(&response_size);
+  assert(response_size != 0);
+  m_buf.resize(response_size);
+  m_socket->ReadVec(&m_buf);
+  std::string client_address;
+  {
+      PublisherInvocation response;
+      using google::protobuf::io::CodedInputStream;
+      using google::protobuf::io::ArrayInputStream;
+      ArrayInputStream array_in(m_buf.data(), response_size);
+      CodedInputStream coded_in(&array_in);
+      CodedInputStream::Limit msg_limit = coded_in.PushLimit(response_size);
+      response.ParseFromCodedStream(&coded_in);
+      coded_in.PopLimit(msg_limit);
+      assert(response.method() == PublisherInvocation::kGetClientAddress);
+      const PublisherInvocation::ClientAddress &addr = response.clientaddressargs();
+      client_address = addr.address();
+  }
+  if (client_address.size() == 0) {
+    std::vector<char> hostname(HOST_NAME_MAX + 1);
+    gethostname(hostname.data(), HOST_NAME_MAX);
+    hostname[HOST_NAME_MAX] = '\0';
+    client_address = hostname.data();
+    client_address += ".local";
+  }
+  m.set_method(PublisherInvocation::kSubscribe);
+  PublisherInvocation::Subscribe *args = m.mutable_subscribeargs();
 
-  std::string mdns_address = hostname.data();
-  mdns_address += ".local";
-
-  args->set_address(mdns_address);
+  args->set_address(client_address);
   args->set_port(port);
 
   WriteMessage(m);
@@ -148,8 +171,8 @@ PublisherStub::Subscribe(SubscriberInterface *subs) {
 
 void
 PublisherStub::Flush() const {
-  GrafipsProto::PublisherInvocation m;
-  m.set_method(GrafipsProto::PublisherInvocation::kFlush);
+  PublisherInvocation m;
+  m.set_method(PublisherInvocation::kFlush);
   WriteMessage(m);
 
   uint32_t response;
