@@ -59,11 +59,14 @@ class Socket : NoAssign, NoCopy, NoMove {
 
  private:
   friend class ServerSocket;
-  // establishes a server, waits for a client to connect
-  Socket(const std::string &address, int port, int fd)
-      : m_address(address), m_port(port), m_socket_fd(fd) {}
+  // this constructor only called by ServerSocket, when connection is
+  // accepted.
+  Socket(int fd, const std::string &address)
+      : m_address(address), m_socket_fd(fd) {}
+
+  // address is stored so a server process can query the address of a
+  // connected client.
   const std::string m_address;
-  const int m_port;
   int m_socket_fd;
 };
 

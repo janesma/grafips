@@ -85,7 +85,7 @@ class FreeAddrInfo {
 };
 
 Socket::Socket(const std::string &address, int port)
-    : m_address(address), m_port(port) {
+    : m_address(address) {
   struct addrinfo hints;
   memset(&hints, 0, sizeof (hints));
   hints.ai_family = AF_INET;
@@ -170,8 +170,7 @@ ServerSocket::Accept() {
   // now that we have a connected server socket, we don't need to listen for
   // subsequent connections.
   
-  return new Socket(inet_ntoa(client_address.sin_addr),
-                    client_address.sin_port, socket_fd);
+  return new Socket(socket_fd, inet_ntoa(client_address.sin_addr));
 }
 
 ServerSocket::~ServerSocket() {
