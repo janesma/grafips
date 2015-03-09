@@ -129,41 +129,10 @@ PublisherStub::Subscribe(SubscriberInterface *subs) {
   const int port = m_subscriber->GetPort();
   m_subscriber->Start();
 
-  // send a quick synchronous request to find out what out IP address
-  // is.  We may be connected on any network interface.
   PublisherInvocation m;
-  m.set_method(PublisherInvocation::kGetClientAddress);
-  WriteMessage(m);
-  uint32_t response_size;
-  m_socket->Read(&response_size);
-  assert(response_size != 0);
-  m_buf.resize(response_size);
-  m_socket->ReadVec(&m_buf);
-  std::string client_address;
-  {
-      PublisherInvocation response;
-      using google::protobuf::io::CodedInputStream;
-      using google::protobuf::io::ArrayInputStream;
-      ArrayInputStream array_in(m_buf.data(), response_size);
-      CodedInputStream coded_in(&array_in);
-      CodedInputStream::Limit msg_limit = coded_in.PushLimit(response_size);
-      response.ParseFromCodedStream(&coded_in);
-      coded_in.PopLimit(msg_limit);
-      assert(response.method() == PublisherInvocation::kGetClientAddress);
-      const PublisherInvocation::ClientAddress &addr = response.clientaddressargs();
-      client_address = addr.address();
-  }
-  if (client_address.size() == 0) {
-    std::vector<char> hostname(HOST_NAME_MAX + 1);
-    gethostname(hostname.data(), HOST_NAME_MAX);
-    hostname[HOST_NAME_MAX] = '\0';
-    client_address = hostname.data();
-    client_address += ".local";
-  }
   m.set_method(PublisherInvocation::kSubscribe);
   PublisherInvocation::Subscribe *args = m.mutable_subscribeargs();
 
-  args->set_address(client_address);
   args->set_port(port);
 
   WriteMessage(m);

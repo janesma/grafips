@@ -6,7 +6,6 @@ message ControlInvocation {
     kSubscribe = 2;
     kOnControlChanged = 3;
     kFlush = 4;
-    kGetClientAddress = 5;
   }
 
   message Set
@@ -17,7 +16,6 @@ message ControlInvocation {
 
   message Subscribe
   {
-    required string address = 1;
     required int32 port = 2;
   };
 
@@ -27,16 +25,8 @@ message ControlInvocation {
     required string value = 2;
   };
 
-  // when client sends kGetClientAddress, server responds with this
-  // message, containing the connected ip address.
-  message ClientAddress
-  {
-    required string address = 1;
-  }
-
   required Method method = 1;
   optional Set setArgs = 2;
   optional Subscribe subscribeArgs = 3;
   optional OnControlChanged OnControlChangedArgs = 4;
-  optional ClientAddress clientAddressArgs = 5;
 }

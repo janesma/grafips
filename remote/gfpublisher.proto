@@ -6,7 +6,6 @@ message PublisherInvocation {
     kEnable = 1;
     kDisable = 2;
     kSubscribe = 3;
-    kGetClientAddress = 4;
   }
 
   required Method method = 1;
@@ -28,17 +27,8 @@ message PublisherInvocation {
 
   message Subscribe
   {
-    required string address = 1;
     required int32 port = 2;
   }
 
   optional Subscribe subscribeArgs = 4;
-
-  // when client sends kGetClientAddress, server responds with this
-  // message, containing the connected ip address.
-  message ClientAddress
-  {
-    required string address = 1;
-  }
-  optional ClientAddress clientAddressArgs = 5;
 }
