@@ -33,6 +33,13 @@ Item {
                 controlModel.SetControl("DisableDrawExperiment", checked);
             }
         }
+        CheckBox {
+            text: qsTr("Wireframe")
+            checked: false
+            onClicked: {
+                controlModel.SetControl("WireframeExperiment", checked);
+            }
+        }
     }
     ApiControlModel {
         id: controlModel
