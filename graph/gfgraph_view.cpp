@@ -223,9 +223,9 @@ GraphViewRenderer::UpdateMax() {
 
   // add a bit of space to the top of the graph, but don't scale past
   // 100%
-  if (max < 98 || max > 101) {
+  //if (max < 98 || max > 101) {
     mantissa += 1;
-  }
+    //}
 
   if ((mantissa) * power_of_ten != m_graph_max) {
     m_graph_max = mantissa * power_of_ten;

@@ -46,6 +46,32 @@ Item {
     ListModel {
         id: activeMetricsModel
     }
+
+    Component {
+        id: list_delegate
+        Item {
+            width: textDel.width + textDel.height
+            Text {
+                text: name
+                id: textDel
+                color: displayColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignBottom
+            }
+            Image {
+                anchors.left: textDel.right
+                height: textDel.height
+                width: textDel.height
+                source: "icons/close_icon.png"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        activeMetricNames.remove(name)
+                    }
+                }
+            }
+        }
+    }
     ListView {
         visible: true
         anchors.left: parent.left
@@ -56,18 +82,6 @@ Item {
         id: activeListView
         orientation: ListView.Horizontal
         spacing: 15
-        delegate: Text {
-            text: name
-            id: textDel
-            color: displayColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignBottom
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    activeMetricNames.remove(name)
-                }
-            }
-        }
+        delegate: list_delegate
     }
 }
