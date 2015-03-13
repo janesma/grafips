@@ -6,6 +6,7 @@ Item {
     property var model: cpuModel
     id: control
     visible: false
+    property int suggested_height: box.height
     CpuFreqControlModel {
         id: cpuModel
         onPoliciesChanged: {

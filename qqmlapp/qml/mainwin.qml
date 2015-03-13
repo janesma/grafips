@@ -68,24 +68,27 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignTop
             MetricList {
                 id: currentList
-                Layout.preferredWidth: 500
-                Layout.preferredHeight: currentList.contentHeight
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 model: mainPublisher.metrics
                 publisher: mainPublisher
                 dragParent: mainWindow.contentItem
             }
+            Rectangle {
+                height: 20
+            }
             CpuFreqPolicy {
                 id: frequencyControl
-                Layout.preferredHeight: 40    
-                Layout.preferredWidth: 500
+                Layout.preferredHeight: frequencyControl.suggested_height
+                Layout.fillWidth: true
                 Component.onCompleted: {
                     frequencyControl.model.SetControlRounter(controlRouter)
                 }
             }
             ApiControl {
                 id: apiControl
-                Layout.preferredHeight: 100    
-                Layout.preferredWidth: 500
+                Layout.preferredHeight: apiControl.suggested_height
+                Layout.fillWidth: true
                 Component.onCompleted: {
                     apiControl.model.SetControlRounter(controlRouter)
                 }

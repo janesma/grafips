@@ -4,8 +4,10 @@ import Grafips 1.0
 
 Item {
     property var model: controlModel
+    property int suggested_height: first_box.height * 5
     Column {
         CheckBox {
+            id: first_box
             text: qsTr("1x1 scissor")
             checked: false
             onClicked: {
