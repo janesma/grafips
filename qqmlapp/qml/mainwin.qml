@@ -79,7 +79,7 @@ ApplicationWindow {
             }
             CpuFreqPolicy {
                 id: frequencyControl
-                Layout.preferredHeight: frequencyControl.suggested_height
+                implicitHeight: frequencyControl.suggested_height
                 Layout.fillWidth: true
                 Component.onCompleted: {
                     frequencyControl.model.SetControlRounter(controlRouter)
@@ -87,7 +87,7 @@ ApplicationWindow {
             }
             ApiControl {
                 id: apiControl
-                Layout.preferredHeight: apiControl.suggested_height
+                implicitHeight: apiControl.suggested_height
                 Layout.fillWidth: true
                 Component.onCompleted: {
                     apiControl.model.SetControlRounter(controlRouter)
