@@ -101,22 +101,18 @@ ApplicationWindow {
             
             MetricGroup {
                 id: cpu
-                color: "red"
                 publisher: mainPublisher
             }
             MetricGroup {
                 id: glFt
-                color: "red"
                 publisher: mainPublisher
             }
             MetricGroup {
                 id: glFps
-                color: "red"
                 publisher: mainPublisher
             }
             MetricGroup {
                 id: glGpu
-                color: "red"
                 publisher: mainPublisher
             }
         }

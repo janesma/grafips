@@ -12,9 +12,6 @@ Item {
         onPoliciesChanged: {
             control.visible = true;
         }
-        // onPolicyChanged: {
-        //     box.currentIndex = control_model.currentPolicy
-        // }
     }
     ComboBox {
         id: box
@@ -25,7 +22,6 @@ Item {
         onActivated: {
             print("onActivated: " + index + " " + model[index])
             console.assert (find(currentText) !== -1, "invalid selection")
-            //currentIndex = find(editText)
             cpuModel.SetPolicy(model[index]);
         }
     }
