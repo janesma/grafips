@@ -20,14 +20,38 @@ Item {
 
         delegate: Rectangle {
             id: currentRect
-            height: nameText.height * 1.5
+            height: nameText.height + 15
             width: currentList.width
             property int theId: model.met_id
             
             color: "light blue"
             Text {
                 id: nameText
+                width: parent.width
+                wrapMode: Text.WordWrap
                 text: name
+            }
+            Rectangle {
+                id: info_rect
+                border.width: 1
+                color: "light blue"
+                width: nameText.height
+                height: nameText.height
+                anchors.top: nameText.top
+                anchors.right: nameText.right
+                Text {
+                    anchors.centerIn: parent
+                    text: "?"
+                }
+            }
+            
+            Text {
+                id: help
+                text: helpText
+                visible: false
+                width: parent.width
+                anchors.top: nameText.bottom
+                wrapMode: Text.WordWrap
             }
             Rectangle {
                 // copies the delegate exactly, with some alpha.  This
@@ -45,6 +69,7 @@ Item {
                 property string name: model.name
 
                 Text {
+                    id: name_text
                     text: name
                 }
 
@@ -68,13 +93,27 @@ Item {
                 id: elementMouse
                 anchors.fill: parent
                 drag.target: dragVisualizer
+                drag.filterChildren: true
+                hoverEnabled: true
                 onPressed : {
                     // reposition the drag visualizer so it overlays
                     // the selected item
+                    print("drag pressed")
                     dragVisualizer.x = currentRect.mapToItem(dragVisualizer.parent).x;
                     dragVisualizer.y = currentRect.mapToItem(dragVisualizer.parent).y;
                 }
-            }            
+            }
+            MouseArea {
+                anchors.fill: info_rect
+                onPressed : {
+                    help.visible =  ! help.visible
+                    currentRect.height += help.visible ? help.height : - help.height
+                    print("info pressed")
+                    metricList.visible = false
+                    metricList.visible = true
+                    z: 200
+                }
+            }
         }
     }
 }

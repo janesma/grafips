@@ -16,9 +16,9 @@ add_library(grafips_sources
   gfimetric_source.h
   )
 
-target_include_directories( grafips_sources PUBLIC .)
+target_include_directories( grafips_sources PUBLIC . ..)
 
-target_link_libraries(grafips_sources grafips_publishers dl)
+target_link_libraries(grafips_sources dl)
 
 
 

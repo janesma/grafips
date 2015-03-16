@@ -48,16 +48,19 @@ class QMetric : public QObject,
                 NoCopy, NoAssign, NoMove {
   Q_OBJECT
   Q_PROPERTY(QString name READ name NOTIFY onName)
+  Q_PROPERTY(QString helpText READ helpText NOTIFY onHelpText)
   Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
   Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY onEnabled)
  public:
-  QMetric() : m_id(-1), m_name(), m_enabled(false) {}
+  QMetric() : m_id(-1), m_name(), m_help_text(), m_enabled(false) {}
 
   explicit QMetric(const MetricDescription &m)
       : m_id(m.id()),
         m_name(QString::fromStdString(m.display_name)),
+        m_help_text(QString::fromStdString(m.help_text)),
         m_enabled(false) {}
   QString name() { return m_name; }
+  QString helpText() {return m_help_text;}
   int met_id() { return m_id; }
   bool enabled() { return m_enabled; }
   void setEnabled(bool e) {
@@ -70,12 +73,13 @@ class QMetric : public QObject,
   // these exist just to avoid run-time warnings.  names & descriptions do
   // not change
   void onName();
+  void onHelpText();
   void onMet_id();
  private:
   QMetric(const QMetric&);
   QMetric& operator=(const QMetric&);
   int m_id;
-  QString m_name;
+  QString m_name, m_help_text;
   bool m_enabled;
 };
 

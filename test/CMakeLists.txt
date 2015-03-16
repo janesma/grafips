@@ -20,12 +20,13 @@ add_executable(test_grafips
   )
 
 target_link_libraries(test_grafips
-  grafips_test_context
   grafips_controls
   grafips_controls_host
-  grafips_sources
-  grafips_publishers
-  grafips_subscriber
   grafips_error
+  grafips_publishers
+  grafips_remote
+  grafips_sources
+  grafips_subscriber
+  grafips_test_context
   gtest waffle-1 GL)
 

@@ -221,11 +221,8 @@ GraphViewRenderer::UpdateMax() {
   const float power_of_ten = exp10f(power_of_ten_exponent);
   int mantissa = max / power_of_ten;
 
-  // add a bit of space to the top of the graph, but don't scale past
-  // 100%
-  //if (max < 98 || max > 101) {
-    mantissa += 1;
-    //}
+  // add a bit of space to the top of the graph
+  mantissa += 1;
 
   if ((mantissa) * power_of_ten != m_graph_max) {
     m_graph_max = mantissa * power_of_ten;
