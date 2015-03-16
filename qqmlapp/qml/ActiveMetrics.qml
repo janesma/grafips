@@ -36,7 +36,7 @@ Item {
         for (var i = 0; i < activeMetricsModel.count; ++i) {
             var current = activeMetricsModel.get(i);
             if (current["name"] == name) {
-                publisher.Disable(current["id"])
+                publisher.Deactivate(current["id"])
                 activeMetricsModel.remove(i);
                 break;
             }

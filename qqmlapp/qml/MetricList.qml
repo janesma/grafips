@@ -98,7 +98,6 @@ Item {
                 onPressed : {
                     // reposition the drag visualizer so it overlays
                     // the selected item
-                    print("drag pressed")
                     dragVisualizer.x = currentRect.mapToItem(dragVisualizer.parent).x;
                     dragVisualizer.y = currentRect.mapToItem(dragVisualizer.parent).y;
                 }
@@ -108,7 +107,6 @@ Item {
                 onPressed : {
                     help.visible =  ! help.visible
                     currentRect.height += help.visible ? help.height : - help.height
-                    print("info pressed")
                     metricList.visible = false
                     metricList.visible = true
                     z: 200

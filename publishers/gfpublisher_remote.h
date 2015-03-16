@@ -55,8 +55,8 @@ class PublisherStub : public PublisherInterface,
   PublisherStub();
   ~PublisherStub();
 
-  void Enable(int id);
-  void Disable(int id);
+  void Activate(int id);
+  void Deactivate(int id);
 
   void Subscribe(SubscriberInterface *s);
 

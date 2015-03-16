@@ -59,7 +59,7 @@ Item {
             source = drag.source
         }
         onDropped: {
-            currentGroup.publisher.EnableToGraph(id, graphView.subscriber);
+            currentGroup.publisher.ActivateToGraph(id, graphView.subscriber);
             activeMetricNames.add(name, id)
             // hide the drag visualizer
             source.x = 0;

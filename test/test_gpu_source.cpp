@@ -74,14 +74,14 @@ class GpuMetricTest : public testing::Test {
     }
     ASSERT_NE(id, 0);
 
-    publisher.Enable(id);
+    publisher.Activate(id);
     for (int i = 0; i < 20; ++i) {
       // for (int j = 0; j < 10; ++j) {
         context.Draw();
       // }
       source.glSwapBuffers();
     }
-    publisher.Disable(id);
+    publisher.Deactivate(id);
   }
 
   GpuPerfSource source;

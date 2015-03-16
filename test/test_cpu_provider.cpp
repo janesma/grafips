@@ -44,8 +44,8 @@ class NullPublisher : public PublisherInterface, public MetricSinkInterface {
  public:
   void RegisterSource(MetricSourceInterface *p) {}
   void OnMetric(const DataSet &d) {}
-  void Enable(int id) {}
-  void Disable(int id) {}
+  void Activate(int id) {}
+  void Deactivate(int id) {}
   void GetDescriptions(std::vector<MetricDescription> *descriptions) const {}
   void Subscribe(SubscriberInterface *s) {}
   void OnDescriptions(const std::vector<MetricDescription> &descriptions) {}
@@ -59,13 +59,13 @@ class TestCpuPublisher : public PublisherInterface, public MetricSinkInterface {
     m_p->Subscribe(this);
   }
   void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
-  void Enable(int id) { m_p->Enable(id); }
-  virtual void Disable(int id) { m_p->Disable(id); }
+  void Activate(int id) { m_p->Activate(id); }
+  virtual void Deactivate(int id) { m_p->Deactivate(id); }
   void Subscribe(SubscriberInterface *s) {}
   void OnDescriptions(const std::vector<MetricDescription> &descriptions) {
     for (MetricDescriptionSet::const_iterator i = descriptions.begin();
          i != descriptions.end(); ++i)
-      Enable(i->id());
+      Activate(i->id());
   }
   DataSet m_d;
   MetricSourceInterface *m_p;

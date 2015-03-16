@@ -44,7 +44,7 @@ MetricRouter::MetricRouter() {
 MetricRouter::~MetricRouter() {}
 
 void
-MetricRouter::EnableToGraph(int id, GraphSetSubscriber *dest) {
+MetricRouter::ActivateToGraph(int id, GraphSetSubscriber *dest) {
   ScopedLock l(&m_protect);
 
   // TODO(majanes): probably want to clear any GraphSetSubscriber that
@@ -52,18 +52,18 @@ MetricRouter::EnableToGraph(int id, GraphSetSubscriber *dest) {
   // level then assert here.
 
   m_routes[id] = dest;
-  Enable(id);
+  Activate(id);
 }
 
 void
-MetricRouter::Enable(int id) {
-  m_pub.Enable(id);
+MetricRouter::Activate(int id) {
+  m_pub.Activate(id);
 }
 
 void
-MetricRouter::Disable(int id) {
+MetricRouter::Deactivate(int id) {
   ScopedLock l(&m_protect);
-  m_pub.Disable(id);
+  m_pub.Deactivate(id);
 }
 
 void

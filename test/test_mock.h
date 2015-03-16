@@ -43,8 +43,8 @@ class TestPublisher : public PublisherInterface, public MetricSinkInterface {
   TestPublisher() : m_p(NULL), m_sub(NULL) {}
   void RegisterSource(MetricSourceInterface *p) { m_p = p; p->Subscribe(this); }
   void OnMetric(const DataSet &d) {m_d.insert(m_d.end(), d.begin(), d.end()); }
-  void Enable(int id) { m_p->Enable(id); }
-  void Disable(int id) { m_p->Disable(id); }
+  void Activate(int id) { m_p->Activate(id); }
+  void Deactivate(int id) { m_p->Deactivate(id); }
   void OnDescriptions(const std::vector<MetricDescription> &descriptions) {
     m_desc = descriptions;
     if (m_sub)

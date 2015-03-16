@@ -106,19 +106,19 @@ PublisherStub::WriteMessage(const PublisherInvocation &m) const {
 }
 
 void
-PublisherStub::Enable(int id) {
+PublisherStub::Activate(int id) {
   PublisherInvocation m;
-  m.set_method(PublisherInvocation::kEnable);
-  PublisherInvocation::Enable *args = m.mutable_enableargs();
+  m.set_method(PublisherInvocation::kActivate);
+  PublisherInvocation::Activate *args = m.mutable_activateargs();
   args->set_id(id);
   WriteMessage(m);
 }
 
 void
-PublisherStub::Disable(int id) {
+PublisherStub::Deactivate(int id) {
   PublisherInvocation m;
-  m.set_method(PublisherInvocation::kDisable);
-  PublisherInvocation::Disable *args = m.mutable_disableargs();
+  m.set_method(PublisherInvocation::kDeactivate);
+  PublisherInvocation::Deactivate *args = m.mutable_deactivateargs();
   args->set_id(id);
   WriteMessage(m);
 }

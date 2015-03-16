@@ -43,7 +43,7 @@ TEST(GlSourceFixture, test_descriptions ) {
   GlSource source(0);  // zero interval, to force immediate publication
   pub.RegisterSource(&source);
 
-  source.Enable(pub.m_desc[0].id());
+  source.Activate(pub.m_desc[0].id());
 
   source.glSwapBuffers();
   EXPECT_TRUE(pub.m_d.empty());
@@ -56,8 +56,8 @@ TEST(GlSourceFixture, test_descriptions ) {
 
   pub.m_d.clear();
 
-  source.Disable(pub.m_desc[0].id());
-  source.Enable(pub.m_desc[1].id());
+  source.Deactivate(pub.m_desc[0].id());
+  source.Activate(pub.m_desc[1].id());
 
   usleep(100000);
   source.glSwapBuffers();

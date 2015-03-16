@@ -50,25 +50,25 @@ class QMetric : public QObject,
   Q_PROPERTY(QString name READ name NOTIFY onName)
   Q_PROPERTY(QString helpText READ helpText NOTIFY onHelpText)
   Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
-  Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY onEnabled)
+  Q_PROPERTY(bool active READ active WRITE setActive NOTIFY onActivated)
  public:
-  QMetric() : m_id(-1), m_name(), m_help_text(), m_enabled(false) {}
+  QMetric() : m_id(-1), m_name(), m_help_text(), m_active(false) {}
 
   explicit QMetric(const MetricDescription &m)
       : m_id(m.id()),
         m_name(QString::fromStdString(m.display_name)),
         m_help_text(QString::fromStdString(m.help_text)),
-        m_enabled(false) {}
+        m_active(false) {}
   QString name() { return m_name; }
   QString helpText() {return m_help_text;}
   int met_id() { return m_id; }
-  bool enabled() { return m_enabled; }
-  void setEnabled(bool e) {
-    m_enabled = e;
-    emit onEnabled();
+  bool active() { return m_active; }
+  void setActive(bool e) {
+    m_active = e;
+    emit onActivated();
   }
  signals:
-  void onEnabled();
+  void onActivated();
 
   // these exist just to avoid run-time warnings.  names & descriptions do
   // not change
@@ -80,7 +80,7 @@ class QMetric : public QObject,
   QMetric& operator=(const QMetric&);
   int m_id;
   QString m_name, m_help_text;
-  bool m_enabled;
+  bool m_active;
 };
 
 class MetricRouter : public QObject,
@@ -94,10 +94,10 @@ class MetricRouter : public QObject,
  public:
   MetricRouter();
   ~MetricRouter();
-  Q_INVOKABLE void EnableToGraph(int id, GraphSetSubscriber *dest);
+  Q_INVOKABLE void ActivateToGraph(int id, GraphSetSubscriber *dest);
   // PublisherInterface
-  void Enable(int id);
-  Q_INVOKABLE void Disable(int id);
+  void Activate(int id);
+  Q_INVOKABLE void Deactivate(int id);
   void Subscribe(SubscriberInterface *s);
 
   // SubscriberInterface
