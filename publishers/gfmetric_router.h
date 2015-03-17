@@ -51,14 +51,17 @@ class QMetric : public QObject,
   Q_PROPERTY(QString helpText READ helpText NOTIFY onHelpText)
   Q_PROPERTY(int met_id READ met_id NOTIFY onMet_id)
   Q_PROPERTY(bool active READ active WRITE setActive NOTIFY onActivated)
+  Q_PROPERTY(bool metEnabled READ metEnabled NOTIFY onMetEnabled)
  public:
-  QMetric() : m_id(-1), m_name(), m_help_text(), m_active(false) {}
+  QMetric() : m_id(-1), m_name(), m_help_text(), m_active(false),
+              m_enabled(true) {}
 
   explicit QMetric(const MetricDescription &m)
       : m_id(m.id()),
         m_name(QString::fromStdString(m.display_name)),
         m_help_text(QString::fromStdString(m.help_text)),
-        m_active(false) {}
+        m_active(false),
+        m_enabled(m.enabled) {}
   QString name() { return m_name; }
   QString helpText() {return m_help_text;}
   int met_id() { return m_id; }
@@ -67,20 +70,24 @@ class QMetric : public QObject,
     m_active = e;
     emit onActivated();
   }
+  bool metEnabled() {return m_enabled;}
+
  signals:
   void onActivated();
+  void onMetEnabled();
 
   // these exist just to avoid run-time warnings.  names & descriptions do
   // not change
   void onName();
   void onHelpText();
   void onMet_id();
+  
  private:
   QMetric(const QMetric&);
   QMetric& operator=(const QMetric&);
   int m_id;
   QString m_name, m_help_text;
-  bool m_active;
+  bool m_active, m_enabled;
 };
 
 class MetricRouter : public QObject,

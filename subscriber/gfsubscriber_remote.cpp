@@ -115,7 +115,8 @@ SubscriberSkeleton::Run() {
           d_set.push_back(MetricDescription(in_d.path(),
                                             in_d.help_text(),
                                             in_d.display_name(),
-                                            (MetricType)in_d.type()));
+                                            (MetricType)in_d.type(),
+                                            in_d.enabled()));
         }
         m_target->OnDescriptions(d_set);
         break;

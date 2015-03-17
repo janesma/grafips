@@ -151,8 +151,9 @@ MetricRouter::HandleNotifyDescriptions() {
     ScopedLock l(&m_protect);
     m_metrics.clear();
     for (auto i = m_descriptions.begin();
-         i != m_descriptions.end(); ++i)
+         i != m_descriptions.end(); ++i) {
       m_metrics.append(new QMetric(i->second));
+    }
   }
   emit onEnabled();
 }

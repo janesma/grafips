@@ -20,11 +20,11 @@ Item {
 
         delegate: Rectangle {
             id: currentRect
-            height: nameText.height + 15
+            height: nameText.height * 1.5
             width: currentList.width
             property int theId: model.met_id
             
-            color: "light blue"
+            color: metEnabled ? "light blue" : "gray"
             Text {
                 id: nameText
                 width: parent.width
@@ -80,7 +80,7 @@ Item {
                 onDragActiveChanged: {
                     if (dragActive) {
                         // show the drag visualizer
-                        visible = true
+                        visible = true;
                         Drag.start();
                         return;
                     }
