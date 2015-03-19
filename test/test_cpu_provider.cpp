@@ -236,4 +236,12 @@ TEST(RemotePubSub, connect_test) {
 
   pub_skel.Join();
 }
+
+TEST(RDTSC, check_time) {
+  const unsigned int ms = get_ms_time();
+  usleep(100000);
+  const unsigned int ms2 = get_ms_time();
+  
+  EXPECT_LT(abs(ms2 - ms) - 100, 1);
+}
 }  // namespace Grafips
