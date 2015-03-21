@@ -81,7 +81,7 @@ class QMetric : public QObject,
   void onName();
   void onHelpText();
   void onMet_id();
-  
+
  private:
   QMetric(const QMetric&);
   QMetric& operator=(const QMetric&);
