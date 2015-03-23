@@ -10,6 +10,31 @@ ApplicationWindow {
     visible: true
     id: mainWindow
 
+    function usage() {
+        print("usage: grafips [-a host:port] [-h]");
+        print("\t-a: provide host and port of target system");
+        print("\t-h: print this message");
+    }
+    
+    function processArgs() {
+        var address = "localhost:53136";
+        for (var i = 0; i < Qt.application.arguments.length; ++i) {
+            if (Qt.application.arguments[i] == "-a") {
+                if (i + 1 < Qt.application.arguments.length) {
+                    address = Qt.application.arguments[i+1];
+                    i += 1;
+                } else {
+                    print("Error: -a requires parameter");
+                    break;
+                }
+            }
+            if (Qt.application.arguments[i] == "-h") {
+                usage();
+            }
+        }
+        return address;
+    }
+
     MetricRouter {
         id: mainPublisher
     }
@@ -41,7 +66,7 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 width:parent.width
                 verticalAlignment: Text.AlignVCenter
-                text: "localhost:53136"
+                text: processArgs()
                 onAccepted: {
                     cpu.start();
                     glFt.start();
