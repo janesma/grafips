@@ -14,6 +14,8 @@ add_library(grafips_sources
   gfgpu_perf_source.cpp
   gfgpu_perf_source.h
   gfimetric_source.h
+  gfproc_self_source.cpp
+  gfproc_self_source.h
   )
 
 target_include_directories( grafips_sources PUBLIC . ..)

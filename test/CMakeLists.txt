@@ -17,6 +17,7 @@ add_executable(test_grafips
   test_gpu_source.cpp
   test_main.cpp
   test_pattern.cpp
+  test_proc_self_source.cpp
   )
 
 target_link_libraries(test_grafips

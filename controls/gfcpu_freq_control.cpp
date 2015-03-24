@@ -43,7 +43,8 @@ using Grafips::FreqSysParser;
 
 CpuFreqControl::CpuFreqControl() : m_subscriber(NULL) {
   m_orig_scaling_governor = m_parser.Governor();
-  // GFLOGF("CpuFreqControl m_orig_scaling_governor %s", m_orig_scaling_governor.c_str());
+  // GFLOGF("CpuFreqControl m_orig_scaling_governor %s",
+  // m_orig_scaling_governor.c_str());
   m_current_setting = m_orig_scaling_governor;
   m_orig_max_freq = m_parser.MaxFreq();
   // GFLOGF("CpuFreqControl m_orig_max_freq %s", m_orig_max_freq.c_str());
