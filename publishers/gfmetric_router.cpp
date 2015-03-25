@@ -39,8 +39,7 @@ using Grafips::QMetric;
 using Grafips::DataSet;
 using Grafips::MetricDescriptionSet;
 
-MetricRouter::MetricRouter() {
-  m_output = NULL;
+MetricRouter::MetricRouter(): m_output(NULL) {
   connect(this, SIGNAL(NotifyDescriptions()),
           this, SLOT(HandleNotifyDescriptions()));
 }
@@ -174,3 +173,21 @@ MetricRouter::HandleNotifyDescriptions() {
   emit onEnabled();
 }
 
+void
+MetricRouter::SetText(bool capture) {
+  ScopedLock l(&m_protect);
+  if (capture) {
+    if (m_output) {
+      delete m_output;
+      m_output = NULL;
+    }
+    m_output = new HtmlOutput;
+    return;
+  }
+
+  // else
+  if (m_output) {
+    delete m_output;
+  }
+  m_output = NULL;
+}

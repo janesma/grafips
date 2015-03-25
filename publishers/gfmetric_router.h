@@ -113,6 +113,7 @@ class MetricRouter : public QObject,
   void OnMetric(const DataSet &d);
   void OnDescriptions(const std::vector<MetricDescription> &descriptions);
 
+  Q_INVOKABLE void SetText(bool capture);
   Q_INVOKABLE void AddGraph(GraphSetSubscriber* g);
   QString address() const { return m_pub.address(); }
   void setAddress(const QString &a);

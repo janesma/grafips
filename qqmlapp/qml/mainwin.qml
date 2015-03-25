@@ -116,6 +116,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Component.onCompleted: {
                     apiControl.model.SetControlRounter(controlRouter)
+                    apiControl.metricsRouter = mainPublisher
                 }
             }
         }

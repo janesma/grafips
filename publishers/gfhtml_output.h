@@ -30,6 +30,7 @@
 
 #include <vector>
 
+#include "os/gfmutex.h"
 #include "remote/gfmetric.h"
 
 namespace Grafips {
@@ -50,6 +51,7 @@ class HtmlOutput {
   TableWriter *m_tw;
   std::vector<int> m_active_ids;
   MetricDescriptionSet m_desc;
+  mutable Mutex m_protect;
 };
 
 }  // namespace Grafips

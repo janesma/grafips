@@ -39,10 +39,11 @@
 
 #include "error/gflog.h"
 
-using Grafips::HtmlOutput;
-using Grafips::MetricDescriptionSet;
 using Grafips::DataPoint;
 using Grafips::DataSet;
+using Grafips::HtmlOutput;
+using Grafips::MetricDescriptionSet;
+using Grafips::Mutex;
 using Grafips::TableWriter;
 
 class TimeCompare {
@@ -64,7 +65,6 @@ class Grafips::DataHeap {
  public:
   void Push(const DataSet &d) {
     for (auto i = d.begin(); i != d.end(); ++i) {
-      GFLOGF("DataHeap::Push %u %f", i->time_val, i->data);
       m_heap.push(*i);
     }
   }
@@ -124,7 +124,8 @@ HtmlOutput::HtmlOutput() : m_heap(new DataHeap), m_tw(NULL) {
 }
 
 HtmlOutput::~HtmlOutput() {
-  delete m_tw;
+  if (m_tw)
+    delete m_tw;
   static const char *END_FILE = "</body>\n</html>\n";
   write(m_fh, END_FILE, strlen(END_FILE));
   close(m_fh);
@@ -135,6 +136,9 @@ void
 HtmlOutput::OnMetric(const DataSet &d) {
   if (!m_tw)
     return;
+  if (d.empty())
+    return;
+  ScopedLock l(&m_protect);
   m_heap->Push(d);
   while (true) {
     DataSet ready;
@@ -147,11 +151,13 @@ HtmlOutput::OnMetric(const DataSet &d) {
 
 void
 HtmlOutput::OnDescriptions(const MetricDescriptionSet &descriptions) {
+  ScopedLock l(&m_protect);
   m_desc = descriptions;
 }
 
 void
 HtmlOutput::Activate(int id) {
+  ScopedLock l(&m_protect);
   m_active_ids.push_back(id);
   std::sort(m_active_ids.begin(), m_active_ids.end());
   m_heap->Clear();
@@ -161,6 +167,7 @@ HtmlOutput::Activate(int id) {
 
 void
 HtmlOutput::Deactivate(int id) {
+  ScopedLock l(&m_protect);
   for (auto i = m_active_ids.begin(); i != m_active_ids.end(); ++i) {
     if (*i == id) {
       *i = m_active_ids.back();

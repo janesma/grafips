@@ -4,7 +4,8 @@ import Grafips 1.0
 
 Item {
     property var model: controlModel
-    property int suggested_height: first_box.height * 5
+    property var metricsRouter
+    property int suggested_height: first_box.height * 6
     Column {
         CheckBox {
             id: first_box
@@ -40,6 +41,13 @@ Item {
             checked: false
             onClicked: {
                 controlModel.SetControl("WireframeExperiment", checked);
+            }
+        }
+        CheckBox {
+            text: qsTr("Save to file")
+            checked: false
+            onClicked: {
+                metricsRouter.SetText(checked);
             }
         }
     }
