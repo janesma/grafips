@@ -126,7 +126,7 @@ MetricRouter::OnDescriptions(const MetricDescriptionSet &descriptions) {
 
   if (m_output)
     m_output->OnDescriptions(descriptions);
-  
+
   // Pass a signal to self so that m_metrics property can be updated
   // in the UI thread.
   emit NotifyDescriptions();

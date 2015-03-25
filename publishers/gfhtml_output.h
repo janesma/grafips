@@ -28,6 +28,8 @@
 #ifndef PUBLISHERS_GFHTML_OUTPUT_H_
 #define PUBLISHERS_GFHTML_OUTPUT_H_
 
+#include <vector>
+
 #include "remote/gfmetric.h"
 
 namespace Grafips {

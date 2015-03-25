@@ -35,8 +35,9 @@
 #include <algorithm>
 #include <queue>
 #include <set>
+#include <vector>
 
-#include <error/gflog.h>
+#include "error/gflog.h"
 
 using Grafips::HtmlOutput;
 using Grafips::MetricDescriptionSet;
@@ -57,7 +58,7 @@ class IdCompare{
     return a.id < b.id;
   }
 };
-  
+
 // orders data by time and then by id
 class Grafips::DataHeap {
  public:
@@ -71,34 +72,37 @@ class Grafips::DataHeap {
   void Pop(DataSet *d, unsigned int current_time) {
     if (m_heap.empty())
       return;
+
+    // tracks ids, so there is at most one value per column
     std::set<int> ids;
+
     while (true) {
       if (m_heap.empty())
         break;
       const DataPoint &top = m_heap.top();
       if (current_time < top.time_val + 100)
         break;
-      
+
       if (ids.find(top.id) != ids.end())
         break;
 
-      GFLOGF("DataHeap::pop %u %f", top.time_val, top.data);
       ids.insert(top.id);
       d->push_back(top);
       m_heap.pop();
     }
-    std::sort(d->begin(), d->end(), IdCompare());
 
+    // metrics must be in the same order as the headers (sorted by id)
+    std::sort(d->begin(), d->end(), IdCompare());
   }
   void Clear() {
     while (!m_heap.empty())
       m_heap.pop();
   }
+
  private:
   std::priority_queue<DataPoint, DataSet, TimeCompare> m_heap;
 };
 
-                         
 class TableWriter {
  public:
   TableWriter(const MetricDescriptionSet &m,
@@ -129,7 +133,7 @@ HtmlOutput::~HtmlOutput() {
 
 void
 HtmlOutput::OnMetric(const DataSet &d) {
-  if (! m_tw)
+  if (!m_tw)
     return;
   m_heap->Push(d);
   while (true) {
@@ -193,7 +197,7 @@ TableWriter::TableWriter(const MetricDescriptionSet &m,
   write_field(m_fh, TD);
   write_field(m_fh, "time_ms");
   write_field(m_fh, TDE);
-      
+
   for (auto i = active_ids.begin(); i != active_ids.end(); ++i) {
     write_field(m_fh, TD);
     for (auto j = m.begin(); j != m.end(); ++j) {
@@ -210,19 +214,19 @@ TableWriter::TableWriter(const MetricDescriptionSet &m,
 TableWriter::~TableWriter() {
   write_field(m_fh, END_TABLE);
 }
-    
+
 void
 TableWriter::Write(const DataSet &d) {
   if (d.empty())
     return;
   write_field(m_fh, TR);
-    
+
   auto data = d.begin();
   write_field(m_fh, TD);
   snprintf(m_buf.data(), m_buf.size() - 1, "%u", data->time_val);
   write_field(m_fh, m_buf.data());
   write_field(m_fh, TDE);
-    
+
   for (auto i = m_ids.begin(); i != m_ids.end(); ++i) {
     write_field(m_fh, TD);
     if (data != d.end()) {
