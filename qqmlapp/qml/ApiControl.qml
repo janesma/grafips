@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
+import QtQuick.Dialogs 1.0
 import Grafips 1.0
 
 Item {
@@ -43,11 +44,43 @@ Item {
                 controlModel.SetControl("WireframeExperiment", checked);
             }
         }
-        CheckBox {
-            text: qsTr("Save to file")
-            checked: false
-            onClicked: {
-                metricsRouter.SetText(checked);
+        Row {
+            CheckBox {
+                id: fileCheck
+                text: qsTr("Save to file")
+                checked: false
+                onClicked: {
+                    metricsRouter.SetText(checked);
+                }
+            }
+            Rectangle {
+                id: file_rect
+                border.width: 1
+                width: fileCheck.height
+                height: fileCheck.height
+                Text {
+                    anchors.centerIn: parent
+                    text: "?"
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed : {
+                        fileDialog.visible =  true
+                    }
+                }
+
+                FileDialog {
+                    id: fileDialog
+                    visible: false
+                    title: "Please choose a file" // 
+                    folder: "file:///tmp/"
+                    selectExisting: false
+                    selectMultiple: false
+                    nameFilters: [ "html files (*.html)", "All files (*)" ]
+                    onAccepted: {
+                        metricsRouter.SetTextFile(fileDialog.fileUrl);
+                    }
+                }
             }
         }
     }

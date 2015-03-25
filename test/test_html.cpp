@@ -54,7 +54,7 @@ class BogoMet {
 TEST(HtmlOutput, instantiate) {
   BogoMet b;
   {
-    HtmlOutput h;
+    HtmlOutput h("/tmp/grafips_test.html");
     h.OnDescriptions(b.metrics);
     h.OnMetric(b.data);
     h.Activate(b.metrics[0].id());

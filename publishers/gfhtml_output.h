@@ -28,6 +28,7 @@
 #ifndef PUBLISHERS_GFHTML_OUTPUT_H_
 #define PUBLISHERS_GFHTML_OUTPUT_H_
 
+#include <string>
 #include <vector>
 
 #include "os/gfmutex.h"
@@ -39,7 +40,7 @@ class TableWriter;
 class DataHeap;
 class HtmlOutput {
  public:
-  HtmlOutput();
+  explicit HtmlOutput(const std::string &file_path);
   ~HtmlOutput();
   void OnMetric(const DataSet &d);
   void OnDescriptions(const MetricDescriptionSet &descriptions);

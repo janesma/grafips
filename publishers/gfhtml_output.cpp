@@ -27,14 +27,15 @@
 
 #include "publishers/gfhtml_output.h"
 
-#include <string.h>
 #include <fcntl.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <queue>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "error/gflog.h"
@@ -116,8 +117,10 @@ class TableWriter {
   int m_fh;
 };
 
-HtmlOutput::HtmlOutput() : m_heap(new DataHeap), m_tw(NULL) {
-  m_fh = open("/tmp/grafips.html", O_WRONLY | O_CREAT | O_TRUNC,
+HtmlOutput::HtmlOutput(const std::string &file_path)
+    : m_heap(new DataHeap),
+      m_tw(NULL) {
+  m_fh = open(file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC,
               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   static const char *BEGIN_FILE = "<html>\n<body>\n";
   write(m_fh, BEGIN_FILE, strlen(BEGIN_FILE));

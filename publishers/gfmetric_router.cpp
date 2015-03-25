@@ -39,7 +39,8 @@ using Grafips::QMetric;
 using Grafips::DataSet;
 using Grafips::MetricDescriptionSet;
 
-MetricRouter::MetricRouter(): m_output(NULL) {
+MetricRouter::MetricRouter(): m_output(NULL),
+                              m_fileName("file:///tmp/grafips.html") {
   connect(this, SIGNAL(NotifyDescriptions()),
           this, SLOT(HandleNotifyDescriptions()));
 }
@@ -181,7 +182,7 @@ MetricRouter::SetText(bool capture) {
       delete m_output;
       m_output = NULL;
     }
-    m_output = new HtmlOutput;
+    m_output = new HtmlOutput(m_fileName.path().toStdString());
     return;
   }
 
@@ -190,4 +191,9 @@ MetricRouter::SetText(bool capture) {
     delete m_output;
   }
   m_output = NULL;
+}
+
+void
+MetricRouter::SetTextFile(QUrl filename) {
+  m_fileName = filename;
 }

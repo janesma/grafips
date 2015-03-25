@@ -31,6 +31,7 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QUrl>
 
 #include <map>
 #include <vector>
@@ -114,6 +115,7 @@ class MetricRouter : public QObject,
   void OnDescriptions(const std::vector<MetricDescription> &descriptions);
 
   Q_INVOKABLE void SetText(bool capture);
+  Q_INVOKABLE void SetTextFile(QUrl filename);
   Q_INVOKABLE void AddGraph(GraphSetSubscriber* g);
   QString address() const { return m_pub.address(); }
   void setAddress(const QString &a);
@@ -143,6 +145,7 @@ class MetricRouter : public QObject,
   // key is description path, to keep the metrics sorted
   std::map<std::string, MetricDescription> m_descriptions;
   HtmlOutput *m_output;
+  QUrl m_fileName;
   mutable Mutex m_protect;
 };
 }  // namespace Grafips
