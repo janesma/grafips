@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(grafips_publishers)
 
 add_library(grafips_publishers
+  gfhtml_output.cpp
+  gfhtml_output.h
   gfmetric_router.cpp
   gfmetric_router.h
   gfpattern.cpp

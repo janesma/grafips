@@ -15,6 +15,7 @@ add_executable(test_grafips
   test_error.cpp
   test_gl_provider.cpp
   test_gpu_source.cpp
+  test_html.cpp
   test_main.cpp
   test_pattern.cpp
   test_proc_self_source.cpp

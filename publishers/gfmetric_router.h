@@ -90,6 +90,7 @@ class QMetric : public QObject,
   bool m_active, m_enabled;
 };
 
+class HtmlOutput;
 class MetricRouter : public QObject,
                      public PublisherInterface,
                      public SubscriberInterface,
@@ -140,6 +141,7 @@ class MetricRouter : public QObject,
   PublisherStub m_pub;
   // key is description path, to keep the metrics sorted
   std::map<std::string, MetricDescription> m_descriptions;
+  HtmlOutput *m_output;
   mutable Mutex m_protect;
 };
 }  // namespace Grafips

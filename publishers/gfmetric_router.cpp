@@ -32,16 +32,23 @@
 
 #include "subscriber/gfsubscriber.h"
 #include "publishers/gfpattern.h"
+#include "publishers/gfhtml_output.h"
 
 using Grafips::MetricRouter;
 using Grafips::QMetric;
+using Grafips::DataSet;
+using Grafips::MetricDescriptionSet;
 
 MetricRouter::MetricRouter() {
+  m_output = NULL;
   connect(this, SIGNAL(NotifyDescriptions()),
           this, SLOT(HandleNotifyDescriptions()));
 }
 
-MetricRouter::~MetricRouter() {}
+MetricRouter::~MetricRouter() {
+  if (m_output)
+    delete m_output;
+}
 
 void
 MetricRouter::ActivateToGraph(int id, GraphSetSubscriber *dest) {
@@ -58,12 +65,16 @@ MetricRouter::ActivateToGraph(int id, GraphSetSubscriber *dest) {
 void
 MetricRouter::Activate(int id) {
   m_pub.Activate(id);
+  if (m_output)
+    m_output->Activate(id);
 }
 
 void
 MetricRouter::Deactivate(int id) {
   ScopedLock l(&m_protect);
   m_pub.Deactivate(id);
+  if (m_output)
+    m_output->Deactivate(id);
 }
 
 void
@@ -90,6 +101,8 @@ MetricRouter::OnMetric(const DataSet &d) {
        i != demux.end(); ++i) {
     m_routes[i->first]->OnMetric(i->second);
   }
+  if (m_output)
+    m_output->OnMetric(d);
 }
 
 void
@@ -111,6 +124,9 @@ MetricRouter::OnDescriptions(const MetricDescriptionSet &descriptions) {
     (*i)->OnDescriptions(descriptions);
   }
 
+  if (m_output)
+    m_output->OnDescriptions(descriptions);
+  
   // Pass a signal to self so that m_metrics property can be updated
   // in the UI thread.
   emit NotifyDescriptions();
@@ -157,3 +173,4 @@ MetricRouter::HandleNotifyDescriptions() {
   }
   emit onEnabled();
 }
+
