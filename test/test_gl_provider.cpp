@@ -31,7 +31,7 @@
 #include <vector>
 
 #include "sources/gfgl_source.h"
-#include "grafips/test/test_mock.h"
+#include "test/test_mock.h"
 
 
 using Grafips::TestPublisher;
