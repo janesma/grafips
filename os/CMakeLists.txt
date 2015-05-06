@@ -15,7 +15,7 @@ add_library(grafips_os
 
 target_include_directories( grafips_os PUBLIC ..)
 
-target_link_libraries(grafips_os grafips_error)
+target_link_libraries(grafips_os grafips_error pthread)
 
 add_subdirectory(test)
 
