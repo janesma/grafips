@@ -51,15 +51,9 @@ Item {
         id: list_delegate
         Item {
             width: textDel.width + textDel.height
-            Text {
-                text: name
-                id: textDel
-                color: displayColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignBottom
-            }
             Image {
-                anchors.left: textDel.right
+                id: closeImage
+                anchors.left: parent.left
                 height: textDel.height
                 width: textDel.height
                 source: "icons/close_icon.png"
@@ -69,6 +63,14 @@ Item {
                         activeMetricNames.remove(name)
                     }
                 }
+            }
+            Text {
+                anchors.left: closeImage.right
+                text: name
+                id: textDel
+                color: displayColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignBottom
             }
         }
     }
