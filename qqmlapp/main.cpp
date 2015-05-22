@@ -40,6 +40,9 @@
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
+    app.setOrganizationName("Open Source Technology Center");
+    app.setOrganizationDomain("intel.com");
+    app.setApplicationName("grafips");
 
     qmlRegisterType<Grafips::MetricRouter>("Grafips", 1, 0, "MetricRouter");
     qmlRegisterType<Grafips::ControlRouterHost>("Grafips", 1, 0,
