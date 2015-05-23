@@ -61,7 +61,9 @@ GraphSetSubscriber::OnMetric(const DataSet &d) {
 
 void
 GraphSetSubscriber::Clear(int id) {
-  m_dataSets[id]->Clear();
+    if (m_dataSets.find(id) == m_dataSets.end())
+        return;
+    m_dataSets[id]->Clear();
 }
 
 GraphSetSubscriber::GraphSetSubscriber() {

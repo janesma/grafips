@@ -87,6 +87,8 @@ MetricRouter::Subscribe(SubscriberInterface *s) {
 void
 MetricRouter::Clear(int id) {
   ScopedLock l(&m_protect);
+  if (m_routes.find(id) == m_routes.end())
+      return;
   m_routes[id]->Clear(id);
 }
 

@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import Grafips 1.0
+import Qt.labs.settings 1.0
 
 Item {
     id: currentGroup
@@ -10,6 +11,7 @@ Item {
     Layout.preferredHeight: 400
     property string color
     property MetricRouter publisher
+    property string offset
 
     function formatFloat(num) {
         if (num < 10) {
@@ -44,8 +46,25 @@ Item {
     }
 
     function start() {
-
         publisher.AddGraph(graphView.subscriber);
+
+        // on startup, we want to activate any metrics that were saved
+        // from the previous run.
+        var savedMetrics = metricPrefs.activated
+        for (var name in savedMetrics) {
+            if (name == 0)
+                // skip the initial entry which sets the type  { "" : 0 }
+                continue;
+            currentGroup.publisher.ActivateToGraph(savedMetrics[name], graphView.subscriber);
+            activeMetricNames.add(name, savedMetrics[name]);
+        }
+    }
+
+    Settings {
+        id: metricPrefs
+        category: "Metrics_" + currentGroup.offset
+        // initial entry sets the type of the associative array
+        property var activated: { "" : 0 }
     }
 
     DropArea {
@@ -98,6 +117,7 @@ Item {
         }
         ActiveMetrics {
             id: activeMetricNames
+            offset: currentGroup.offset
             visible: true
             renderer: graphView
             publisher: currentGroup.publisher

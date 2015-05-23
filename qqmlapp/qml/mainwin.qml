@@ -56,14 +56,20 @@ ApplicationWindow {
                 }
 
                 onAccepted: {
-                    cpu.start();
-                    glFt.start();
-                    glFps.start();
-                    glGpu.start();
                     mainPublisher.address = text
                     controlRouter.address = text
                     row.visible = true
                     connectionDialog.visible = false
+
+                    // these graphs will activate metrics from the
+                    // previous settings as soon as they are started.
+                    // This needs to happen after controlRouter /
+                    // mainPublisher get their addresses, which will
+                    // open the sockets.
+                    cpu.start();
+                    glFt.start();
+                    glFps.start();
+                    glGpu.start();
                 }
             }
         }
@@ -116,18 +122,30 @@ ApplicationWindow {
             MetricGroup {
                 id: cpu
                 publisher: mainPublisher
+                // offset is used to address the settings, which hold
+                // the active metrics for the graph
+                offset: "1"
             }
             MetricGroup {
                 id: glFt
                 publisher: mainPublisher
+                // offset is used to address the settings, which hold
+                // the active metrics for the graph
+                offset: "2"
             }
             MetricGroup {
                 id: glFps
                 publisher: mainPublisher
+                // offset is used to address the settings, which hold
+                // the active metrics for the graph
+                offset: "3"
             }
             MetricGroup {
                 id: glGpu
                 publisher: mainPublisher
+                // offset is used to address the settings, which hold
+                // the active metrics for the graph
+                offset: "4"
             }
         }
     }
