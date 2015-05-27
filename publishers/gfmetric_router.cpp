@@ -64,6 +64,7 @@ MetricRouter::ActivateToGraph(int id, GraphSetSubscriber *dest) {
 
 void
 MetricRouter::Activate(int id) {
+  m_active_ids[id] = true;
   m_pub.Activate(id);
   if (m_output)
     m_output->Activate(id);
@@ -72,6 +73,7 @@ MetricRouter::Activate(int id) {
 void
 MetricRouter::Deactivate(int id) {
   ScopedLock l(&m_protect);
+  m_active_ids[id] = false;
   m_pub.Deactivate(id);
   if (m_output)
     m_output->Deactivate(id);
@@ -185,6 +187,17 @@ MetricRouter::SetText(bool capture) {
       m_output = NULL;
     }
     m_output = new HtmlOutput(m_fileName.path().toStdString());
+
+    // the HtmlOutput needs to know what metrics currently exist and
+    // which ones are active
+    MetricDescriptionSet temp_desc;
+    for (auto i : m_descriptions) {
+        temp_desc.push_back(i.second);
+    }
+    m_output->OnDescriptions(temp_desc);
+    for (auto i : m_active_ids) {
+      m_output->Activate(i.first);
+    }
     return;
   }
 
