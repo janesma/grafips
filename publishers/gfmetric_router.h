@@ -114,11 +114,14 @@ class MetricRouter : public QObject,
 
   QQmlListProperty<QMetric> metrics();
 
+  void OnDisconnect();
+
  signals:
   // sent to self, from the skeleton thread, to pass control to the UI
   // thread, where QMetric Qlist can be updated in QML.  Connected to
   // self's HandleNotifyDescriptions
   void NotifyDescriptions();
+  void stop();
 
   // bound to QML in MetricList via the metrics property
   void onEnabled();

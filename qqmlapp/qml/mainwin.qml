@@ -20,6 +20,13 @@ ApplicationWindow {
 
     MetricRouter {
         id: mainPublisher
+        onStop: {
+            cpu.stop();
+            glFt.stop();
+            glFps.stop();
+            glGpu.stop();
+        }
+                
     }
     ControlRouterHost {
         id: controlRouter

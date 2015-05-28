@@ -60,6 +60,10 @@ Item {
         }
     }
 
+    function stop() {
+        graphView.stop();
+    }
+
     Settings {
         id: metricPrefs
         category: "Metrics_" + currentGroup.offset

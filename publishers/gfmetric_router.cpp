@@ -151,6 +151,7 @@ void
 MetricRouter::setAddress(const QString &a) {
   ScopedLock l(&m_protect);
   m_pub.setAddress(a);
+  m_pub.SubscribeDisconnect(this);
   m_pub.Subscribe(this);
 }
 
@@ -211,4 +212,9 @@ MetricRouter::SetText(bool capture) {
 void
 MetricRouter::SetTextFile(QUrl filename) {
   m_fileName = filename;
+}
+
+void
+MetricRouter::OnDisconnect() {
+  emit stop();
 }

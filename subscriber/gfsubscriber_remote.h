@@ -38,8 +38,9 @@ class SubscriberInterface;
 }
 
 namespace Grafips {
-class Socket;
+class MetricRouter;
 class ServerSocket;
+class Socket;
 class SubscriberInterface;
 
 class SubscriberSkeleton : public QObject, public Thread {
@@ -49,10 +50,12 @@ class SubscriberSkeleton : public QObject, public Thread {
   void Run();
   void Stop();
   int GetPort() const;
+  void SubscribeDisconnect(MetricRouter *);
  private:
   ServerSocket *m_server;
   Socket *m_socket;
   SubscriberInterface *m_target;
+  MetricRouter *m_onDisconnect;
   bool m_running;
 };
 }  // namespace Grafips

@@ -49,7 +49,7 @@ using Grafips::kSocketWriteFail;
 using GrafipsProto::PublisherInvocation;
 
 PublisherStub::PublisherStub()
-    : m_socket(NULL), m_subscriber(NULL) {
+    : m_socket(NULL), m_subscriber(NULL), m_onDisconnect(NULL) {
 }
 
 void
@@ -127,6 +127,8 @@ void
 PublisherStub::Subscribe(SubscriberInterface *subs) {
   m_subscriber = new SubscriberSkeleton(0, subs);
   const int port = m_subscriber->GetPort();
+  if (m_onDisconnect)
+    m_subscriber->SubscribeDisconnect(m_onDisconnect);
   m_subscriber->Start();
 
   PublisherInvocation m;
@@ -136,6 +138,13 @@ PublisherStub::Subscribe(SubscriberInterface *subs) {
   args->set_port(port);
 
   WriteMessage(m);
+}
+
+void
+PublisherStub::SubscribeDisconnect(MetricRouter *r) {
+  m_onDisconnect = r;
+  if (m_subscriber)
+    m_subscriber->SubscribeDisconnect(r);
 }
 
 void

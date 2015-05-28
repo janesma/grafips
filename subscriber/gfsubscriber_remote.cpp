@@ -36,6 +36,7 @@
 #include "error/gferror.h"
 #include "os/gfsocket.h"
 #include "remote/gfisubscriber.h"
+#include "publishers/gfmetric_router.h"
 
 using Grafips::SubscriberSkeleton;
 using GrafipsProto::SubscriberInvocation;
@@ -45,7 +46,13 @@ SubscriberSkeleton::SubscriberSkeleton(int port, SubscriberInterface *target)
       m_server(new ServerSocket(port)),
       m_socket(NULL),
       m_target(target),
+      m_onDisconnect(NULL),
       m_running(false) {
+}
+
+void
+SubscriberSkeleton::SubscribeDisconnect(MetricRouter *r) {
+  m_onDisconnect = r;
 }
 
 void
@@ -57,8 +64,11 @@ SubscriberSkeleton::Run() {
   std::vector<unsigned char> m_buf;
   while (m_running) {
     uint32_t msg_len;
-    if (!m_socket->Read(&msg_len))
+    if (!m_socket->Read(&msg_len)) {
+      if (m_onDisconnect)
+        m_onDisconnect->OnDisconnect();
       return;
+    }
     m_buf.resize(msg_len);
     if (!m_socket->ReadVec(&m_buf)) {
       assert(false);

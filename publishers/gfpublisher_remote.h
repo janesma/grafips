@@ -48,6 +48,7 @@ namespace Grafips {
 class SubscriberInterface;
 class SubscriberStub;
 class SubscriberSkeleton;
+class MetricRouter;
 
 class PublisherStub : public PublisherInterface,
                       NoAssign, NoCopy, NoMove {
@@ -65,6 +66,8 @@ class PublisherStub : public PublisherInterface,
   QString address() const { return m_address; }
   void setAddress(const QString &a) { m_address = a; Connect(); }
 
+  void SubscribeDisconnect(MetricRouter *);
+  
  private:
   void WriteMessage(const GrafipsProto::PublisherInvocation &m) const;
   void Connect();
@@ -73,6 +76,7 @@ class PublisherStub : public PublisherInterface,
   mutable std::vector<unsigned char> m_buf;
   mutable Mutex m_protect;
   SubscriberSkeleton *m_subscriber;
+  MetricRouter *m_onDisconnect;
   QString m_address;
 };
 }  // namespace Grafips

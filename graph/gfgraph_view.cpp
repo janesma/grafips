@@ -71,7 +71,8 @@ GraphViewRenderer::GraphViewRenderer(const GraphView *v,
                                      GraphSetSubscriber *s,
                                      const PublisherInterface &p)
     : m_subscriber(s),
-      m_graph_max(0) {
+      m_graph_max(0),
+      m_stopped(false) {
   connect(this, SIGNAL(maxChanged()),
           v, SLOT(update()));
   glGenBuffers(1, &vbo);
@@ -230,6 +231,11 @@ GraphViewRenderer::UpdateMax() {
   }
 }
 
+// to support freezing the graph after disconnect, we need to keep the
+// last valid render time.  If we don't continue to render() after
+// disconnect, the UI will be misdrawn during window resize.
+static unsigned int last_time;
+
 void
 GraphViewRenderer::render() {
   UpdateMax();
@@ -258,7 +264,12 @@ GraphViewRenderer::render() {
   }
 
   // render the per-10s vertical lines
-  const unsigned int t = get_ms_time();
+  if (! m_stopped)
+    // after disconnect, continue to render the last view of the graph
+    // data.
+    last_time = get_ms_time();
+  const unsigned int t = last_time;
+  
   unsigned int age_of_10_sec = t % 10000;
   // const float offset_t = 1.0  - (static_cast<float>(t % 10000))/10000.0;
   // const float line_distance = 2.0 * 10.0 / 60.0;
@@ -318,6 +329,11 @@ void
 GraphViewRenderer::synchronize(QQuickFramebufferObject * item) {
   // inform the GraphView of the max, so it can draw the y-axis units
   GraphView *gv = dynamic_cast<GraphView*>(item);
+  if (gv->isStopped()) {
+    m_stopped = true;
+    return;
+  }
+    
   if (0 != m_graph_max) {
     assert(gv != NULL);
     gv->setGraphMax(m_graph_max);
@@ -343,7 +359,8 @@ GraphViewRenderer::synchronize(QQuickFramebufferObject * item) {
 }
 
 GraphView::GraphView() : m_pub(NULL),
-                         m_subscriber() {
+                         m_subscriber(),
+                         m_stopped(false) {
   setTextureFollowsItemSize(true);
 }
 
@@ -410,4 +427,10 @@ GraphView::GetColors(std::map<int, float*> *c) {
       continue;
     }
   }
+}
+
+void
+GraphView::stop() {
+  m_stopped = true;
+  update();
 }
