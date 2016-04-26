@@ -9,7 +9,10 @@ About **grafips**
 
 * Allows the user to toggle system settings or opengl overrides, to experiment with various bottlenecks that may be impacting the application:
 
-** test
+    * 2x2 Texture replace: minimizes memory bandwidth use due to textures
+    * Simple fragment shader: minimizes fragment processing
+    * Wireframe mode: helps visualize geometry in the application
+    * 1x1 scissor: eliminates geometry processing
 
 * Optionally saves metrics to a file, for offline analysis or comparison to subsequent collections.
 
