@@ -1,3 +1,3 @@
 See information on the wiki:
 
-https://github.com/janesma/grips/wiki
+https://github.com/janesma/grafips/wiki
