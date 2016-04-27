@@ -34,3 +34,4 @@ target_link_libraries(grafips
   GL pthread)
 
 
+install(TARGETS grafips RUNTIME DESTINATION bin)
