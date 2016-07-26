@@ -24,7 +24,7 @@ add_executable(grafips
   ${RESOURCE_ADDED} 
 )
 
-qt5_use_modules(grafips Core Gui Widgets OpenGL Quick Declarative) 
+qt5_use_modules(grafips Core Gui Widgets OpenGL Quick) 
 
 target_link_libraries(grafips
   grafips_graph
