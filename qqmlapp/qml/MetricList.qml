@@ -98,8 +98,8 @@ Item {
                 onPressed : {
                     // reposition the drag visualizer so it overlays
                     // the selected item
-                    dragVisualizer.x = currentRect.mapToItem(dragVisualizer.parent).x;
-                    dragVisualizer.y = currentRect.mapToItem(dragVisualizer.parent).y;
+                    dragVisualizer.x = currentRect.mapToItem(dragVisualizer.parent,0,0).x;
+                    dragVisualizer.y = currentRect.mapToItem(dragVisualizer.parent,0,0).y;
                 }
             }
             MouseArea {
